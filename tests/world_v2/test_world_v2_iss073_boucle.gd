@@ -210,6 +210,11 @@ func test_le_retour_du_vestibule_replace_le_heros_devant_la_citadelle() -> void:
 	# le joueur repart aussitôt d'où il vient.
 	var portes: Array[Node] = _portes_du_monde()
 	var seuil: SceneDoor = _porte_du_donjon(portes)
+	# `tests/CLAUDE.md` nomme ce piège : une assertion enfermée dans un
+	# `if node != null:` DISPARAÎT en silence le jour où le nœud est renommé.
+	# L'absence de la porte doit donc échouer ICI, bruyamment, avant la mesure.
+	check(seuil != null, "la porte du donjon doit exister pour juger la "
+		+ "distance de sortie ; portes trouvées : %s" % [_decrire(portes)])
 	if seuil != null:
 		check(ici.distance_to(seuil.global_position) > 2.0,
 			"le héros ressort DANS le volume de la porte — transition "

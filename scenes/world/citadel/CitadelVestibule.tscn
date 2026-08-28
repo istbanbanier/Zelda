@@ -11,6 +11,12 @@
 script = ExtResource("1_vestibule")
 
 [node name="GameplayShell" parent="." instance=ExtResource("3_shell")]
+; ISS-073 — « Réessayer » recharge `world_scene_path`, dont la valeur PAR
+; DÉFAUT est la vallée V1. Mourir dans le vestibule y déposait donc le
+; joueur, dans un monde qu'il n'a jamais traversé. Les six salles du
+; donjon et l'arène surchargent déjà cette valeur avec elles-mêmes ; le
+; vestibule ne le faisait pas.
+world_scene_path = "res://scenes/world/citadel/CitadelVestibule.tscn"
 
 ; Le joueur entre par la porte sud, face au fond (regard -Z).
 [node name="Player" parent="." instance=ExtResource("2_player")]

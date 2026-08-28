@@ -207,9 +207,15 @@ func test_the_victory_screen_offers_three_real_ways_out() -> void:
 	check_equal(buttons.size(), 3, "trois issues (§16.8)")
 	# Les deux autres issues mènent bien où elles disent.
 	buttons[0].pressed.emit()
+	# ISS-073 — CE CONTRAT A SURVÉCU À SA RAISON. Il épinglait `ValleyWorld`
+	# du temps où le menu ouvrait le monde V1. Le menu ouvre World V2 depuis
+	# le passage à la nouvelle vallée : viser V1 ici déposerait le joueur
+	# victorieux dans un monde qu'il n'a jamais parcouru, et dont aucune porte
+	# ne le ramènerait. Le littéral change, l'exigence ne change pas — « la
+	# victoire rend au monde de la CAMPAGNE ».
 	check_equal(String(screen.call("last_target")),
-		"res://scenes/world/valley/ValleyWorld.tscn",
-		"« Continuer l'exploration » ramène dans la vallée")
+		"res://scenes/world_v2/WorldV2.tscn",
+		"« Continuer l'exploration » ramène dans le monde de la campagne")
 	buttons[2].pressed.emit()
 	check_equal(String(screen.call("last_target")),
 		"res://scenes/ui/MainMenu.tscn", "« Menu principal » ramène au menu")
@@ -278,7 +284,7 @@ func test_restarting_asks_before_erasing_a_finished_run() -> void:
 	check(bool(save_system.call("has_save", "slot0")),
 		"le slot existe toujours : on n'a pas supprimé le fichier")
 	check_equal(String(screen.call("last_target")),
-		"res://scenes/world/valley/ValleyWorld.tscn",
-		"…et il repart dans la vallée")
+		"res://scenes/world_v2/WorldV2.tscn",
+		"…et il repart dans le monde de la campagne (ISS-073 : plus V1)")
 	await _close(screen)
 	await _erase_save()

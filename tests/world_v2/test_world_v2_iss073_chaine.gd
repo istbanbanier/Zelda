@@ -218,6 +218,33 @@ func test_aucune_porte_de_la_chaine_ne_renvoie_dans_le_monde_v1() -> void:
 		% [coupables.size(), ", ".join(coupables)])
 
 
+## UNE PORTE N'EST PAS LE SEUL CHEMIN DE RETOUR. « Réessayer », après une mort,
+## recharge `GameplayShell.world_scene_path` — un `@export` dont la valeur PAR
+## DÉFAUT est la vallée V1. Chaque scène de la campagne doit donc la surcharger,
+## comme le font déjà les six salles du donjon et l'arène.
+##
+## Ce trou m'a échappé au premier jet : mon test ne regardait que les
+## `SceneDoor`. Le vestibule, lui, ne surchargeait rien — mourir dedans
+## déposait le joueur dans un monde qu'il n'a jamais traversé, exactement le
+## défaut d'ISS-073 par une autre porte.
+func test_aucun_ecran_de_mort_de_la_chaine_ne_recharge_le_monde_v1() -> void:
+	var coupables: Array[String] = []
+	for chemin: String in [WORLD_V2, VESTIBULE, ROOM1, HALL, ANTECHAMBER, ARENA]:
+		remember_saves()
+		remember_root()
+		var scene: Node = await _monter(chemin)
+		for node: Node in scene.find_children("*", "CanvasLayer", true, false):
+			if not node.has_method("retry_target"):
+				continue
+			var cible: String = String(node.call("retry_target"))
+			if cible == VALLEY_V1:
+				coupables.append("%s::%s" % [chemin.get_file(), node.name])
+		await _demonter()
+	check(coupables.is_empty(),
+		"%d « Réessayer » de la chaîne rechargent la vallée V1 : %s"
+		% [coupables.size(), ", ".join(coupables)])
+
+
 # --------------------------------------------------------------------------
 # Marche réelle — copiée du portail, mêmes garde-fous
 # --------------------------------------------------------------------------
