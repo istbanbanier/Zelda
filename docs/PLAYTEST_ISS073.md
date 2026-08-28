@@ -60,6 +60,12 @@ gauche · Esquiver `Ctrl gauche` · Pause `Échap`.
 **Nouvelle partie.** Attends le paysage (le chargement peut prendre une
 minute).
 
+> **Tu commenceras peut-être dos à la vallée.** C'est un défaut connu et
+> consigné (ISS-076), pas un piège : tourne simplement la caméra avec la
+> souris pour trouver la grande masse au fond. Je ne l'ai pas corrigé dans
+> cette version parce qu'elle ne devait toucher qu'à la mécanique de la
+> boucle.
+
 Puis, simplement : **descends vers la citadelle**, la grande masse au fond.
 Ne cherche pas de chemin particulier — prends celui qui te paraît naturel.
 

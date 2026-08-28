@@ -2835,3 +2835,36 @@ parce qu'il est minuscule. Externaliser quatre fragments coûte une heure ;
 externaliser les 30 000 à 80 000 mots qu'exigerait une campagne de 30-50 h
 coûte plusieurs fois le prix de leur écriture. **La localisation ne se rattrape
 pas** : elle se pose avant d'écrire, ou elle se paie deux fois.
+
+## ISS-076 — World V2 fait apparaître le héros DOS À LA VALLÉE — S3, OUVERT
+
+**Découvert le 2026-08-28**, sur la capture de la build exportée
+`evidence/world_v2/iss073/build_exportee/iss073_02_monde.png` : au spawn, le
+héros regarde la CAMÉRA, donc le sud, donc l'opposé de la citadelle et de tout
+ce que la vallée contient.
+
+**Ce n'est pas un défaut nouveau : c'est un défaut déjà corrigé ailleurs, et
+non reporté.** `scenes/world/valley/ValleyWorld.tscn` porte, en toutes
+lettres, le commentaire de sa propre correction :
+
+> « §3.3 : "regard vers -Z" — le visuel fait demi-tour au spawn ; la première
+> capture montrait le héros de FACE (nez cyan vers la caméra), §3.2 exige le
+> dos. »
+
+et applique `VisualRoot transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1,
+…)`. `CitadelVestibule.tscn` fait de même. **`WorldV2.tscn` ne le fait pas** :
+son nœud `Player` n'a aucun enfant `VisualRoot` surchargé.
+
+**Effet.** MASTER_SPEC §3.2 exige le héros vu de DOS dans la vue d'ouverture ;
+c'est la toute première image de la campagne. Et pratiquement, un joueur à qui
+l'on dit « descends vers la citadelle » commence tourné dans l'autre sens.
+
+**Gravité S3** : contournable d'un mouvement de caméra, aucun blocage de
+progression. Mais c'est la PREMIÈRE seconde de jeu, et le défaut a déjà coûté
+une correction en V1.
+
+**Correction attendue** : la même qu'en V1 — un `VisualRoot` retourné dans
+`WorldV2.tscn` — précédée d'un test qui épingle l'orientation au spawn, sinon
+elle se reperdra une troisième fois. **Volontairement HORS du périmètre
+d'ISS-073** : la directive interdit toute retouche artistique dans cette
+corrective, et ce défaut ne casse pas la boucle.
