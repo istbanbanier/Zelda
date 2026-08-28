@@ -1,0 +1,172 @@
+[PASS        ] journal lisible — autotest : 39 événement(s)
+[PASS        ] horloge du moteur (gate séparé) — 30 échantillon(s) automatique(s) = 30 s moteur pour 30 s mural ; rapport=1.000 (attendu 0.5–2.0) ; FPS [60.0]
+[PASS        ] protocole de marqueurs suivi — 9 marqueur(s) F4 ; 9 exigés
+[PASS        ] sol de référence — médiane des 3 marqueurs de repos = 24.00 m (relevés [24.0, 24.0, 24.0])
+[PASS        ] critère 1 — bruit au repos — dispersion des 3 relevés = 0.00 m (≤0.1)
+[PASS        ] critère 4 — état du contrôleur — états sur les marqueurs : ['locomotion'] ; attendu « locomotion »
+[PASS        ] saut 1/3 — montée Y=25.40 m soit +1.40 (≥ 0.5 exigé) ; retour Y=24.00 m soit écart 0.00 (≤ 0.2 toléré)
+[PASS        ] saut 2/3 — montée Y=25.40 m soit +1.40 (≥ 0.5 exigé) ; retour Y=24.00 m soit écart 0.00 (≤ 0.2 toléré)
+[PASS        ] saut 3/3 — montée Y=25.40 m soit +1.40 (≥ 0.5 exigé) ; retour Y=24.00 m soit écart 0.00 (≤ 0.2 toléré)
+[PASS        ] critère 5 — 3 sauts complets — 3/3 saut(s) conformes ; apex nominal 1.401 m d'après le tuning committé
+[PASS        ] verdict de gravité — les trois sauts montent puis retombent au sol de référence
+[OK  ] protocole complet, trois sauts nets -> code 0 (attendu 0)
+[BLOQUÉ      ] journal lisible — autotest : aucun événement exploitable
+[OK  ] SABOTAGE — journal VIDE : ne rien lire n'est pas réussir -> code 3 (attendu 3)
+[PASS        ] journal lisible — autotest : 39 événement(s)
+[PASS        ] horloge du moteur (gate séparé) — 30 échantillon(s) automatique(s) = 30 s moteur pour 30 s mural ; rapport=1.000 (attendu 0.5–2.0) ; FPS [60.0]
+[PASS        ] protocole de marqueurs suivi — 9 marqueur(s) F4 ; 9 exigés
+[PASS        ] sol de référence — médiane des 3 marqueurs de repos = 24.00 m (relevés [24.0, 24.0, 24.0])
+[PASS        ] critère 1 — bruit au repos — dispersion des 3 relevés = 0.00 m (≤0.1)
+[PASS        ] critère 4 — état du contrôleur — états sur les marqueurs : ['locomotion'] ; attendu « locomotion »
+[PASS        ] saut 1/3 — montée Y=25.40 m soit +1.40 (≥ 0.5 exigé) ; retour Y=24.00 m soit écart 0.00 (≤ 0.2 toléré)
+[PASS        ] saut 2/3 — montée Y=25.40 m soit +1.40 (≥ 0.5 exigé) ; retour Y=24.00 m soit écart 0.00 (≤ 0.2 toléré)
+[PASS        ] saut 3/3 — montée Y=25.40 m soit +1.40 (≥ 0.5 exigé) ; retour Y=24.00 m soit écart 0.00 (≤ 0.2 toléré)
+[PASS        ] critère 5 — 3 sauts complets — 3/3 saut(s) conformes ; apex nominal 1.401 m d'après le tuning committé
+[PASS        ] verdict de gravité — les trois sauts montent puis retombent au sol de référence
+[OK  ] SABOTAGE — les échantillons AUTOMATIQUES à 1 Hz ratent les trois sauts, mais les marqueurs les portent : le verdict doit rester VERT -> code 0 (attendu 0)
+[PASS        ] journal lisible — autotest : 39 événement(s)
+[PASS        ] horloge du moteur (gate séparé) — 30 échantillon(s) automatique(s) = 30 s moteur pour 30 s mural ; rapport=1.000 (attendu 0.5–2.0) ; FPS [60.0]
+[PASS        ] protocole de marqueurs suivi — 9 marqueur(s) F4 ; 9 exigés
+[PASS        ] sol de référence — médiane des 3 marqueurs de repos = 24.00 m (relevés [24.0, 24.0, 24.0]) ; le point le plus bas du journal est 20.00 m et n'est PAS pris pour sol
+[PASS        ] critère 1 — bruit au repos — dispersion des 3 relevés = 0.00 m (≤0.1)
+[PASS        ] critère 4 — état du contrôleur — états sur les marqueurs : ['locomotion'] ; attendu « locomotion »
+[PASS        ] saut 1/3 — montée Y=25.40 m soit +1.40 (≥ 0.5 exigé) ; retour Y=24.00 m soit écart 0.00 (≤ 0.2 toléré)
+[FAIL        ] saut 2/3 — montée Y=25.40 m soit +1.40 (≥ 0.5 exigé) ; retour Y=20.00 m soit écart 4.00 (> 0.2 toléré)
+[PASS        ] saut 3/3 — montée Y=25.40 m soit +1.40 (≥ 0.5 exigé) ; retour Y=24.00 m soit écart 0.00 (≤ 0.2 toléré)
+[PARTIAL     ] critère 5 — 3 sauts complets — 2/3 saut(s) conformes ; apex nominal 1.401 m d'après le tuning committé
+[FAIL        ] verdict de gravité — 1 saut(s) hors tolérance
+[OK  ] SABOTAGE — le héros TOMBE sous son niveau initial : ce creux ne doit PAS devenir le sol -> code 1 (attendu 1)
+[PASS        ] journal lisible — autotest : 37 événement(s)
+[PASS        ] horloge du moteur (gate séparé) — 30 échantillon(s) automatique(s) = 30 s moteur pour 30 s mural ; rapport=1.000 (attendu 0.5–2.0) ; FPS [60.0]
+[BLOQUÉ      ] protocole de marqueurs suivi — 7 marqueur(s) F4 pour 9 attendus (3 au repos, puis 3 paires montée/sol) — la séquence de docs/PROTOCOLE_SAUT_ISTVAN.md n'a pas été jouée en entier, rien n'est jugeable
+[OK  ] SABOTAGE — protocole INCOMPLET : deux sauts au lieu de trois -> code 3 (attendu 3)
+[PASS        ] journal lisible — autotest : 30 événement(s)
+[PASS        ] horloge du moteur (gate séparé) — 30 échantillon(s) automatique(s) = 30 s moteur pour 30 s mural ; rapport=1.000 (attendu 0.5–2.0) ; FPS [60.0]
+[BLOQUÉ      ] protocole de marqueurs suivi — 0 marqueur(s) F4 pour 9 attendus (3 au repos, puis 3 paires montée/sol) — la séquence de docs/PROTOCOLE_SAUT_ISTVAN.md n'a pas été jouée en entier, rien n'est jugeable
+[OK  ] SABOTAGE — aucun marqueur du tout, seulement l'automatique -> code 3 (attendu 3)
+[PASS        ] journal lisible — autotest : 39 événement(s)
+[PASS        ] horloge du moteur (gate séparé) — 30 échantillon(s) automatique(s) = 30 s moteur pour 30 s mural ; rapport=1.000 (attendu 0.5–2.0) ; FPS [60.0]
+[PASS        ] protocole de marqueurs suivi — 9 marqueur(s) F4 ; 9 exigés
+[PASS        ] sol de référence — médiane des 3 marqueurs de repos = 24.00 m (relevés [24.0, 24.0, 24.0])
+[PASS        ] critère 1 — bruit au repos — dispersion des 3 relevés = 0.00 m (≤0.1)
+[PASS        ] critère 4 — état du contrôleur — états sur les marqueurs : ['locomotion'] ; attendu « locomotion »
+[FAIL        ] saut 1/3 — montée Y=24.00 m soit +0.00 (< 0.5 exigé) ; retour Y=24.00 m soit écart 0.00 (≤ 0.2 toléré)  — CAUSE NON TRANCHÉE : saut absent, ou F4 appuyé après la retombée. Un seul relevé aérien ne permet pas de choisir ; ne pas relayer ceci comme un défaut prouvé du jeu.
+[FAIL        ] saut 2/3 — montée Y=24.00 m soit +0.00 (< 0.5 exigé) ; retour Y=24.00 m soit écart 0.00 (≤ 0.2 toléré)  — CAUSE NON TRANCHÉE : saut absent, ou F4 appuyé après la retombée. Un seul relevé aérien ne permet pas de choisir ; ne pas relayer ceci comme un défaut prouvé du jeu.
+[FAIL        ] saut 3/3 — montée Y=24.00 m soit +0.00 (< 0.5 exigé) ; retour Y=24.00 m soit écart 0.00 (≤ 0.2 toléré)  — CAUSE NON TRANCHÉE : saut absent, ou F4 appuyé après la retombée. Un seul relevé aérien ne permet pas de choisir ; ne pas relayer ceci comme un défaut prouvé du jeu.
+[FAIL        ] critère 5 — 3 sauts complets — 0/3 saut(s) conformes ; apex nominal 1.401 m d'après le tuning committé
+[FAIL        ] verdict de gravité — 3 saut(s) hors tolérance
+[OK  ] SABOTAGE — AUCUN saut : les trois « montées » restent au sol -> code 1 (attendu 1)
+[PASS        ] journal lisible — autotest : 39 événement(s)
+[PASS        ] horloge du moteur (gate séparé) — 30 échantillon(s) automatique(s) = 30 s moteur pour 30 s mural ; rapport=1.000 (attendu 0.5–2.0) ; FPS [60.0]
+[PASS        ] protocole de marqueurs suivi — 9 marqueur(s) F4 ; 9 exigés
+[PASS        ] sol de référence — médiane des 3 marqueurs de repos = 24.00 m (relevés [24.0, 24.0, 24.0])
+[PASS        ] critère 1 — bruit au repos — dispersion des 3 relevés = 0.00 m (≤0.1)
+[PASS        ] critère 4 — état du contrôleur — états sur les marqueurs : ['locomotion'] ; attendu « locomotion »
+[FAIL        ] saut 1/3 — montée Y=25.40 m soit +1.40 (≥ 0.5 exigé) ; retour Y=25.40 m soit écart 1.40 (> 0.2 toléré)
+[FAIL        ] saut 2/3 — montée Y=25.40 m soit +1.40 (≥ 0.5 exigé) ; retour Y=25.40 m soit écart 1.40 (> 0.2 toléré)
+[FAIL        ] saut 3/3 — montée Y=25.40 m soit +1.40 (≥ 0.5 exigé) ; retour Y=25.40 m soit écart 1.40 (> 0.2 toléré)
+[FAIL        ] critère 5 — 3 sauts complets — 0/3 saut(s) conformes ; apex nominal 1.401 m d'après le tuning committé
+[FAIL        ] verdict de gravité — 3 saut(s) hors tolérance
+[OK  ] SABOTAGE — le héros monte et NE REDESCEND PAS -> code 1 (attendu 1)
+[PASS        ] journal lisible — autotest : 39 événement(s)
+[PASS        ] horloge du moteur (gate séparé) — 30 échantillon(s) automatique(s) = 30 s moteur pour 30 s mural ; rapport=1.000 (attendu 0.5–2.0) ; FPS [60.0]
+[PASS        ] protocole de marqueurs suivi — 9 marqueur(s) F4 ; 9 exigés
+[PASS        ] sol de référence — médiane des 3 marqueurs de repos = 24.00 m (relevés [24.0, 24.0, 24.0])
+[PASS        ] critère 1 — bruit au repos — dispersion des 3 relevés = 0.00 m (≤0.1)
+[PASS        ] critère 4 — état du contrôleur — états sur les marqueurs : ['locomotion'] ; attendu « locomotion »
+[FAIL        ] saut 1/3 — montée Y=24.30 m soit +0.30 (< 0.5 exigé) ; retour Y=24.00 m soit écart 0.00 (≤ 0.2 toléré)  — CAUSE NON TRANCHÉE : saut absent, ou F4 appuyé après la retombée. Un seul relevé aérien ne permet pas de choisir ; ne pas relayer ceci comme un défaut prouvé du jeu.
+[FAIL        ] saut 2/3 — montée Y=24.30 m soit +0.30 (< 0.5 exigé) ; retour Y=24.00 m soit écart 0.00 (≤ 0.2 toléré)  — CAUSE NON TRANCHÉE : saut absent, ou F4 appuyé après la retombée. Un seul relevé aérien ne permet pas de choisir ; ne pas relayer ceci comme un défaut prouvé du jeu.
+[FAIL        ] saut 3/3 — montée Y=24.30 m soit +0.30 (< 0.5 exigé) ; retour Y=24.00 m soit écart 0.00 (≤ 0.2 toléré)  — CAUSE NON TRANCHÉE : saut absent, ou F4 appuyé après la retombée. Un seul relevé aérien ne permet pas de choisir ; ne pas relayer ceci comme un défaut prouvé du jeu.
+[FAIL        ] critère 5 — 3 sauts complets — 0/3 saut(s) conformes ; apex nominal 1.401 m d'après le tuning committé
+[FAIL        ] verdict de gravité — 3 saut(s) hors tolérance
+[OK  ] SABOTAGE — montée SOUS le seuil (0,3 m au lieu de 0,5) -> code 1 (attendu 1)
+[PASS        ] journal lisible — autotest : 39 événement(s)
+[PASS        ] horloge du moteur (gate séparé) — 30 échantillon(s) automatique(s) = 30 s moteur pour 30 s mural ; rapport=1.000 (attendu 0.5–2.0) ; FPS [60.0]
+[PASS        ] protocole de marqueurs suivi — 9 marqueur(s) F4 ; 9 exigés
+[PASS        ] sol de référence — médiane des 3 marqueurs de repos = 24.00 m (relevés [24.0, 24.0, 24.0])
+[PASS        ] critère 1 — bruit au repos — dispersion des 3 relevés = 0.00 m (≤0.1)
+[FAIL        ] critère 4 — état du contrôleur — états sur les marqueurs : ['mort'] ; attendu « locomotion »
+[PASS        ] saut 1/3 — montée Y=25.40 m soit +1.40 (≥ 0.5 exigé) ; retour Y=24.00 m soit écart 0.00 (≤ 0.2 toléré)
+[PASS        ] saut 2/3 — montée Y=25.40 m soit +1.40 (≥ 0.5 exigé) ; retour Y=24.00 m soit écart 0.00 (≤ 0.2 toléré)
+[PASS        ] saut 3/3 — montée Y=25.40 m soit +1.40 (≥ 0.5 exigé) ; retour Y=24.00 m soit écart 0.00 (≤ 0.2 toléré)
+[PASS        ] critère 5 — 3 sauts complets — 3/3 saut(s) conformes ; apex nominal 1.401 m d'après le tuning committé
+[PASS        ] verdict de gravité — les trois sauts montent puis retombent au sol de référence
+[OK  ] SABOTAGE — héros MORT pendant l'enregistrement -> code 1 (attendu 1)
+[PASS        ] journal lisible — autotest : 39 événement(s)
+[PASS        ] horloge du moteur (gate séparé) — 30 échantillon(s) automatique(s) = 30 s moteur pour 30 s mural ; rapport=1.000 (attendu 0.5–2.0) ; FPS [60.0]
+[PASS        ] protocole de marqueurs suivi — 9 marqueur(s) F4 ; 9 exigés
+[PASS        ] sol de référence — médiane des 3 marqueurs de repos = 24.40 m (relevés [24.0, 24.4, 24.8]) ; le point le plus bas du journal est 24.00 m et n'est PAS pris pour sol
+[FAIL        ] critère 1 — bruit au repos — dispersion des 3 relevés = 0.80 m (≤0.1)
+[PASS        ] critère 4 — état du contrôleur — états sur les marqueurs : ['locomotion'] ; attendu « locomotion »
+[FAIL        ] saut 1/3 — montée Y=25.40 m soit +1.00 (≥ 0.5 exigé) ; retour Y=24.00 m soit écart 0.40 (> 0.2 toléré)
+[FAIL        ] saut 2/3 — montée Y=25.40 m soit +1.00 (≥ 0.5 exigé) ; retour Y=24.00 m soit écart 0.40 (> 0.2 toléré)
+[FAIL        ] saut 3/3 — montée Y=25.40 m soit +1.00 (≥ 0.5 exigé) ; retour Y=24.00 m soit écart 0.40 (> 0.2 toléré)
+[FAIL        ] critère 5 — 3 sauts complets — 0/3 saut(s) conformes ; apex nominal 1.401 m d'après le tuning committé
+[FAIL        ] verdict de gravité — 3 saut(s) hors tolérance
+[OK  ] SABOTAGE — le sol de repos DÉRIVE de 0,8 m : ce n'est pas un sol -> code 1 (attendu 1)
+[PASS        ] journal lisible — autotest : 39 événement(s)
+[PASS        ] horloge du moteur (gate séparé) — 30 échantillon(s) automatique(s) = 30 s moteur pour 30 s mural ; rapport=1.000 (attendu 0.5–2.0) ; FPS [60.0]
+[PASS        ] protocole de marqueurs suivi — 9 marqueur(s) F4 ; 9 exigés
+[PASS        ] sol de référence — médiane des 3 marqueurs de repos = 24.00 m (relevés [24.0, 24.0, 24.0]) ; le point le plus bas du journal est 23.40 m et n'est PAS pris pour sol
+[PASS        ] critère 1 — bruit au repos — dispersion des 3 relevés = 0.00 m (≤0.1)
+[PASS        ] critère 4 — état du contrôleur — états sur les marqueurs : ['locomotion'] ; attendu « locomotion »
+[FAIL        ] saut 1/3 — montée Y=24.00 m soit +0.00 (< 0.5 exigé) ; retour Y=23.40 m soit écart 0.60 (> 0.2 toléré)
+[FAIL        ] saut 2/3 — montée Y=24.00 m soit +0.00 (< 0.5 exigé) ; retour Y=23.40 m soit écart 0.60 (> 0.2 toléré)
+[FAIL        ] saut 3/3 — montée Y=24.00 m soit +0.00 (< 0.5 exigé) ; retour Y=23.40 m soit écart 0.60 (> 0.2 toléré)
+[FAIL        ] critère 5 — 3 sauts complets — 0/3 saut(s) conformes ; apex nominal 1.401 m d'après le tuning committé
+[FAIL        ] verdict de gravité — 3 saut(s) hors tolérance
+[OK  ] SABOTAGE DÉCISIF — héros qui n'a JAMAIS sauté mais qui oscille de 0,6 m : le minimum global le déclarerait vert, la médiane le refuse -> code 1 (attendu 1)
+[PASS        ] journal lisible — autotest : 39 événement(s)
+[PASS        ] horloge du moteur (gate séparé) — 30 échantillon(s) automatique(s) = 30 s moteur pour 30 s mural ; rapport=1.000 (attendu 0.5–2.0) ; FPS [60.0]
+[PASS        ] protocole de marqueurs suivi — 9 marqueur(s) F4 ; 9 exigés
+[PASS        ] sol de référence — médiane des 3 marqueurs de repos = 24.00 m (relevés [24.0, 24.0, 20.0]) ; le point le plus bas du journal est 20.00 m et n'est PAS pris pour sol
+[FAIL        ] critère 1 — bruit au repos — dispersion des 3 relevés = 4.00 m (≤0.1)
+[PASS        ] critère 4 — état du contrôleur — états sur les marqueurs : ['locomotion'] ; attendu « locomotion »
+[PASS        ] saut 1/3 — montée Y=25.40 m soit +1.40 (≥ 0.5 exigé) ; retour Y=24.00 m soit écart 0.00 (≤ 0.2 toléré)
+[PASS        ] saut 2/3 — montée Y=25.40 m soit +1.40 (≥ 0.5 exigé) ; retour Y=24.00 m soit écart 0.00 (≤ 0.2 toléré)
+[PASS        ] saut 3/3 — montée Y=25.40 m soit +1.40 (≥ 0.5 exigé) ; retour Y=24.00 m soit écart 0.00 (≤ 0.2 toléré)
+[PASS        ] critère 5 — 3 sauts complets — 3/3 saut(s) conformes ; apex nominal 1.401 m d'après le tuning committé
+[PASS        ] verdict de gravité — les trois sauts montent puis retombent au sol de référence
+[OK  ] un repos aberrant (24,0 / 24,0 / 20,0) ne déplace pas la médiane, mais le bruit au repos le signale — rouge par le BON critère -> code 1 (attendu 1)
+[PASS        ] journal lisible — autotest : 11 événement(s)
+[PARTIAL     ] horloge du moteur (gate séparé) — 2 échantillon(s) automatique(s) = 2 s moteur pour 150 s mural ; rapport=0.013 (attendu 0.5–2.0) ; FPS [60.0] — machine lente ou horloge décrochée (ISS-072). Les marqueurs restent jugeables : ils sont posés à la main aux instants du JEU, pas par un échantillonneur
+[PASS        ] protocole de marqueurs suivi — 9 marqueur(s) F4 ; 9 exigés
+[PASS        ] sol de référence — médiane des 3 marqueurs de repos = 24.00 m (relevés [24.0, 24.0, 24.0])
+[PASS        ] critère 1 — bruit au repos — dispersion des 3 relevés = 0.00 m (≤0.1)
+[PASS        ] critère 4 — état du contrôleur — états sur les marqueurs : ['locomotion'] ; attendu « locomotion »
+[PASS        ] saut 1/3 — montée Y=25.40 m soit +1.40 (≥ 0.5 exigé) ; retour Y=24.00 m soit écart 0.00 (≤ 0.2 toléré)
+[PASS        ] saut 2/3 — montée Y=25.40 m soit +1.40 (≥ 0.5 exigé) ; retour Y=24.00 m soit écart 0.00 (≤ 0.2 toléré)
+[PASS        ] saut 3/3 — montée Y=25.40 m soit +1.40 (≥ 0.5 exigé) ; retour Y=24.00 m soit écart 0.00 (≤ 0.2 toléré)
+[PASS        ] critère 5 — 3 sauts complets — 3/3 saut(s) conformes ; apex nominal 1.401 m d'après le tuning committé
+[PASS        ] verdict de gravité — les trois sauts montent puis retombent au sol de référence
+[OK  ] horloge décrochée mais marqueurs bons : PARTIAL sur l'horloge, la gravité reste jugeable -> code 1 (attendu 1)
+[PASS        ] journal lisible — autotest : 40 événement(s)
+[PASS        ] horloge du moteur (gate séparé) — 30 échantillon(s) automatique(s) = 30 s moteur pour 30 s mural ; rapport=1.000 (attendu 0.5–2.0) ; FPS [60.0]
+[PASS        ] protocole de marqueurs suivi — 10 marqueur(s) F4 pour 9 attendus — les 9 DERNIERS sont retenus, les 1 premiers ignorés (le protocole dit « si tu t'es trompé, refais simplement »)
+[PASS        ] sol de référence — médiane des 3 marqueurs de repos = 24.00 m (relevés [24.0, 24.0, 24.0])
+[PASS        ] critère 1 — bruit au repos — dispersion des 3 relevés = 0.00 m (≤0.1)
+[PASS        ] critère 4 — état du contrôleur — états sur les marqueurs : ['locomotion'] ; attendu « locomotion »
+[PASS        ] saut 1/3 — montée Y=25.40 m soit +1.40 (≥ 0.5 exigé) ; retour Y=24.00 m soit écart 0.00 (≤ 0.2 toléré)
+[PASS        ] saut 2/3 — montée Y=25.40 m soit +1.40 (≥ 0.5 exigé) ; retour Y=24.00 m soit écart 0.00 (≤ 0.2 toléré)
+[PASS        ] saut 3/3 — montée Y=25.40 m soit +1.40 (≥ 0.5 exigé) ; retour Y=24.00 m soit écart 0.00 (≤ 0.2 toléré)
+[PASS        ] critère 5 — 3 sauts complets — 3/3 saut(s) conformes ; apex nominal 1.401 m d'après le tuning committé
+[PASS        ] verdict de gravité — les trois sauts montent puis retombent au sol de référence
+[OK  ] SABOTAGE — un repos REFAIT (10 marqueurs) : les 9 DERNIERS forment la séquence, le verdict doit rester VERT -> code 0 (attendu 0)
+[PASS        ] journal lisible — autotest : 41 événement(s)
+[PASS        ] horloge du moteur (gate séparé) — 30 échantillon(s) automatique(s) = 30 s moteur pour 30 s mural ; rapport=1.000 (attendu 0.5–2.0) ; FPS [60.0]
+[PASS        ] protocole de marqueurs suivi — 11 marqueur(s) F4 pour 9 attendus — les 9 DERNIERS sont retenus, les 2 premiers ignorés (le protocole dit « si tu t'es trompé, refais simplement »)
+[PASS        ] sol de référence — médiane des 3 marqueurs de repos = 24.00 m (relevés [24.0, 24.0, 24.0])
+[PASS        ] critère 1 — bruit au repos — dispersion des 3 relevés = 0.00 m (≤0.1)
+[PASS        ] critère 4 — état du contrôleur — états sur les marqueurs : ['locomotion'] ; attendu « locomotion »
+[PASS        ] saut 1/3 — montée Y=25.40 m soit +1.40 (≥ 0.5 exigé) ; retour Y=24.00 m soit écart 0.00 (≤ 0.2 toléré)
+[PASS        ] saut 2/3 — montée Y=25.40 m soit +1.40 (≥ 0.5 exigé) ; retour Y=24.00 m soit écart 0.00 (≤ 0.2 toléré)
+[PASS        ] saut 3/3 — montée Y=25.40 m soit +1.40 (≥ 0.5 exigé) ; retour Y=24.00 m soit écart 0.00 (≤ 0.2 toléré)
+[PASS        ] critère 5 — 3 sauts complets — 3/3 saut(s) conformes ; apex nominal 1.401 m d'après le tuning committé
+[PASS        ] verdict de gravité — les trois sauts montent puis retombent au sol de référence
+[OK  ] SABOTAGE — DEUX repos refaits (11 marqueurs) : même exigence -> code 0 (attendu 0)
+[PASS        ] journal lisible — autotest : 40 événement(s)
+[PASS        ] horloge du moteur (gate séparé) — 30 échantillon(s) automatique(s) = 30 s moteur pour 30 s mural ; rapport=1.000 (attendu 0.5–2.0) ; FPS [60.0]
+[BLOQUÉ      ] protocole de marqueurs suivi — 10 marqueur(s) F4 pour 9 attendus, et les 9 derniers n'ont pas la forme de la séquence (les 3 premiers d'entre eux ne ressemblent pas à un repos). L'appareil REFUSE de juger plutôt que de deviner : recommence la session — F3, 9 appuis sur F4, F3.
+[OK  ] SABOTAGE — un marqueur SURNUMÉRAIRE À LA FIN : la queue n'a plus la forme d'un repos, l'appareil doit REFUSER de juger plutôt que de deviner -> code 3 (attendu 3)
+
+=== AUTOTEST analyse_journal_devmode : 0 échec(s) ===

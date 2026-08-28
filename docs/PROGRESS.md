@@ -4,6 +4,90 @@ Ordre **anti-chronologique** : l'entrée la plus récente est en haut. La derni�
 entrée fait office de handoff et doit indiquer **exactement** la prochaine action.
 
 ---
+## 2026-08-28 — T1 implémenté et vert, et la contre-revue §6 a rendu son verdict
+
+Branche `claude/world-v2-t1-persistance`, toujours **séparée** de la candidate
+de lundi. Rien n'a été fusionné.
+
+**La partie se reprend.** World V2 écrit et relit son état : position,
+orientation, lieu où rouvrir. Écriture par FUSION — jamais en écrasement,
+sinon `boss_defeated` posé par l'arène disparaîtrait à la première sauvegarde.
+Écriture au DÉPART d'une transition, seul instant où le héros est encore en
+place. Lecture seulement si la sauvegarde est SIGNÉE `world_version =
+neris_v2` : une position V1 peut être dans les bornes V2 et pourtant au fond
+d'un lac V2, et le contrat de migration l'écrivait déjà.
+
+**Aucun champ nouveau pour le routage.** Le donjon écrit déjà son lieu dans
+`checkpoint`, `boss_arena.gd` sait déjà que `dungeon.antechamber` désigne
+cette scène : le menu lit enfin ce qui existait. Le champ `resume_scene` que
+j'avais inventé au premier jet est parti — poser une seconde source de vérité
+à côté d'une qui existe est la façon la plus sûre de les faire diverger.
+
+**Verdicts, tous mesurés sur l'arbre committé `ca1ffed`** :
+
+| Preuve | Résultat |
+|---|---|
+| `--filter=t1_persistance` | **7 réussis, 0 échoué**, 115 assertions |
+| contrôle négatif « restauration aveugle » | C1 verdit à moitié, **C4 et C5 rougissent** |
+| contrôle négatif « gardes C7 retirées » | **une seule** assertion rougit — celle du mort |
+| `validate_fast.sh` | **VERT, RC=0, 984 tests, 0 échec**, gel intact |
+| autotest de l'analyseur de gravité | 3 cas neufs, **rouges d'abord**, puis verts |
+
+**C7 est né APRÈS l'implémentation**, désigné par la contre-revue : le crochet
+d'autosave écoute TOUTES les transitions, « Réessayer » compris. Sans garde,
+mourir inscrivait le lieu de sa mort comme point de reprise. On ne sauvegarde
+pas la position d'un mort. Le contrôle négatif a ensuite PRÉCISÉ le constat :
+sans la constante `RETRY_TAG`, ce cas reste vert — elle ne corrige qu'un
+avertissement FAUX émis à chaque mort, le placement venant de C1.
+
+**Le gel V2.3-B a demandé une levée** (`world_v2_root.gd`, une empreinte,
+D-056). En revanche `test_world_v2_skeleton.gd` — « slot0 identique à l'octet
+près après un passage en V2 » — **passe sans levée** : monter puis démonter le
+monde ne déclenche aucune transition, donc aucune écriture. C'était un
+raisonnement avant l'exécution ; c'est un constat depuis.
+
+**Contre-revue §6, à contexte frais, modèle Fable 5.** Huit points attaqués,
+verdicts et constats consignés dans
+`evidence/world_v2/iss073/contre_revue_fable5.md`. Six PASS, deux PARTIAL,
+aucun FAIL. Le relecteur a vérifié la release EN LIGNE : les quatre digests
+SHA-256 publiés par l'API GitHub correspondent au tableau du README, et
+`git diff c3f1819..98cbaf0` ne touche que `docs/` et `evidence/`.
+
+Trois constats « à corriger », traités ainsi :
+1. `retry_checkpoint` incompris — **fermé** par C7 ;
+2. l'analyseur prenait silencieusement les 9 PREMIERS marqueurs au-delà de 9,
+   et un repos refait décalait toutes les paires : il rendait `FAIL` sur une
+   faute de PROTOCOLE. **Fermé** — les 9 derniers sont retenus quand ils ont
+   la forme d'un repos, et l'appareil REFUSE de juger sinon ;
+3. un seul relevé aérien par saut ne distingue pas « pas de saut » de « F4
+   trop tard ». **Non réparable pour lundi** : les deux voies touchent le jeu
+   (`SAMPLE_INTERVAL = 1.0` contre un vol de 0,683 s), et la build est
+   publiée. Le message dit désormais l'ambiguïté ; le seuil n'a pas bougé.
+   **ISS-077 ouverte.**
+
+Détails traités : les compteurs de prose divergents rectifiés depuis le log
+(10 cas, 60 assertions — `STATUS.md` n'en porte plus du tout, règle
+d'ancrage), la ligne périmée de la feuille de route rafraîchie, et
+**ISS-078** ouverte pour `fumee_gravite.py`, qui prend encore le MINIMUM des
+repos là où son outil frère prend la médiane.
+
+**Une correction de ma part, à porter au compte de la vérité.** J'avais
+relayé la boucle comme « victoire → continuer → devant la porte ». C'est faux,
+et aucun document du dépôt ne le prétendait : `victory_screen.gd::_on_explore`
+ne pose aucun `pending_spawn`. Le « devant la porte » ne vaut que pour la
+sortie du vestibule. T1 change ce comportement sans l'avoir visé — la reprise
+se fait désormais à la dernière position sauvegardée.
+
+**PROCHAINE ACTION EXACTE** : la décision appartient au propriétaire —
+fusionner ou non T1 dans la candidate de lundi. Mon avis : **ne pas fusionner
+avant qu'Istvan ait joué**. La candidate publiée est vérifiée de bout en bout ;
+T1 est vert mais n'a jamais tourné dans une build exportée, et lundi doit
+mesurer le jeu, pas un changement de la veille. Si T1 est fusionné plus tard,
+la chaîne est : `validate_fast` sur l'arbre committé, export frais, portail
+`gate_export_iss073.sh`, puis nouvelle candidate. **Interdits inchangés** :
+`GO_V2_3_B_LOT2 = FALSE`, aucune retouche artistique, aucun ennemi ajouté.
+
+---
 ## 2026-08-28 — T1 ouvert sur branche séparée : six contrats de persistance, écrits rouges
 
 Branche `claude/world-v2-t1-persistance`, partie de `a8d2f77` — la candidate de
