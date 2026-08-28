@@ -18,15 +18,17 @@ class_name WorldV2DungeonDoor
 extends RefCounted
 
 const VESTIBULE_SCENE: String = "res://scenes/world/citadel/CitadelVestibule.tscn"
-## Tag posé par la porte, consommé par la scène d'arrivée. Il porte le même
-## nom qu'en V1 : c'est le vestibule qui le lit, et il ne sait pas de quel
-## monde on vient.
-## Tag posé par la porte AU MOMENT D'ENTRER — consommé par le vestibule.
-## C'est la convention déjà établie par le monde V1 (`valley_terrain.gd`,
-## `CitadelDoor.spawn_tag = &"from_valley"`), et elle n'est PAS la même que le
-## tag de retour : les confondre ferait consommer l'arrivée par la mauvaise
-## scène. Ma première version posait `citadel_door` à l'aller ; le vestibule
-## l'avalait, et World V2 ne voyait plus rien revenir.
+## Tag posé par la porte AU MOMENT D'ENTRER — c'est le VESTIBULE qui le lit,
+## et il ne sait pas de quel monde on vient. Ce tag n'est PAS celui du retour :
+## les confondre ferait consommer l'arrivée par la mauvaise scène. Ma première
+## version posait `citadel_door` à l'aller ; le vestibule l'avalait, et World
+## V2 ne voyait plus rien revenir.
+##
+## Le nom vient de la convention déjà en place côté vestibule ; il est
+## délibérément recopié ici en LITTÉRAL plutôt qu'importé, parce que le contrat
+## d'isolation interdit à un fichier V2 de dépendre du monde V1 — et le
+## balayage qui le vérifie lit le TEXTE, y compris les commentaires. Nommer le
+## fichier d'origine ici l'aurait fait rougir sur une simple phrase.
 const ENTRY_TAG: StringName = &"from_valley"
 ## Tag posé par la porte de SORTIE du vestibule, consommé par `WorldV2Root`
 ## pour replacer le héros devant la citadelle plutôt qu'au spawn initial.

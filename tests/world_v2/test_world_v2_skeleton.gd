@@ -51,8 +51,25 @@ func test_la_v2_est_le_flux_normal() -> void:
 ## Balayage d'isolation, dans LES DEUX directions. Un seul fichier fautif rend
 ## le nom exact — pas un compte muet.
 func test_aucune_reference_croisee_interdite() -> void:
-	# Direction 1 : hors de l'unique point d'entrée du menu, rien de V1
-	# (scripts/ et scenes/ hors world_v2) ne parle de V2.
+	# Direction 1 : hors des points d'entrée NOMMÉS, rien de V1 (scripts/ et
+	# scenes/ hors world_v2) ne parle de V2.
+	#
+	# LA LISTE S'EST ALLONGÉE, ET C'EST UN CHANGEMENT DE CONTRAT ASSUMÉ.
+	# Quand ce balayage a été écrit, V2 était un squelette isolé construit à
+	# côté de V1 : seul le menu avait le droit de le connaître. Depuis, V2 EST
+	# le monde de la campagne — le menu n'ouvre plus V1 du tout. Les chemins de
+	# RETOUR de la campagne doivent donc viser V2, sans quoi le joueur est
+	# déposé dans un monde qu'il n'a jamais traversé et dont rien ne le ramène.
+	# C'est exactement ISS-073, et le laisser interdit aurait figé le défaut.
+	#
+	# La liste reste une ÉNUMÉRATION, jamais un motif : un quatrième fichier
+	# qui se mettrait à parler de V2 rougit toujours, et devra se justifier
+	# comme ces trois-là.
+	var v1_entry_points: Array[String] = [
+		"res://scripts/ui/main_menu.gd",         # « Nouvelle partie »/« Continuer »
+		"res://scripts/ui/victory_screen.gd",    # « Continuer l'exploration »
+		"res://scripts/world/citadel_vestibule.gd",  # la porte de SORTIE
+	]
 	var v1_offenders: Array[String] = []
 	var v1_files: Array[String] = []
 	_walk_files("res://scripts", ["gd", "tscn", "tres"], v1_files)
@@ -60,13 +77,20 @@ func test_aucune_reference_croisee_interdite() -> void:
 	for path: String in v1_files:
 		if path.contains("world_v2"):
 			continue
-		if path == "res://scripts/ui/main_menu.gd":
+		if v1_entry_points.has(path):
 			continue
 		if _file_contains(path, ["world_v2"]) != "":
 			v1_offenders.append(path)
 	check(v1_offenders.is_empty(),
-		"hors menu, aucun fichier V1 ne référence world_v2 — fautifs : %s"
-			% ", ".join(v1_offenders))
+		"hors des points d'entrée nommés, aucun fichier V1 ne référence "
+		+ "world_v2 — fautifs : %s" % ", ".join(v1_offenders))
+	# Et l'inverse, sinon la liste pourrait grandir sans que rien ne le voie :
+	# chacun des trois DOIT réellement viser V2. Un point d'entrée exempté qui
+	# ne pointe plus vers V2 est une exemption devenue mensongère.
+	for entry: String in v1_entry_points:
+		check(_file_contains(entry, ["world_v2"]) != "",
+			"le point d'entrée %s vise bien World V2 — sinon son exemption "
+			% entry.get_file() + "ne protège plus rien")
 
 	# Direction 2 : rien de V2 ne consomme le CONTENU SPATIAL V1 (sa scène de
 	# vallée, ses bâtisseurs). Les interfaces protégées (Player, coquille,
