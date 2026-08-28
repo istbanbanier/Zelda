@@ -1,0 +1,52 @@
+{
+  "doc": "ISS-074 — le peuplement de World V2, PILOTÉ PAR DONNÉES. Le bâtisseur `WorldV2EncountersBuilder` ne connaît aucune coordonnée : il lit ce fichier. Ajouter une garnison n'est donc pas une modification de code. Le layout `world_v2_layout.json` est GELÉ (docs/contrats/gel_v2_3_b.sha256) : il reste la source des bornes de région et de sa ligne `encounters` normative, et ce fichier-ci porte ce qu'elle implique.",
+  "schema": 1,
+  "garrisons": [
+    {
+      "id": "garrison.ember_camp",
+      "region": "r05_terrasse_du_camp",
+      "doc": "La garnison du camp braise — la PREMIÈRE rencontre du jeu. Le layout dit de r05 : fonction « première rencontre 3 approches, cuisine, checkpoint camp », encounters « garnison braise du camp ». Trois braise tiennent le camp, un azur veille au nord.",
+      "positions_doc": "Chaque position vient de tools/godot/probe_camp_braise_navmesh.gd, exécutée AVANT tout placement : 240 points sondés dans r05, 239 sur navmesh, 238 atteignables depuis le spawn. Les quatre retenues ont un écart au navmesh <= 0,02 m. Les altitudes sont celles MESURÉES, pas devinées.",
+      "bounds_doc": "Fenêtre de placement x[28,44] z[60,80] : c'est l'ensemble des centres dont le disque de rayon 20 m tient dans r05 (x[8,64], z[40,100]). C'est ce qui rend la règle des calmes vraie par CONSTRUCTION plutôt que par vérification au cas par cas.",
+      "tuning_doc": "Vision et poursuite sont VOLONTAIREMENT plus courtes que les défauts sauvages (braise 22 m de vision et 45 m de poursuite ; azur 30 et 50). Une garnison garde son camp, elle ne traverse pas la vallée — et surtout : avec 30 m de vision, AUCUNE position de r05 ne satisfait la règle des calmes, la région ne mesurant que 56 x 60 m. Le contrat impose la règle ; la donnée s'y plie.",
+      "enemies": [
+        {
+          "id": "garrison.ember_camp.red.01",
+          "scene": "res://scenes/enemies/RaiderRed.tscn",
+          "position": [36.0, 6.28, 64.0],
+          "yaw_deg": 180.0,
+          "vision_range": 18.0,
+          "max_pursuit_distance": 20.0,
+          "patrol_offsets": []
+        },
+        {
+          "id": "garrison.ember_camp.red.02",
+          "scene": "res://scenes/enemies/RaiderRed.tscn",
+          "position": [40.0, 6.35, 68.0],
+          "yaw_deg": 215.0,
+          "vision_range": 18.0,
+          "max_pursuit_distance": 20.0,
+          "patrol_offsets": [[0.0, 0.0, 0.0], [-5.0, 0.0, 3.0]]
+        },
+        {
+          "id": "garrison.ember_camp.red.03",
+          "scene": "res://scenes/enemies/RaiderRed.tscn",
+          "position": [32.0, 6.14, 72.0],
+          "yaw_deg": 140.0,
+          "vision_range": 18.0,
+          "max_pursuit_distance": 20.0,
+          "patrol_offsets": [[0.0, 0.0, 0.0], [4.0, 0.0, -4.0]]
+        },
+        {
+          "id": "garrison.ember_camp.blue.01",
+          "scene": "res://scenes/enemies/RaiderBlue.tscn",
+          "position": [40.0, 6.34, 76.0],
+          "yaw_deg": 0.0,
+          "vision_range": 20.0,
+          "max_pursuit_distance": 20.0,
+          "patrol_offsets": []
+        }
+      ]
+    }
+  ]
+}

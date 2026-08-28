@@ -237,10 +237,42 @@ func test_les_fondations_epousent_le_terrain_gele() -> void:
 func test_aucun_acteur_et_les_routes_restent_libres() -> void:
 	await _mount()
 	var faults: Array[String] = []
-	# a. Aucun acteur (directive V2.3 §2) : ni groupe ennemi peuplé, ni
-	# script d'IA/ennemi sous les lieux.
-	check_equal(_world.get_tree().get_nodes_in_group(&"enemies").size(), 0,
-		"aucun ennemi dans le monde V2")
+	# a. LE CONTRAT DE BUDGET (ISS-074 §3) — il REMPLACE, ce jour, le contrat
+	# « acteur prématuré » qui exigeait `= 0` partout. La directive V2.3 §2
+	# interdisait les acteurs tant que le peuplement n'était pas conçu ; il
+	# l'est désormais, et un monde d'action-aventure durablement vide serait
+	# le vrai défaut. Ce qui reste interdit, c'est le peuplement SANS
+	# gouvernance :
+	#   1. plafond d'agents — celui du `CombatCoordinator`, jamais une copie ;
+	#   2. un seul coordinateur ;
+	#   3. territoire borné pour chacun ;
+	#   4. aucun acteur sous `Places` — les lieux restent du DÉCOR, le
+	#      peuplement vit sous `Encounters`.
+	# Le détail par ennemi (composition, identifiants, atteignabilité, calmes,
+	# non-duplication, morts persistées) est le portail
+	# `test_world_v2_iss074_portail.gd` ; ici on tient le budget, pas la
+	# rencontre.
+	var acteurs: Array[Node] = _world.find_children("*", "EnemyBase", true,
+		false)
+	var coordinateurs: Array[Node] = _world.find_children("*",
+		"CombatCoordinator", true, false)
+	check(acteurs.size() <= CombatCoordinator.MAX_ACTIVE_AI,
+		"plafond d'agents respecté : %d acteur(s) pour un maximum de %d "
+			% [acteurs.size(), CombatCoordinator.MAX_ACTIVE_AI]
+		+ "(§12.9, lu SUR le coordinateur — une seconde constante diverge)")
+	if not acteurs.is_empty():
+		check_equal(coordinateurs.size(), 1,
+			"un monde peuplé porte exactement un `CombatCoordinator` — sans "
+			+ "lui les tokens sont accordés d'office et §12.8 meurt en silence")
+		var infinis: Array[String] = []
+		for acteur: Node in acteurs:
+			var tuning: Variant = acteur.get("tuning")
+			if tuning == null \
+					or float(tuning.get("max_pursuit_distance")) <= 0.0:
+				infinis.append(String(acteur.name))
+		check(infinis.is_empty(),
+			"chaque acteur a un territoire borné — poursuivants infinis : %s"
+				% ", ".join(infinis))
 	var places_root: Node3D = _world.get_node("Places") as Node3D
 	for node: Node in places_root.find_children("*", "", true, false):
 		var script: Script = node.get_script() as Script

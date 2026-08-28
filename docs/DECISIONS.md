@@ -1583,3 +1583,36 @@ corrections vivent dans `world_v2_root.gd` — garde C10, handler
 « héros posé » lisible par le portail d'export. Vérifié AVANT régénération :
 « 1 écart(s), 0 absent(s) » — le diff du manifeste tient en une ligne, rien
 n'est absorbé. Les 43 autres empreintes n'ont pas bougé.
+
+## D-057 — Le manifeste de gel accueille le bâtisseur de peuplement, sans lever aucun gel
+
+- **Date** : 2026-08-28 · **Phase** : ISS-074 · **Statut** : ADOPTÉE
+- **Contexte** : peupler World V2 exigeait un nouveau script,
+  `scripts/world_v2/world_v2_encounters_builder.gd`. `tools/gel_verifier.sh`
+  a immédiatement rendu **`[GEL INCOMPLET]` : 45 fichiers dans le périmètre,
+  44 au manifeste — 1 écart, 0 absent**.
+- **Le point important, et il est rassurant** : `0 absent` signifie que
+  **chaque empreinte du manifeste correspondait encore**. Aucun élément gelé
+  n'a été modifié — ni `world_v2_root.gd`, ni le layout, ni un lieu. L'écart
+  venait d'un fichier NEUF entrant dans un périmètre encore globé.
+- **La cause est nommée dans l'en-tête du garde-fou lui-même** : « LES CHEMINS
+  SONT ÉNUMÉRÉS, JAMAIS GLOBÉS SUR UN RÉPERTOIRE QUI VA GROSSIR », suivi du
+  récit d'un lot qui n'aurait pas pu ajouter un seul lieu. Une ligne reste
+  pourtant globée, `ls scripts/world_v2/*.gd`, et c'est elle qui a mordu.
+- **Options pesées** :
+  1. *Énumérer cette ligne comme les autres* — rejeté ici. Ce serait
+     RÉTRÉCIR un garde-fou au moment précis où il gêne. Un contrôle qu'on
+     desserre parce qu'il a parlé n'en est plus un.
+  2. *Régénérer le manifeste (`--ecrire`)* — **retenu**. C'est la procédure
+     écrite dans le script, et l'effet est vérifiable : le nouveau fichier
+     entre dans le gel, donc il devient à son tour protégé. Le contrôle se
+     resserre, il ne se relâche pas.
+- **La preuve que la régénération n'a rien effacé** : `diff` du manifeste
+  avant/après rend **0 ligne retirée, 1 ligne ajoutée**. Les 44 empreintes
+  existantes sont identiques au caractère près — `world_v2_root.gd` reste
+  `4dedd535…`, le layout reste `338dff14…`. Une régénération ne prouve rien
+  par elle-même ; ce diff-là, si.
+- **Limite assumée** : la ligne globée reste globée. Le prochain script neuf
+  de `scripts/world_v2/` refera rougir le gel, et devra refaire ce diff.
+  C'est un coût par fichier, pas une dette qui grossit — et il achète que
+  personne ne puisse ajouter du code non gelé à cet endroit sans le dire.

@@ -1,0 +1,300 @@
+LANCER_GODOT: --headless ajouté (pas de --rendu : aucun affichage disponible).
+LANCER_GODOT: VERROU=/home/user/Zelda/.git/heavy_tools.lock
+LANCER_GODOT: XDG_DATA_HOME=/tmp/lancer_godot_ud_lyGyBRW7
+LANCER_GODOT: CWD=/home/user/Zelda
+LANCER_GODOT: CMD=/usr/local/bin/godot --headless --path . --script tools/godot/probe_camp_braise_navmesh.gd
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+
+[camp] région r05_terrasse_du_camp : x[8.0, 64.0] z[40.0, 100.0]
+[camp] encounters (normatif) : garnison braise du camp
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 12197 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 15 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+[world_v2] porte donjon : posée au seuil §3.3
+[world_v2] arrivée      : spawn
+[world_v2] héros posé   : (0.0, 24.4, 170.0) lacet=0.00
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+[camp] spawn du héros : (0.0, 24.4, 170.0)
+[camp] (   8.0,   40.0) -> nav (   8.0,  4.25,   40.0) ecart_h= 0.00 POSABLE bout=0.00
+[camp] (   8.0,   44.0) -> nav (   8.0,  6.50,   44.0) ecart_h= 0.00 POSABLE bout=3.09
+[camp] (   8.0,   48.0) -> nav (   8.0,  4.22,   48.0) ecart_h= 0.03 POSABLE bout=0.00
+[camp] (   8.0,   52.0) -> nav (   8.0,  4.13,   52.0) ecart_h= 0.05 POSABLE bout=0.00
+[camp] (   8.0,   56.0) -> nav (   8.0,  4.04,   56.0) ecart_h= 0.06 POSABLE bout=0.00
+[camp] (   8.0,   60.0) -> nav (   8.0,  3.94,   60.0) ecart_h= 0.06 POSABLE bout=0.00
+[camp] (   8.0,   64.0) -> nav (   8.0,  3.85,   64.0) ecart_h= 0.06 POSABLE bout=0.00
+[camp] (   8.0,   68.0) -> nav (   8.0,  3.76,   67.9) ecart_h= 0.06 POSABLE bout=0.00
+[camp] (   8.0,   72.0) -> nav (   8.0,  3.67,   71.9) ecart_h= 0.07 POSABLE bout=0.00
+[camp] (   8.0,   76.0) -> nav (   8.0,  3.53,   75.9) ecart_h= 0.10 POSABLE bout=0.00
+[camp] (   8.0,   80.0) -> nav (   8.0,  3.37,   79.9) ecart_h= 0.11 POSABLE bout=0.00
+[camp] (   8.0,   84.0) -> nav (   8.0,  3.27,   83.9) ecart_h= 0.06 POSABLE bout=0.00
+[camp] (   8.0,   88.0) -> nav (   8.0,  3.16,   87.9) ecart_h= 0.08 POSABLE bout=0.00
+[camp] (   8.0,   92.0) -> nav (   8.0,  3.05,   91.9) ecart_h= 0.08 POSABLE bout=0.00
+[camp] (   8.0,   96.0) -> nav (   8.0,  2.93,   95.9) ecart_h= 0.09 POSABLE bout=0.00
+[camp] (   8.0,  100.0) -> nav (   8.0,  2.85,  100.0) ecart_h= 0.06 POSABLE bout=0.00
+[camp] (  12.0,   40.0) -> nav (  12.0,  4.25,   40.0) ecart_h= 0.00 POSABLE bout=0.00
+[camp] (  12.0,   44.0) -> nav (  12.0,  4.22,   44.0) ecart_h= 0.04 POSABLE bout=0.00
+[camp] (  12.0,   48.0) -> nav (  12.0,  4.16,   48.0) ecart_h= 0.03 POSABLE bout=0.00
+[camp] (  12.0,   52.0) -> nav (  12.0,  4.13,   52.0) ecart_h= 0.03 POSABLE bout=0.00
+[camp] (  12.0,   56.0) -> nav (  12.0,  4.09,   56.0) ecart_h= 0.03 POSABLE bout=0.00
+[camp] (  12.0,   60.0) -> nav (  12.0,  4.01,   60.0) ecart_h= 0.06 POSABLE bout=0.00
+[camp] (  12.0,   64.0) -> nav (  12.0,  3.92,   64.0) ecart_h= 0.06 POSABLE bout=0.00
+[camp] (  12.0,   68.0) -> nav (  12.0,  3.80,   67.9) ecart_h= 0.09 POSABLE bout=0.00
+[camp] (  12.0,   72.0) -> nav (  12.0,  3.64,   71.9) ecart_h= 0.10 POSABLE bout=0.00
+[camp] (  12.0,   76.0) -> nav (  12.0,  3.48,   75.9) ecart_h= 0.10 POSABLE bout=0.00
+[camp] (  12.0,   80.0) -> nav (  12.0,  3.36,   79.9) ecart_h= 0.06 POSABLE bout=0.00
+[camp] (  12.0,   84.0) -> nav (  12.0,  3.27,   83.9) ecart_h= 0.06 POSABLE bout=0.00
+[camp] (  12.0,   88.0) -> nav (  12.0,  3.16,   87.9) ecart_h= 0.08 POSABLE bout=0.00
+[camp] (  12.0,   92.0) -> nav (  12.0,  3.05,   91.9) ecart_h= 0.08 POSABLE bout=0.00
+[camp] (  12.0,   96.0) -> nav (  12.0,  2.95,   96.0) ecart_h= 0.05 POSABLE bout=0.00
+[camp] (  12.0,  100.0) -> nav (  12.0,  2.89,  100.0) ecart_h= 0.05 POSABLE bout=0.00
+[camp] (  16.0,   40.0) -> nav (  15.9,  4.19,   40.2) ecart_h= 0.26 POSABLE bout=0.00
+[camp] (  16.0,   44.0) -> nav (  16.0,  4.15,   44.0) ecart_h= 0.04 POSABLE bout=0.00
+[camp] (  16.0,   48.0) -> nav (  16.0,  4.12,   47.9) ecart_h= 0.12 POSABLE bout=0.00
+[camp] (  16.0,   52.0) -> nav (  16.0,  4.07,   52.0) ecart_h= 0.03 POSABLE bout=0.00
+[camp] (  16.0,   56.0) -> nav (  16.0,  4.04,   56.0) ecart_h= 0.03 POSABLE bout=0.00
+[camp] (  16.0,   60.0) -> nav (  16.0,  4.00,   60.0) ecart_h= 0.03 POSABLE bout=0.00
+[camp] (  16.0,   64.0) -> nav (  15.9,  3.91,   63.9) ecart_h= 0.10 POSABLE bout=0.00
+[camp] (  16.0,   68.0) -> nav (  16.0,  3.76,   67.9) ecart_h= 0.09 POSABLE bout=0.00
+[camp] (  16.0,   72.0) -> nav (  16.0,  3.60,   71.9) ecart_h= 0.10 POSABLE bout=0.00
+[camp] (  16.0,   76.0) -> nav (  16.0,  3.45,   75.9) ecart_h= 0.06 POSABLE bout=0.00
+[camp] (  16.0,   80.0) -> nav (  16.0,  3.36,   79.9) ecart_h= 0.06 POSABLE bout=0.00
+[camp] (  16.0,   84.0) -> nav (  16.0,  3.27,   83.9) ecart_h= 0.06 POSABLE bout=0.00
+[camp] (  16.0,   88.0) -> nav (  16.0,  3.16,   87.9) ecart_h= 0.08 POSABLE bout=0.00
+[camp] (  16.0,   92.0) -> nav (  16.0,  3.05,   91.9) ecart_h= 0.08 POSABLE bout=0.00
+[camp] (  16.0,   96.0) -> nav (  16.0,  2.98,   96.0) ecart_h= 0.05 POSABLE bout=0.00
+[camp] (  16.0,  100.0) -> nav (  16.0,  2.93,  100.0) ecart_h= 0.05 POSABLE bout=0.00
+[camp] (  20.0,   40.0) -> nav (  19.8,  3.83,   40.4) ecart_h= 0.44 POSABLE bout=0.00
+[camp] (  20.0,   44.0) -> nav (  19.9,  4.08,   44.0) ecart_h= 0.05 POSABLE bout=0.00
+[camp] (  20.0,   48.0) -> nav (  20.0,  4.04,   48.0) ecart_h= 0.04 POSABLE bout=0.00
+[camp] (  20.0,   52.0) -> nav (  20.0,  4.02,   52.0) ecart_h= 0.03 POSABLE bout=0.00
+[camp] (  20.0,   56.0) -> nav (  20.1,  4.08,   56.1) ecart_h= 0.12 POSABLE bout=0.00
+[camp] (  20.0,   60.0) -> nav (  20.0,  4.08,   59.9) ecart_h= 0.14 POSABLE bout=0.00
+[camp] (  20.0,   64.0) -> nav (  20.4,  3.89,   64.0) ecart_h= 0.35 POSABLE bout=0.00
+[camp] (  20.0,   68.0) -> nav (  20.4,  3.85,   67.9) ecart_h= 0.44 POSABLE bout=0.00
+[camp] (  20.0,   72.0) -> nav (  20.5,  3.74,   71.9) ecart_h= 0.46 POSABLE bout=0.00
+[camp] (  20.0,   76.0) -> nav (  20.0,  3.45,   75.9) ecart_h= 0.06 POSABLE bout=0.00
+[camp] (  20.0,   80.0) -> nav (  20.0,  3.36,   79.9) ecart_h= 0.06 POSABLE bout=0.00
+[camp] (  20.0,   84.0) -> nav (  20.0,  3.27,   83.9) ecart_h= 0.06 POSABLE bout=0.00
+[camp] (  20.0,   88.0) -> nav (  20.0,  3.16,   87.9) ecart_h= 0.08 POSABLE bout=0.00
+[camp] (  20.0,   92.0) -> nav (  20.0,  3.08,   92.0) ecart_h= 0.05 POSABLE bout=0.00
+[camp] (  20.0,   96.0) -> nav (  20.0,  3.02,   96.0) ecart_h= 0.05 POSABLE bout=0.00
+[camp] (  20.0,  100.0) -> nav (  20.0,  2.96,  100.0) ecart_h= 0.05 POSABLE bout=0.00
+[camp] (  24.0,   40.0) -> nav (  23.8,  3.54,   40.5) ecart_h= 0.58 POSABLE bout=0.00
+[camp] (  24.0,   44.0) -> nav (  24.0,  4.00,   44.0) ecart_h= 0.00 POSABLE bout=0.00
+[camp] (  24.0,   48.0) -> nav (  24.2,  4.00,   47.8) ecart_h= 0.25 POSABLE bout=0.00
+[camp] (  24.0,   52.0) -> nav (  24.4,  4.06,   52.2) ecart_h= 0.47 POSABLE bout=0.00
+[camp] (  24.0,   56.0) -> nav (  24.2,  4.39,   56.2) ecart_h= 0.27 POSABLE bout=0.00
+[camp] (  24.0,   60.0) -> nav (  24.2,  4.54,   60.0) ecart_h= 0.24 POSABLE bout=0.00
+[camp] (  24.0,   64.0) -> nav (  24.4,  4.62,   64.1) ecart_h= 0.44 POSABLE bout=0.00
+[camp] (  24.0,   68.0) -> nav (  24.4,  4.62,   68.0) ecart_h= 0.40 POSABLE bout=0.00
+[camp] (  24.0,   72.0) -> nav (  24.3,  4.41,   71.8) ecart_h= 0.29 POSABLE bout=0.00
+[camp] (  24.0,   76.0) -> nav (  24.3,  4.04,   75.8) ecart_h= 0.36 POSABLE bout=0.00
+[camp] (  24.0,   80.0) -> nav (  24.4,  3.56,   79.7) ecart_h= 0.54 POSABLE bout=0.00
+[camp] (  24.0,   84.0) -> nav (  24.0,  3.27,   83.9) ecart_h= 0.06 POSABLE bout=0.00
+[camp] (  24.0,   88.0) -> nav (  24.0,  3.18,   88.0) ecart_h= 0.05 POSABLE bout=0.00
+[camp] (  24.0,   92.0) -> nav (  24.0,  3.12,   92.0) ecart_h= 0.05 POSABLE bout=0.00
+[camp] (  24.0,   96.0) -> nav (  24.1,  3.07,   96.0) ecart_h= 0.11 POSABLE bout=0.00
+[camp] (  24.0,  100.0) -> nav (  24.1,  3.03,  100.0) ecart_h= 0.11 POSABLE bout=0.00
+[camp] (  28.0,   40.0) -> nav (  28.0,  3.53,   40.7) ecart_h= 0.70 POSABLE bout=0.00
+[camp] (  28.0,   44.0) -> nav (  28.0,  4.00,   44.0) ecart_h= 0.00 POSABLE bout=0.00
+[camp] (  28.0,   48.0) -> nav (  28.2,  4.28,   48.3) ecart_h= 0.39 POSABLE bout=0.00
+[camp] (  28.0,   52.0) -> nav (  28.2,  4.85,   52.1) ecart_h= 0.28 POSABLE bout=0.00
+[camp] (  28.0,   56.0) -> nav (  28.2,  5.16,   56.0) ecart_h= 0.20 POSABLE bout=0.00
+[camp] (  28.0,   60.0) -> nav (  28.1,  5.61,   60.0) ecart_h= 0.15 POSABLE bout=0.00
+[camp] (  28.0,   64.0) -> nav (  28.1,  5.67,   64.0) ecart_h= 0.09 POSABLE bout=0.00
+[camp] (  28.0,   68.0) -> nav (  28.1,  5.66,   68.0) ecart_h= 0.09 POSABLE bout=0.00
+[camp] (  28.0,   72.0) -> nav (  28.2,  5.33,   71.9) ecart_h= 0.20 POSABLE bout=0.00
+[camp] (  28.0,   76.0) -> nav (  28.3,  4.78,   75.8) ecart_h= 0.36 POSABLE bout=0.00
+[camp] (  28.0,   80.0) -> nav (  28.1,  4.20,   79.7) ecart_h= 0.32 POSABLE bout=0.00
+[camp] (  28.0,   84.0) -> nav (  28.2,  3.57,   83.6) ecart_h= 0.43 POSABLE bout=0.00
+[camp] (  28.0,   88.0) -> nav (  28.1,  3.28,   88.0) ecart_h= 0.10 POSABLE bout=0.00
+[camp] (  28.0,   92.0) -> nav (  28.1,  3.25,   92.0) ecart_h= 0.10 POSABLE bout=0.00
+[camp] (  28.0,   96.0) -> nav (  28.1,  3.21,   96.0) ecart_h= 0.10 POSABLE bout=0.00
+[camp] (  28.0,  100.0) -> nav (  28.0,  3.17,   99.9) ecart_h= 0.07 POSABLE bout=0.00
+[camp] (  32.0,   40.0) -> nav (  32.1,  3.55,   40.4) ecart_h= 0.37 POSABLE bout=0.00
+[camp] (  32.0,   44.0) -> nav (  32.1,  3.96,   44.2) ecart_h= 0.22 POSABLE bout=0.00
+[camp] (  32.0,   48.0) -> nav (  32.1,  4.71,   48.3) ecart_h= 0.29 POSABLE bout=0.00
+[camp] (  32.0,   52.0) -> nav (  32.1,  5.44,   52.1) ecart_h= 0.14 POSABLE bout=0.00
+[camp] (  32.0,   56.0) -> nav (  32.0,  6.04,   56.0) ecart_h= 0.01 POSABLE bout=0.00
+[camp] (  32.0,   60.0) -> nav (  32.0,  6.25,   60.0) ecart_h= 0.00 POSABLE bout=0.00
+[camp] (  32.0,   64.0) -> nav (  32.0,  6.25,   64.0) ecart_h= 0.00 POSABLE bout=0.00
+[camp] (  32.0,   68.0) -> nav (  32.0,  6.27,   68.0) ecart_h= 0.01 POSABLE bout=0.00
+[camp] (  32.0,   72.0) -> nav (  32.0,  6.14,   72.0) ecart_h= 0.02 POSABLE bout=0.00
+[camp] (  32.0,   76.0) -> nav (  32.1,  5.65,   75.9) ecart_h= 0.10 POSABLE bout=0.00
+[camp] (  32.0,   80.0) -> nav (  32.3,  4.92,   79.7) ecart_h= 0.38 POSABLE bout=0.00
+[camp] (  32.0,   84.0) -> nav (  32.2,  3.91,   83.7) ecart_h= 0.32 POSABLE bout=0.00
+[camp] (  32.0,   88.0) -> nav (  32.1,  3.42,   88.0) ecart_h= 0.09 POSABLE bout=0.00
+[camp] (  32.0,   92.0) -> nav (  32.1,  3.39,   92.0) ecart_h= 0.09 POSABLE bout=0.00
+[camp] (  32.0,   96.0) -> nav (  32.0,  3.31,   95.9) ecart_h= 0.07 POSABLE bout=0.00
+[camp] (  32.0,  100.0) -> nav (  32.0,  3.23,   99.9) ecart_h= 0.07 POSABLE bout=0.00
+[camp] (  36.0,   40.0) -> nav (  36.1,  3.68,   40.3) ecart_h= 0.35 POSABLE bout=0.00
+[camp] (  36.0,   44.0) -> nav (  36.1,  4.19,   44.2) ecart_h= 0.20 POSABLE bout=0.00
+[camp] (  36.0,   48.0) -> nav (  36.1,  5.14,   48.2) ecart_h= 0.19 POSABLE bout=0.00
+[camp] (  36.0,   52.0) -> nav (  36.0,  6.01,   52.0) ecart_h= 0.00 POSABLE bout=0.00
+[camp] (  36.0,   56.0) -> nav (  36.0,  6.25,   56.0) ecart_h= 0.00 POSABLE bout=0.00
+[camp] (  36.0,   60.0) -> nav (  36.0,  6.25,   60.0) ecart_h= 0.00 POSABLE bout=0.00
+[camp] (  36.0,   64.0) -> nav (  36.0,  6.28,   64.0) ecart_h= 0.00 POSABLE bout=0.00
+[camp] (  36.0,   68.0) -> nav (  36.0,  6.32,   68.0) ecart_h= 0.00 POSABLE bout=0.00
+[camp] (  36.0,   72.0) -> nav (  36.0,  6.31,   72.0) ecart_h= 0.01 POSABLE bout=0.00
+[camp] (  36.0,   76.0) -> nav (  36.0,  6.27,   76.0) ecart_h= 0.01 POSABLE bout=0.00
+[camp] (  36.0,   80.0) -> nav (  36.1,  5.73,   79.9) ecart_h= 0.10 POSABLE bout=0.00
+[camp] (  36.0,   84.0) -> nav (  36.2,  4.28,   83.8) ecart_h= 0.27 POSABLE bout=0.00
+[camp] (  36.0,   88.0) -> nav (  36.2,  3.77,   87.7) ecart_h= 0.37 POSABLE bout=0.00
+[camp] (  36.0,   92.0) -> nav (  35.9,  3.39,   91.9) ecart_h= 0.08 POSABLE bout=0.00
+[camp] (  36.0,   96.0) -> nav (  35.9,  3.31,   95.9) ecart_h= 0.09 POSABLE bout=0.00
+[camp] (  36.0,  100.0) -> nav (  35.9,  3.23,   99.9) ecart_h= 0.09 POSABLE bout=0.00
+[camp] (  40.0,   40.0) -> nav (  40.0,  3.73,   40.4) ecart_h= 0.38 POSABLE bout=0.00
+[camp] (  40.0,   44.0) -> nav (  40.0,  4.38,   44.3) ecart_h= 0.27 POSABLE bout=0.00
+[camp] (  40.0,   48.0) -> nav (  40.0,  5.49,   48.2) ecart_h= 0.16 POSABLE bout=0.00
+[camp] (  40.0,   52.0) -> nav (  40.0,  6.13,   52.0) ecart_h= 0.01 POSABLE bout=0.00
+[camp] (  40.0,   56.0) -> nav (  40.0,  6.25,   56.0) ecart_h= 0.00 POSABLE bout=0.00
+[camp] (  40.0,   60.0) -> nav (  40.0,  6.29,   60.0) ecart_h= 0.00 POSABLE bout=0.00
+[camp] (  40.0,   64.0) -> nav (  40.0,  6.32,   64.0) ecart_h= 0.00 POSABLE bout=0.00
+[camp] (  40.0,   68.0) -> nav (  40.0,  6.35,   68.0) ecart_h= 0.00 POSABLE bout=0.00
+[camp] (  40.0,   72.0) -> nav (  40.0,  6.38,   72.0) ecart_h= 0.01 POSABLE bout=0.00
+[camp] (  40.0,   76.0) -> nav (  40.0,  6.34,   76.0) ecart_h= 0.01 POSABLE bout=0.00
+[camp] (  40.0,   80.0) -> nav (  40.0,  6.24,   80.1) ecart_h= 0.06 POSABLE bout=0.00
+[camp] (  40.0,   84.0) -> nav (  40.2,  4.98,   83.5) ecart_h= 0.53 POSABLE bout=0.00
+[camp] (  40.0,   88.0) -> nav (  40.1,  4.01,   87.6) ecart_h= 0.45 POSABLE bout=0.00
+[camp] (  40.0,   92.0) -> nav (  39.9,  3.29,   91.9) ecart_h= 0.09 POSABLE bout=0.00
+[camp] (  40.0,   96.0) -> nav (  39.9,  3.21,   95.9) ecart_h= 0.09 POSABLE bout=0.00
+[camp] (  40.0,  100.0) -> nav (  40.1,  3.18,  100.0) ecart_h= 0.09 POSABLE bout=0.00
+[camp] (  44.0,   40.0) -> nav (  44.0,  3.59,   40.2) ecart_h= 0.25 POSABLE bout=0.00
+[camp] (  44.0,   44.0) -> nav (  44.0,  4.46,   44.5) ecart_h= 0.51 POSABLE bout=0.00
+[camp] (  44.0,   48.0) -> nav (  44.0,  5.50,   47.8) ecart_h= 0.25 POSABLE bout=0.00
+[camp] (  44.0,   52.0) -> nav (  44.0,  6.25,   52.8) ecart_h= 0.75 POSABLE bout=0.00
+[camp] (  44.0,   56.0) -> nav (  44.0,  6.28,   56.0) ecart_h= 0.00 POSABLE bout=0.00
+[camp] (  44.0,   60.0) -> nav (  44.0,  6.32,   60.0) ecart_h= 0.00 POSABLE bout=0.00
+[camp] (  44.0,   64.0) -> nav (  44.0,  6.35,   64.0) ecart_h= 0.00 POSABLE bout=0.00
+[camp] (  44.0,   68.0) -> nav (  44.0,  6.39,   68.0) ecart_h= 0.00 POSABLE bout=0.00
+[camp] (  44.0,   72.0) -> nav (  44.0,  6.42,   72.0) ecart_h= 0.00 POSABLE bout=0.00
+[camp] (  44.0,   76.0) -> nav (  44.0,  6.42,   76.0) ecart_h= 0.01 POSABLE bout=0.00
+[camp] (  44.0,   80.0) -> nav (  44.0,  6.30,   80.0) ecart_h= 0.03 POSABLE bout=0.00
+[camp] (  44.0,   84.0) -> nav (  44.0,  5.16,   83.7) ecart_h= 0.33 POSABLE bout=0.00
+[camp] (  44.0,   88.0) -> nav (  43.9,  4.07,   87.6) ecart_h= 0.44 POSABLE bout=0.00
+[camp] (  44.0,   92.0) -> nav (  44.1,  3.30,   92.0) ecart_h= 0.06 POSABLE bout=0.00
+[camp] (  44.0,   96.0) -> nav (  44.1,  3.31,   96.0) ecart_h= 0.06 POSABLE bout=0.00
+[camp] (  44.0,  100.0) -> nav (  44.1,  3.30,  100.0) ecart_h= 0.08 POSABLE bout=0.00
+[camp] (  48.0,   40.0) -> nav (  48.0,  3.56,   40.3) ecart_h= 0.25 POSABLE bout=0.00
+[camp] (  48.0,   44.0) -> nav (  47.8,  4.31,   44.5) ecart_h= 0.50 POSABLE bout=0.00
+[camp] (  48.0,   48.0) -> nav (  48.0,  5.56,   48.1) ecart_h= 0.15 POSABLE bout=0.00
+[camp] (  48.0,   52.0) -> nav (  48.0,  6.15,   52.0) ecart_h= 0.01 POSABLE bout=0.00
+[camp] (  48.0,   56.0) -> nav (  48.0,  6.39,   56.0) ecart_h= 0.02 POSABLE bout=0.00
+[camp] (  48.0,   60.0) -> nav (  48.0,  6.40,   60.0) ecart_h= 0.02 POSABLE bout=0.00
+[camp] (  48.0,   64.0) -> nav (  48.0,  6.42,   64.0) ecart_h= 0.02 POSABLE bout=0.00
+[camp] (  48.0,   68.0) -> nav (  48.0,  6.43,   68.0) ecart_h= 0.02 POSABLE bout=0.00
+[camp] (  48.0,   72.0) -> nav (  48.0,  6.45,   72.0) ecart_h= 0.01 POSABLE bout=0.00
+[camp] (  48.0,   76.0) -> nav (  48.0,  6.48,   76.0) ecart_h= 0.01 POSABLE bout=0.00
+[camp] (  48.0,   80.0) -> nav (  48.0,  6.20,   80.0) ecart_h= 0.02 POSABLE bout=0.00
+[camp] (  48.0,   84.0) -> nav (  48.0,  5.09,   83.6) ecart_h= 0.39 POSABLE bout=0.00
+[camp] (  48.0,   88.0) -> nav (  47.9,  3.95,   87.5) ecart_h= 0.49 POSABLE bout=0.00
+[camp] (  48.0,   92.0) -> nav (  48.1,  3.40,   92.0) ecart_h= 0.06 POSABLE bout=0.00
+[camp] (  48.0,   96.0) -> nav (  48.1,  3.40,   96.0) ecart_h= 0.06 POSABLE bout=0.00
+[camp] (  48.0,  100.0) -> nav (  48.1,  3.41,  100.0) ecart_h= 0.06 POSABLE bout=0.00
+[camp] (  52.0,   40.0) -> nav (  52.8,  6.25,   39.8) ecart_h= 0.79 POSABLE bout=4.37
+[camp] (  52.0,   44.0) -> nav (  51.7,  4.00,   44.4) ecart_h= 0.45 POSABLE bout=0.00
+[camp] (  52.0,   48.0) -> nav (  51.9,  5.19,   48.3) ecart_h= 0.27 POSABLE bout=0.00
+[camp] (  52.0,   52.0) -> nav (  52.0,  6.07,   52.0) ecart_h= 0.00 POSABLE bout=0.00
+[camp] (  52.0,   56.0) -> nav (  52.0,  6.32,   56.0) ecart_h= 0.02 POSABLE bout=0.00
+[camp] (  52.0,   60.0) -> nav (  52.0,  6.49,   60.0) ecart_h= 0.02 POSABLE bout=0.00
+[camp] (  52.0,   64.0) -> nav (  52.0,  6.42,   64.0) ecart_h= 0.01 POSABLE bout=0.00
+[camp] (  52.0,   68.0) -> nav (  52.0,  6.37,   68.0) ecart_h= 0.01 POSABLE bout=0.00
+[camp] (  52.0,   72.0) -> nav (  52.0,  6.33,   72.0) ecart_h= 0.00 POSABLE bout=0.00
+[camp] (  52.0,   76.0) -> nav (  52.0,  6.28,   76.0) ecart_h= 0.00 POSABLE bout=0.00
+[camp] (  52.0,   80.0) -> nav (  52.0,  5.87,   80.0) ecart_h= 0.04 POSABLE bout=0.00
+[camp] (  52.0,   84.0) -> nav (  52.1,  4.96,   83.3) ecart_h= 0.67 POSABLE bout=0.00
+[camp] (  52.0,   88.0) -> nav (  52.0,  3.85,   87.4) ecart_h= 0.63 POSABLE bout=0.00
+[camp] (  52.0,   92.0) -> nav (  52.1,  3.49,   92.0) ecart_h= 0.06 POSABLE bout=0.00
+[camp] (  52.0,   96.0) -> nav (  52.1,  3.50,   96.0) ecart_h= 0.06 POSABLE bout=0.00
+[camp] (  52.0,  100.0) -> nav (  52.0,  3.50,  100.0) ecart_h= 0.05 POSABLE bout=0.00
+[camp] (  56.0,   40.0) -> nav (  54.5,  6.50,   39.5) ecart_h= 1.58 HORS-NAV bout=aucun chemin
+[camp] (  56.0,   44.0) -> nav (  55.7,  3.65,   44.4) ecart_h= 0.52 POSABLE bout=0.00
+[camp] (  56.0,   48.0) -> nav (  55.7,  4.52,   48.5) ecart_h= 0.57 POSABLE bout=0.00
+[camp] (  56.0,   52.0) -> nav (  55.9,  5.51,   52.1) ecart_h= 0.14 POSABLE bout=0.00
+[camp] (  56.0,   56.0) -> nav (  56.0,  6.21,   56.0) ecart_h= 0.04 POSABLE bout=0.00
+[camp] (  56.0,   60.0) -> nav (  56.0,  6.34,   60.0) ecart_h= 0.02 POSABLE bout=0.00
+[camp] (  56.0,   64.0) -> nav (  56.1,  6.45,   64.0) ecart_h= 0.06 POSABLE bout=0.00
+[camp] (  56.0,   68.0) -> nav (  56.0,  6.39,   68.0) ecart_h= 0.04 POSABLE bout=0.00
+[camp] (  56.0,   72.0) -> nav (  56.0,  6.32,   72.0) ecart_h= 0.01 POSABLE bout=0.00
+[camp] (  56.0,   76.0) -> nav (  56.0,  6.08,   76.0) ecart_h= 0.02 POSABLE bout=0.00
+[camp] (  56.0,   80.0) -> nav (  55.9,  5.27,   79.9) ecart_h= 0.18 POSABLE bout=0.00
+[camp] (  56.0,   84.0) -> nav (  55.7,  4.13,   83.6) ecart_h= 0.48 POSABLE bout=0.00
+[camp] (  56.0,   88.0) -> nav (  56.0,  3.51,   88.0) ecart_h= 0.04 POSABLE bout=0.00
+[camp] (  56.0,   92.0) -> nav (  56.0,  3.55,   92.0) ecart_h= 0.03 POSABLE bout=0.00
+[camp] (  56.0,   96.0) -> nav (  56.0,  3.57,   96.0) ecart_h= 0.05 POSABLE bout=0.00
+[camp] (  56.0,  100.0) -> nav (  56.0,  3.58,  100.0) ecart_h= 0.05 POSABLE bout=0.00
+[camp] (  60.0,   40.0) -> nav (  59.9,  2.93,   40.0) ecart_h= 0.07 POSABLE bout=0.00
+[camp] (  60.0,   44.0) -> nav (  59.9,  3.05,   43.9) ecart_h= 0.13 POSABLE bout=0.00
+[camp] (  60.0,   48.0) -> nav (  59.7,  3.80,   48.4) ecart_h= 0.48 POSABLE bout=0.00
+[camp] (  60.0,   52.0) -> nav (  59.5,  4.66,   52.3) ecart_h= 0.60 POSABLE bout=0.00
+[camp] (  60.0,   56.0) -> nav (  59.8,  5.42,   56.1) ecart_h= 0.22 POSABLE bout=0.00
+[camp] (  60.0,   60.0) -> nav (  60.0,  5.89,   60.0) ecart_h= 0.03 POSABLE bout=0.00
+[camp] (  60.0,   64.0) -> nav (  60.0,  5.96,   64.0) ecart_h= 0.01 POSABLE bout=0.00
+[camp] (  60.0,   68.0) -> nav (  60.0,  5.99,   68.0) ecart_h= 0.00 POSABLE bout=0.00
+[camp] (  60.0,   72.0) -> nav (  59.9,  5.65,   72.0) ecart_h= 0.11 POSABLE bout=0.00
+[camp] (  60.0,   76.0) -> nav (  59.7,  5.11,   75.8) ecart_h= 0.30 POSABLE bout=0.00
+[camp] (  60.0,   80.0) -> nav (  59.6,  4.36,   79.5) ecart_h= 0.66 POSABLE bout=0.00
+[camp] (  60.0,   84.0) -> nav (  59.7,  3.58,   83.6) ecart_h= 0.51 POSABLE bout=0.00
+[camp] (  60.0,   88.0) -> nav (  60.0,  3.51,   88.0) ecart_h= 0.04 POSABLE bout=0.00
+[camp] (  60.0,   92.0) -> nav (  60.0,  3.57,   92.0) ecart_h= 0.03 POSABLE bout=0.00
+[camp] (  60.0,   96.0) -> nav (  60.0,  3.62,   96.0) ecart_h= 0.03 POSABLE bout=0.00
+[camp] (  60.0,  100.0) -> nav (  60.0,  3.66,  100.0) ecart_h= 0.04 POSABLE bout=0.00
+[camp] (  64.0,   40.0) -> nav (  63.9,  2.85,   40.0) ecart_h= 0.07 POSABLE bout=0.00
+[camp] (  64.0,   44.0) -> nav (  63.9,  2.95,   43.9) ecart_h= 0.14 POSABLE bout=0.00
+[camp] (  64.0,   48.0) -> nav (  63.6,  3.24,   48.5) ecart_h= 0.68 POSABLE bout=0.00
+[camp] (  64.0,   52.0) -> nav (  63.5,  3.69,   52.3) ecart_h= 0.61 POSABLE bout=0.00
+[camp] (  64.0,   56.0) -> nav (  63.4,  4.25,   56.4) ecart_h= 0.75 POSABLE bout=0.00
+[camp] (  64.0,   60.0) -> nav (  63.5,  4.72,   60.1) ecart_h= 0.53 POSABLE bout=0.00
+[camp] (  64.0,   64.0) -> nav (  63.6,  4.92,   64.0) ecart_h= 0.43 POSABLE bout=0.00
+[camp] (  64.0,   68.0) -> nav (  63.6,  4.85,   67.9) ecart_h= 0.39 POSABLE bout=0.00
+[camp] (  64.0,   72.0) -> nav (  63.6,  4.65,   71.8) ecart_h= 0.41 POSABLE bout=0.00
+[camp] (  64.0,   76.0) -> nav (  63.5,  4.11,   75.8) ecart_h= 0.53 POSABLE bout=0.00
+[camp] (  64.0,   80.0) -> nav (  63.6,  3.68,   79.9) ecart_h= 0.38 POSABLE bout=0.00
+[camp] (  64.0,   84.0) -> nav (  64.0,  3.37,   84.1) ecart_h= 0.11 POSABLE bout=0.00
+[camp] (  64.0,   88.0) -> nav (  64.0,  3.51,   88.0) ecart_h= 0.04 POSABLE bout=0.00
+[camp] (  64.0,   92.0) -> nav (  64.0,  3.57,   92.0) ecart_h= 0.03 POSABLE bout=0.00
+[camp] (  64.0,   96.0) -> nav (  64.0,  3.62,   96.0) ecart_h= 0.03 POSABLE bout=0.00
+[camp] (  64.0,  100.0) -> nav (  64.0,  3.68,  100.0) ecart_h= 0.03 POSABLE bout=0.00
+[camp] ---------------------------------------------
+[camp] 240 points sondés, 239 sur navmesh, 238 ATTEIGNABLES depuis le spawn
+[camp] dix meilleurs candidats (écart au navmesh croissant) :
+[camp]   (8.00, 4.25, 40.00)  ecart_h=0.000  bout=0.00
+[camp]   (8.00, 6.50, 44.00)  ecart_h=0.000  bout=3.09
+[camp]   (36.00, 6.25, 56.00)  ecart_h=0.000  bout=0.00
+[camp]   (32.00, 6.25, 60.00)  ecart_h=0.000  bout=0.00
+[camp]   (28.00, 4.00, 44.00)  ecart_h=0.000  bout=0.00
+[camp]   (24.00, 4.00, 44.00)  ecart_h=0.000  bout=0.00
+[camp]   (12.00, 4.25, 40.00)  ecart_h=0.000  bout=0.00
+[camp]   (60.00, 5.99, 68.00)  ecart_h=0.002  bout=0.00
+[camp]   (36.00, 6.01, 52.00)  ecart_h=0.002  bout=0.00
+[camp]   (44.00, 6.28, 56.00)  ecart_h=0.003  bout=0.00
+[camp] FIN NOMINALE
+WARNING: 102 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 54 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)
+ERROR: Pages in use exist at exit in PagedAllocator: N12VariantPools12BucketMediumE
+   at: ~PagedAllocator (./core/templates/paged_allocator.h:170)
+ERROR: Pages in use exist at exit in PagedAllocator: N12VariantPools11BucketSmallE
+   at: ~PagedAllocator (./core/templates/paged_allocator.h:170)
+LANCER_GODOT: RC_GODOT=0
+RC=0
