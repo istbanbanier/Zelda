@@ -1477,3 +1477,40 @@ jeu dans le registre du harnais de checklist (son contrat l'affirmait sans le
 faire), `kill()` toujours suivi de `wait()`, lecture `-displayfd` bornée à
 15 s, garde de confinement avant tout `rmtree` d'un chemin passé en argument,
 et trace `constats.json` écrite même sur sortie précoce.
+
+## D-055 — Le gel V2.3-B est levé sur `world_v2_root.gd`, pour rendre le donjon atteignable (ISS-073)
+
+**Date** : 2026-08-28. **Décidé par** : directive ISS-073 du propriétaire,
+sévérité S1. **Portée** : une empreinte levée, une empreinte ajoutée.
+
+**La régression démontrée.** Le menu principal ouvre `WorldV2.tscn` depuis le
+passage à World V2. Or World V2 ne portait AUCUNE `SceneDoor` : le marqueur
+`dungeon_gate` est un `Node3D` nu, avec lequel on ne peut pas interagir. Et
+`WorldV2Root` ne consommait aucun `pending_spawn` — il écrivait toujours la
+position du spawn. Conséquences mesurées, l'une par le portail rouge du §2,
+l'autre par un sabotage : le donjon était **inatteignable** par le chemin du
+joueur, et un retour depuis le vestibule replaçait le héros en `(0, 170)`, à
+380 m de la citadelle, au lieu de `(0, -210)`.
+
+Corriger cela demande de toucher `world_v2_root.gd` : c'est lui qui monte le
+monde et qui place le joueur. Aucun contournement ne l'évite — poser la porte
+ailleurs ne consommerait toujours pas le tag d'arrivée.
+
+**Ce que la levée couvre exactement.** Une seule empreinte change
+(`f17b55c3…` → `586b3841…`, `scripts/world_v2/world_v2_root.gd`). Vérifié
+AVANT régénération par `tools/gel_verifier.sh` seul : « 2 écart(s), 0
+absent(s) », le second écart étant le COMPTE — 44 fichiers dans le périmètre
+contre 43 au manifeste. Aucune autre empreinte du périmètre n'a bougé : la
+régénération n'absorbe donc rien en silence.
+
+**Le second écart n'est pas une levée, c'est un ajout.** `gel_fichiers()`
+globe `scripts/world_v2/*.gd`, et le nouveau `world_v2_dungeon_door.gd` y
+tombe. Le contrat du gel énonce pourtant « AJOUTER N'EST PAS TOUCHER » — la
+règle a bien été appliquée à `scenes/world_v2/poi/*.tscn`, qui est énuméré,
+mais pas à ce glob-là. Plutôt que d'affaiblir le contrôle en désarmant le
+glob, le manifeste est régénéré : le fichier neuf entre dans le gel dès sa
+naissance. C'est **plus strict** que l'état d'avant, pas moins.
+
+**Les six lieux gelés ne sont pas concernés** : leurs empreintes et celles des
+quatre golden masters R2a sont inchangées, ce que le « 0 absent(s), 2
+écart(s) » atteste avant comme après.
