@@ -4,6 +4,41 @@ Ordre **anti-chronologique** : l'entrée la plus récente est en haut. La derni�
 entrée fait office de handoff et doit indiquer **exactement** la prochaine action.
 
 ---
+## 2026-08-28 — ISS-074 ouverte : le contrat de peuplement, l'inventaire et le portail rouge
+
+Branche `claude/world-v2-iss074-population-contract`, depuis la candidate
+`a8d2f77`. **Aucun ennemi de production posé.** Trois livrables :
+
+1. **`docs/contrats/iss074_peuplement_world_v2.md`** — le contrat : le
+   remplacement du verrou « acteur prématuré » par un contrat de BUDGET à
+   quatre règles exécutables (plafond du coordinateur, un coordinateur
+   unique, territoire borné, zones calmes) ; les règles de densité par
+   région (la prose `regions[].encounters` du layout devient NORMATIVE) ;
+   la règle de respawn/persistance AVANT le système (garnison morte reste
+   morte — champ additif `enemies_slain` ; patrouille peut réapparaître,
+   déclaré explicitement ; loot HORS tranche) ; et la tranche verticale
+   proposée — « la garnison du camp braise » (r05) : navmesh vérifié
+   d'abord, `WorldV2EncountersBuilder` NEUF piloté par données, 3
+   `raider_red` + 1 `raider_blue` au guet, remplacement du contrat, profil
+   CPU en preuve.
+2. **`docs/contrats/iss074_inventaire.md`** — l'état réel, sur pièces : les
+   cinq familles prêtes au combat (sans loot), la coordination jamais
+   instanciée en V2, le navmesh 0,7 m prêt et le navmesh grandes carrures
+   ABSENT, `Encounters` vide, 1 territoire construit sur 5, aucune
+   persistance de mort, aucun AILab, budget CPU inconnu.
+3. **`tests/world_v2/test_world_v2_iss074_portail.gd`** — le portail,
+   ROUGE : `0 réussi, 2 échoué` sur le monde monté (aucun adversaire, aucun
+   coordinateur), 0 erreur de script. Il exige aussi, pour le futur vert :
+   l'adversaire ATTEIGNABLE par la navigation depuis le spawn, et un
+   territoire borné pour chacun. **Ce rouge vit sur cette branche
+   seulement** — la candidate n'en porte rien.
+
+**PROCHAINE ACTION EXACTE** : rien avant la décision du propriétaire — la
+tranche « garnison du camp braise » est PROPOSÉE, pas autorisée. Les
+interdits tiennent : aucun ennemi de production, six lieux gelés intacts,
+`GO_V2_3_B_LOT2 = FALSE`.
+
+---
 ## 2026-08-28 — ISS-073 : la boucle de campagne est refermée, et prouvée dans une build
 
 **Le donjon était inatteignable.** Le menu ouvre World V2 ; World V2 ne portait
