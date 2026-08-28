@@ -50,9 +50,11 @@ for cle in ("physique_ms_moyen", "physique_ms_p95", "process_ms_moyen", "noeuds"
         print("   %-20s %10.3f %10.3f %+10.3f" % (cle, a[cle], s[cle], a[cle] - s[cle]))
 print("   gardes vivants       %10.0f %10.0f" % (a.get("gardes vivants", -1),
                                                  s.get("gardes vivants", -1)))
-print("   Un seul run par mode, sequentiels sur conteneur partage : le p95")
-print("   est du meme ordre que le delta. C'est un ECART de protocole, pas")
-print("   une mesure de dispersion, et surtout pas un budget de frame.")
+print("   Un seul run par mode, sequentiels sur conteneur partage. Les ABSOLUS")
+print("   varient d'un facteur cinq selon la charge de la machine ; seul")
+print("   « noeuds » est deterministe. Le p95 est PUBLIE, jamais juge : a un")
+print("   run par mode il est domine par l'ordonnancement. Un ECART, pas un")
+print("   budget de frame.")
 
 fautes = []
 if a.get("gardes vivants") != 4.0:
@@ -60,14 +62,29 @@ if a.get("gardes vivants") != 4.0:
                   % a.get("gardes vivants"))
 if s.get("gardes vivants") != 0.0:
     fautes.append("le monde temoin n'est pas vide : %r" % s.get("gardes vivants"))
-for cle in ("physique_ms_moyen", "physique_ms_p95", "noeuds"):
+for cle in ("physique_ms_moyen", "physique_ms_p95", "process_ms_moyen", "noeuds"):
     if cle not in a or cle not in s:
         fautes.append("grandeur absente d'un des deux journaux : %s" % cle)
-    elif a[cle] < s[cle]:
-        # Ajouter quatre gardes ne rend pas le monde MOINS cher. Un delta
-        # negatif ne se discute pas : le protocole compare deux choses
-        # differentes, comme le 2026-08-28 (deux mondes, un seul processus).
-        fautes.append("delta NEGATIF sur %s (%.3f avec, %.3f sans) — le "
+# QUELLES GRANDEURS PEUVENT PORTER UN VERDICT DE SENS, ET LESQUELLES NON.
+# Premiere redaction de ce verdict, le 2026-08-28 : le delta NEGATIF etait
+# refuse sur physique_ms_moyen ET sur physique_ms_p95. Le run suivant a
+# rougi sur le p95 (-0,814 ms) — et le rouge etait un defaut du VERDICT, pas
+# du monde. Mesure a l'appui, deux paires de runs sur ce conteneur :
+#     run 1 (machine chargee) : moyen 13,804 / 7,217 · p95 44,583 / 23,820
+#     run 2 (machine calme)   : moyen  2,821 / 2,117 · p95  4,580 /  5,394
+# Les absolus varient d'un facteur cinq selon la charge, et la QUEUE varie
+# davantage que la moyenne. Un p95 tire de 240 echantillons, un seul run par
+# mode, sur un conteneur partage, est domine par l'ordonnancement : lui faire
+# porter une affirmation DIRECTIONNELLE, c'est mesurer le voisin.
+# Restent donc gardees les grandeurs qui resistent au bruit :
+#   - noeuds        : deterministe (+132, identique aux deux runs) ;
+#   - moyenne       : 240 echantillons, positive aux deux runs.
+# Le p95 est publie, jamais juge. Ce n'est pas un seuil assoupli — c'est une
+# affirmation retiree parce que la donnee ne peut pas la porter.
+for cle in ("physique_ms_moyen", "noeuds"):
+    if cle in a and cle in s and a[cle] < s[cle]:
+        fautes.append("delta NEGATIF sur %s (%.3f avec, %.3f sans) — quatre "
+                      "gardes ne rendent pas le monde MOINS cher ; le "
                       "protocole compare deux choses differentes"
                       % (cle, a[cle], s[cle]))
 if fautes:

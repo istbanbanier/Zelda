@@ -1,0 +1,17 @@
+== COÛT CPU DE LA GARNISON — deux processus, mêmes réglages ==
+   Conteneur headless sans GPU, rendu logiciel. PAS un budget de frame.
+   commit 9600512ec18b, 0 fichier(s) sale(s) dans l'arbre au moment de la mesure
+   echantillons : 240.0 par mode, apres 60.0 d'echauffement
+   grandeur                   avec       sans      delta
+   physique_ms_moyen         2.821      2.117     +0.704
+   physique_ms_p95           4.580      5.394     -0.814
+   process_ms_moyen          4.251      4.486     -0.235
+   noeuds                 4378.000   4246.000   +132.000
+   gardes vivants                4          0
+   Un seul run par mode, sequentiels sur conteneur partage : le p95
+   est du meme ordre que le delta. C'est un ECART de protocole, pas
+   une mesure de dispersion, et surtout pas un budget de frame.
+
+   FAUTE : delta NEGATIF sur physique_ms_p95 (4.580 avec, 5.394 sans) — le protocole compare deux choses differentes
+VERDICT PROFIL : ROUGE (1 faute(s))
+RC_PROFIL=1

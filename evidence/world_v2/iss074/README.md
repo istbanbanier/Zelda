@@ -47,13 +47,37 @@ DANS LE VIDE, la hitbox pendant sous `VisualRoot`, seul nœud qui tourne.
 
 ## Le coût CPU du camp, exigé par le contrat §6.6
 
+Quatre runs, gardés tous les quatre. Le chiffre unique et net que ce
+répertoire affichait — « +6,587 ms » — n'était pas reproductible, et c'est
+la mesure elle-même qui l'a démontré.
+
 | Journal | Ce qu'il montre |
 |---|---|
-| `profil_cpu_INVALIDE_un_seul_processus.log` | gardé POUR SON DÉFAUT : monde témoin 12,629 ms contre 3,857 ms avec garnison — un résultat absurde, produit par une sonde qui montait les deux mondes dans le MÊME processus, le témoin payant la démolition du premier |
-| `profil_cpu_sans.log` / `profil_cpu_avec.log` | la mesure refaite, **un monde par processus** |
-| `profil_cpu_comparaison.log` | l'écart honnête : **+6,587 ms en moyenne, +20,763 ms au p95, +132 nœuds** |
+| `profil_cpu_INVALIDE_un_seul_processus.log` | gardé POUR SON DÉFAUT : monde témoin 12,629 ms contre 3,857 ms avec garnison — absurde, produit par une sonde qui montait les deux mondes dans le MÊME processus, le témoin payant la démolition du premier |
+| run 1 (dans l'historique, commit `fbf2b524`) | machine chargée : moyenne 13,804 / 7,217 → **+6,587** ; p95 44,583 / 23,820 → **+20,763** |
+| `profil_cpu_run2_avec.log`, `profil_cpu_run2_sans.log`, `profil_cpu_run2_verdict_rouge.log` | machine calme : moyenne 2,821 / 2,117 → **+0,704** ; p95 4,580 / 5,394 → **−0,814**. Le verdict neuf a rougi — et il avait tort |
+| `profil_cpu_run3_arbre_sale.log` | verdict corrigé, VERT, mais l'arbre portait l'outil non committé : **non autoritaire**, gardé pour la traçabilité |
+| `profil_cpu_avec.log`, `profil_cpu_sans.log`, `profil_cpu_comparaison.log` | la mesure qui fait autorité, arbre propre |
 
-Le journal invalide reste ici parce qu'il enseigne mieux que le bon : une
+**Ce que quatre runs ont appris, et qu'un seul cachait.** Les absolus varient
+d'un facteur cinq selon la charge du conteneur, et la QUEUE varie davantage
+que la moyenne : entre le run 1 et le run 2, le delta de p95 a changé de
+signe. Un p95 tiré de 240 échantillons, un seul run par mode, sur une machine
+partagée, est dominé par l'ordonnancement.
+
+Le verdict de `profil_camp.sh` ne juge donc plus que ce qui résiste au bruit —
+`noeuds`, déterministe et à **+132** aux quatre runs, et la moyenne sur 240
+échantillons, positive à chaque fois. Le p95 est **publié, jamais jugé**. Ce
+n'est pas un seuil assoupli : c'est une affirmation retirée parce que la
+donnée ne peut pas la porter, et le script porte les deux séries qui le
+prouvent.
+
+**Ce qu'on peut honnêtement dire du coût** : sur conteneur calme, la garnison
+coûte **moins d'une milliseconde** de temps physique moyen et **+132 nœuds**.
+Sous charge, le même code affiche plusieurs millisecondes. Aucun de ces
+nombres n'est un budget de frame — le rendu est logiciel.
+
+Le journal invalide reste ici parce qu'il enseigne mieux que les bons : une
 mesure peut être exacte, reproductible et fausse quand le protocole compare
 deux choses qui ne sont pas comparables.
 
@@ -63,7 +87,7 @@ deux choses qui ne sont pas comparables.
 |---|---|
 | `gate_export_run_rouge_harnais.md` | le run ROUGE du 2026-08-28 : deux `FAIL` qui ne portaient sur AUCUNE affirmation du jeu, et leur cause |
 | `mesure_fermeture_fenetre.log` | le chronométrage qui a tranché : 32 s sur cache froid, 2 s sur cache chaud, contre un budget de 30 s |
-| `gate_export_garnison_vert.log` | après correction du seul harnais : **VERT, 0 échec**, sur la build liée à `86bc5570` |
+| `gate_export_garnison_vert.log` | portail RENFORCÉ après contre-revue : **VERT, 0 échec**, build liée à `9600512e`, arbre propre. Deux contrôles neufs y prouvent ce qu'aucun ne prouvait : les morts SURVIVENT à la réécriture de fermeture (G5), et le balayage de ressources porte sur les **quatre** journaux du run, donjon compris (G7) |
 
 Le portail vert publie l'attente réelle de chaque fermeture — `32 s` pour G5,
 `2` à `4 s` ailleurs. Le nombre qui a causé le rouge est désormais visible dans
@@ -82,8 +106,10 @@ la preuve elle-même, au lieu d'être caché derrière un verdict.
   l'arbre final » était faux. Constat d'une contre-revue à contexte frais.
   Le journal ne portait ni commit ni état de l'arbre — c'est ce qui rendait
   l'écart invisible ; `validate_fast.sh` imprime désormais sa provenance en
-  étape `0a`. Voir `validate_fast_arbre_final.log` pour la mesure qui fait
-  autorité.
+  étape `0a`.
+- `validate_fast_arbre_final.log` — la mesure qui fait autorité : **999
+  réussi, 0 échoué**, code retour 0, et un en-tête qui dit d'où elle vient —
+  `commit 9600512e`, `fichiers sales : 0`.
 
 ## Ce qui n'est PAS ici, et le restera
 

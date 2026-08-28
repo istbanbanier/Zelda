@@ -1,37 +1,45 @@
 
 == G1. l'artefact mesuré est-il CELUI du commit courant ? ==
-  PASS  build liée au commit courant (86bc5570df4d34f46a990a8529a49c8f9fa30639)
+  PASS  build liée au commit courant (9600512ec18b6b4e97301df8faea58f3bb77b09d), arbre propre à l'export
 
 == G2/G3. arrivée réelle au camp, et zéro ressource manquante ==
         [peuplement] garnison : 4 posé(s), 0 déjà tombé(s)
   PASS  quatre gardes posés, aucun déjà tombé
   PASS  un garde a VU le héros arriver : garrison.ember_camp.blue.01
 WM_DELETE_WINDOW envoyé à 2097155
-        (fermeture honorée en 2 s)
-        position sauvegardée : {'x': 35.9669952392578, 'y': 1.38202154636383, 'z': 28.6721439361572}
-  PASS  le héros a RÉELLEMENT marché : 71.33 m depuis son point de reprise
-  PASS  aucun modèle ni ressource manquant dans le PCK
+        (fermeture honorée en 1 s)
+        position sauvegardée : {'x': 35.9669952392578, 'y': 1.1954003572464, 'z': 25.4715824127197}
+  PASS  le héros a RÉELLEMENT marché : 74.53 m depuis son point de reprise
+  PASS  aucun modèle ni ressource manquant dans le PCK — la vallée (G2/G3)
 
 == G4. aucune duplication au redémarrage ==
         [peuplement] garnison : 4 posé(s), 0 déjà tombé(s)  (lignes de peuplement : 1)
   PASS  quatre gardes, pas huit — aucune duplication
   PASS  le bâtisseur n'a construit QU'UNE fois dans ce processus
 WM_DELETE_WINDOW envoyé à 2097155
-        (fermeture honorée en 4 s)
+        (fermeture honorée en 3 s)
 
 == G5. une garnison tombée reste tombée après fermeture et « Continuer » ==
         [peuplement] garnison : 2 posé(s), 2 déjà tombé(s)
   PASS  deux gardes seulement : les deux morts du slot ne reviennent pas
 WM_DELETE_WINDOW envoyé à 2097155
-        (fermeture honorée en 32 s)
+        (fermeture honorée en 31 s)
+        enemies_slain après la croix : ['garrison.ember_camp.blue.01', 'garrison.ember_camp.red.01']
+  PASS  les deux morts SURVIVENT à la réécriture de fermeture
 
 == G6. l'inventaire de l'antichambre survit à la reprise ==
   PASS  « Continuer » route vers l'antichambre
 WM_DELETE_WINDOW envoyé à 2097155
-        (fermeture honorée en 3 s)
-  PASS  une écriture a RÉELLEMENT eu lieu (horodatage : 2026-08-28 21:02:37)
+        (fermeture honorée en 2 s)
+  PASS  une écriture a RÉELLEMENT eu lieu (horodatage : 2026-08-28 21:22:15)
         armes=3 flèches=37 storm_berry=3 plats=1
   PASS  l'inventaire est INTACT après la reprise dans l'antichambre (ISS-080)
+
+== G7. aucune ressource manquante — sur TOUS les journaux de ce run ==
+  PASS  aucun modèle ni ressource manquant dans le PCK — garnison_2_profil_garnison_g3.log
+  PASS  aucun modèle ni ressource manquant dans le PCK — garnison_3_profil_garnison_g5.log
+  PASS  aucun modèle ni ressource manquant dans le PCK — garnison_4_profil_garnison_g6.log
+        4 journal(aux) de jeu examiné(s) dans ce run
 
 NON VÉRIFIÉ ICI, ET PROUVÉ EN MOTEUR PAR test_world_v2_garrison_combat.gd :
   dégâts dans les deux sens · victoire de la garnison · mort du héros et
