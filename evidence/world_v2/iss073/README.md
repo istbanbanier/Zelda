@@ -92,3 +92,30 @@ l'essai d'Istvan (`docs/PLAYTEST_ISS073.md`).
 
 Ni la fluidité : une mesure prise en rendu logiciel n'est jamais un budget de
 frame.
+
+## La CANDIDATE de lundi
+
+**Pré-publication** (`prerelease: true`), pas une livraison officielle :
+<https://github.com/istbanbanier/Zelda/releases/tag/world-v2-candidate-iss073-98cbaf0>
+
+Construite par la CI depuis `98cbaf0`. Le code du JEU y est identique à
+`c3f1819`, l'arbre exporté et mesuré localement — entre les deux, seuls
+`docs/` et `evidence/` ont bougé, ce que `git diff --name-only c3f1819..HEAD`
+atteste.
+
+| Cible | Fichier | SHA-256 |
+|---|---|---|
+| Windows 64 bits | `EclatsDOrage_Windows_x86_64_98cbaf0.zip` | `ba431dc96417d5d6e42b142dc7738b40536d65f75ab35121df3f5b06fefa66fa` |
+| macOS | `EclatsDOrage_macOS_98cbaf0.zip` | `411df11c4dd7f8e8fe1ef6027c3c82c736768198fdd11908091a0b3ae58acad9` |
+| Linux x86_64 | `EclatsDOrage_Linux_x86_64_98cbaf0.zip` | `30ef276c3f5f3ae1c148c6e8f111cd7d1439f2c34747355312789a4e7717c054` |
+| Projet Godot | `EclatsDOrage_MondeOuvert_98cbaf0.zip` | `669f6400dfe247cb663fc6f7cfc8ea6726b78ca115bf49a0534fe18e27d5d01a` |
+
+`docs/PLAYTEST_ISS073.md` y est joint, ses `@@SHA@@` remplis PAR LE RUN depuis
+le commit qu'il construit réellement — un SHA écrit d'avance serait soit
+circulaire, soit une ancre morte.
+
+**Ce n'est pas la build que j'ai testée localement.** Celle-ci vient du runner
+GitHub avec les templates officiels ; la mienne venait d'un template compilé
+ici. Les deux partent du même code de jeu, et c'est la CANDIDATE qui doit être
+jouée lundi — pas `world-v2-playtest-lot1r2-05d0760`, qui est antérieure à la
+réparation de la boucle.
