@@ -172,9 +172,15 @@ attendre_motif() {  # $1 = motif fixe attendu dans le journal
 }
 
 fermer_fenetre() {
-  # La CROIX de la fenêtre — le geste C9. WM_DELETE_WINDOW → close request →
-  # autosave → quit. On attend la mort réelle du processus.
-  DISPLAY="$DISPLAY_NUM" xdotool windowclose "$FENETRE" 2>/dev/null || true
+  # La CROIX de la fenêtre — le geste C9. Sous Xvfb SANS gestionnaire de
+  # fenêtres, `xdotool windowclose` DÉTRUIT la fenêtre (XDestroyWindow) et le
+  # jeu ne reçoit JAMAIS la demande — mesuré au premier run de ce portail :
+  # processus vivant, aucune sauvegarde de fermeture. Le seul geste fidèle est
+  # le ClientMessage WM_PROTOCOLS/WM_DELETE_WINDOW, envoyé par
+  # tools/x11_fermer_fenetre.py. Godot le reçoit, propage
+  # NOTIFICATION_WM_CLOSE_REQUEST (notre autosave), puis quitte.
+  DISPLAY="$DISPLAY_NUM" python3 "$ARBRE/tools/x11_fermer_fenetre.py" \
+    "$FENETRE" || true
   for _ in $(seq 1 30); do kill -0 "$PID_JEU" 2>/dev/null || break; sleep 1; done
   if kill -0 "$PID_JEU" 2>/dev/null; then return 1; fi
   PID_JEU=""
@@ -185,6 +191,8 @@ pos_posee() {  # lit « héros posé : (x, y, z) » du journal courant → "x y 
   grep -F "[world_v2] héros posé" "$JOURNAL_JEU" | head -1 \
     | sed -n 's/.*(\(-\{0,1\}[0-9.]*\), \(-\{0,1\}[0-9.]*\), \(-\{0,1\}[0-9.]*\)).*/\1 \2 \3/p'
 }
+
+sauvegarde_du_slot_p4() { sauvegarde_du_profil "$SORTIE/profil_t1_p4"; }
 
 # ------------------------------------------------------------------ étapes --
 etape "1. l'artefact mesuré est-il CELUI du commit courant ?"
@@ -200,13 +208,27 @@ info "sha256 : $(sha256sum "$BINAIRE" | cut -d' ' -f1)"
 
 command -v Xvfb >/dev/null    || { echo "BLOQUÉ: Xvfb absent" >&2; fini 3; }
 command -v xdotool >/dev/null || { echo "BLOQUÉ: xdotool absent" >&2; fini 3; }
+python3 -c "import Xlib" 2>/dev/null || { echo "BLOQUÉ: python3-xlib absent (fermeture WM_DELETE)" >&2; fini 3; }
 rm -f "/tmp/.X${DISPLAY_NUM#:}-lock"
-Xvfb "$DISPLAY_NUM" -screen 0 "${LARGEUR}x${HAUTEUR}x24" \
+# `-noreset` est OBLIGATOIRE, et la raison mérite d'être sue : Godot interne
+# WM_DELETE_WINDOW avec only_if_exists=true. Sur un serveur X VIERGE — aucun
+# gestionnaire de fenêtres, aucun client passé — l'atome n'existe pas, Godot
+# reçoit 0, et la croix devient physiquement inopérante (WM_PROTOCOLS=[0],
+# mesuré). On interne donc l'atome AVANT le jeu ; et sans -noreset, Xvfb se
+# RÉINITIALISE quand son dernier client se déconnecte, effaçant l'atome
+# aussitôt posé. Sur un poste réel, le WM a toujours déjà interné l'atome —
+# ce piège n'existe que dans un harnais nu comme celui-ci.
+Xvfb "$DISPLAY_NUM" -screen 0 "${LARGEUR}x${HAUTEUR}x24" -noreset \
   > "$JOURNAUX/t1_xvfb.log" 2>&1 &
 PID_XVFB=$!
 sleep 3
 kill -0 "$PID_XVFB" 2>/dev/null || { echo "BLOQUÉ: Xvfb mort" >&2; fini 3; }
-info "Xvfb PID $PID_XVFB sur $DISPLAY_NUM"
+info "Xvfb PID $PID_XVFB sur $DISPLAY_NUM (-noreset)"
+DISPLAY="$DISPLAY_NUM" python3 -c "
+from Xlib import display
+d = display.Display(); a = d.intern_atom('WM_DELETE_WINDOW'); d.close()
+print('    atome WM_DELETE_WINDOW interné :', a)" \
+  || { echo "BLOQUÉ: internement de l'atome impossible" >&2; fini 3; }
 
 # --- PHASE 1 : partie neuve, mouvement réel, fermeture par la croix (C9) ----
 etape "P1. partie NEUVE : spawn, marche tenue, puis la CROIX de la fenêtre"
@@ -239,13 +261,23 @@ if [ -f "$FICHIER_P1" ]; then
   DELTA="$(python3 - "$FICHIER_P1" $POS0 <<'PYEOF'
 import json, sys, math
 d = json.load(open(sys.argv[1]))["data"]
-p = d.get("player_position", {})
-x0, z0 = float(sys.argv[2]), float(sys.argv[4])
-print("%.2f" % math.hypot(float(p.get("x", 0)) - x0, float(p.get("z", 0)) - z0))
+p = d.get("player_position")
+# Une position ABSENTE n'est pas un déplacement nul : au premier run de ce
+# portail, `p.get("x", 0)` sur un slot sans position a fabriqué un faux
+# déplacement de 170 m (la distance du spawn à l'origine). L'absence rend nan
+# et le constat échoue BRUYAMMENT.
+if not isinstance(p, dict) or "x" not in p or "z" not in p:
+    print("nan")
+else:
+    x0, z0 = float(sys.argv[2]), float(sys.argv[4])
+    print("%.2f" % math.hypot(float(p["x"]) - x0, float(p["z"]) - z0))
 PYEOF
 )"
   info "déplacement écrit : ${DELTA} m (seuil ${DEPLACEMENT_MIN_M})"
-  python3 -c "import sys; sys.exit(0 if float('$DELTA') >= $DEPLACEMENT_MIN_M else 1)"
+  python3 -c "
+import sys, math
+d = float('$DELTA')
+sys.exit(0 if not math.isnan(d) and d >= $DEPLACEMENT_MIN_M else 1)"
   constat "l'avatar a réellement bougé et la position écrite a suivi" $?
 fi
 
@@ -306,6 +338,10 @@ constat "le slot fabriqué est bien relu comme une reprise" $?
 sleep 3
 fermer_fenetre
 constat "la croix ferme le jeu (P4)" $?
+HORODATAGE="$(python3 -c "import json,sys;print(json.load(open(sys.argv[1]))['saved_at_utc'])" \
+  "$(sauvegarde_du_slot_p4)" 2>/dev/null || echo "")"
+[ -n "$HORODATAGE" ] && [ "$HORODATAGE" != "2026-08-28T00:00:00" ]
+constat "une ÉCRITURE a réellement eu lieu (horodatage ≠ fabriqué) — sans elle, « préservé » serait un constat creux" $?
 BOSS="$(lire_champ_slot "$P4" "d.get('boss_defeated')")"
 [ "$BOSS" = "True" ]; constat "boss_defeated a SURVÉCU à l'autosave réel de la croix" $?
 TEMOIN="$(lire_champ_slot "$P4" "d.get('weapons')")"

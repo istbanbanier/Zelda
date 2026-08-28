@@ -1,0 +1,63 @@
+
+### 1. l'artefact mesuré est-il CELUI du commit courant ?
+    sha    : a168dfd55fee3238fe7e6a997b74b6424b0a822d
+    sha256 : ae8633575c715003cde1cd572558bbbc0a6be990f705ee844099de94c4c2e1c5
+    Xvfb PID 32313 sur :94 (-noreset)
+    atome WM_DELETE_WINDOW interné : 228
+
+### P1. partie NEUVE : spawn, marche tenue, puis la CROIX de la fenêtre
+    Return envoyé (partie neuve — le focus est sur « Nouvelle partie »)
+    [PASS] une partie neuve arrive au point d'apparition
+    posé à : 0.0 24.4 170.0
+    [PASS] le jalon « héros posé » est lisible
+    marche : W physique tenu 90s de mur (ISS-072 borne ce qu'on en attend)
+WM_DELETE_WINDOW envoyé à 2097155
+    [PASS] la croix ferme le jeu (le processus meurt tout seul)
+    [PASS] C9 en export : la fermeture a ÉCRIT une sauvegarde
+    [PASS] la sauvegarde est signée neris_v2
+    [PASS] le lieu de reprise est world_v2.valley
+    déplacement écrit : 103.29 m (seuil 1.0)
+    [PASS] l'avatar a réellement bougé et la position écrite a suivi
+
+### P2. relance sur le MÊME profil : « Continuer » restaure l'endroit
+    attendu du fichier : pos=(-0.0 3.5 66.7) lacet=-3.14
+    Return envoyé (le focus est sur « Continuer » — une sauvegarde existe)
+    [PASS] la provenance du placement est « sauvegarde »
+    posé à : -0.0 3.5 66.7
+    écart horizontal : 0.00 m (tolérance 2.0)
+    [PASS] la position est RESTAURÉE là où la partie s'était arrêtée
+    [PASS] l'orientation est restaurée (écrit -3.14, posé -3.14)
+
+### P3. un slot « arrêté dans l'antichambre » : le menu route vers ELLE
+    [PASS] « Continuer » route vers l'antichambre, pas vers le monde ouvert
+    [PASS] l'antichambre monte à froid sans erreur de script (0)
+    [PASS] le processus est vivant dans l'antichambre
+
+### P4. un slot riche (boss_defeated) : l'autosave de la croix le PRÉSERVE
+    [PASS] le slot fabriqué est bien relu comme une reprise
+WM_DELETE_WINDOW envoyé à 2097155
+    [PASS] la croix ferme le jeu (P4)
+    [PASS] une ÉCRITURE a réellement eu lieu (horodatage ≠ fabriqué) — sans elle, « préservé » serait un constat creux
+    [PASS] boss_defeated a SURVÉCU à l'autosave réel de la croix
+    [PASS] l'inventaire témoin a survécu à la fusion
+
+### P5. un slot V1 (sans signature) avec position plausible : IGNORÉ
+    [PASS] position V1 dans les bornes V2 : provenance « spawn », jamais « sauvegarde »
+
+### P6. un slot corrompu : refus lisible, aucun crash, fichier intact
+    [PASS] le processus survit à un « Continuer » sur slot corrompu
+    transitions parties : 1 (1 = boot→menu, attendu)
+    [PASS] aucune transition APRÈS le refus — le menu a refusé, pas planté
+WM_DELETE_WINDOW envoyé à 2097155
+    [PASS] C10 en export : le slot corrompu est INTACT au sha256
+
+### 7. ce que ce portail déclare NON VÉRIFIÉ, et pourquoi
+    NON VÉRIFIÉ — marche jusqu'au donjon et retour (ISS-072, horloge découplée)
+    NON VÉRIFIÉ — mort puis « Réessayer » en export (ISS-074, aucun adversaire)
+    Les deux sont prouvés en ÉDITEUR par la suite t1_persistance (C1..C10).
+
+### 8. verdict
+    constats en échec : 0
+
+=== VERDICT PORTAIL EXPORT T1 : code 0
+RC=0

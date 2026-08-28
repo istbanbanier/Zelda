@@ -4,6 +4,65 @@ Ordre **anti-chronologique** : l'entrée la plus récente est en haut. La derni�
 entrée fait office de handoff et doit indiquer **exactement** la prochaine action.
 
 ---
+## 2026-08-28 — T1 §2-§3 : contre-revue absorbée, C8/C9/C10, et la reprise prouvée dans la build exportée
+
+Branche `claude/world-v2-t1-persistance`, toujours séparée de la candidate.
+Conteneur re-provisionné en début de passe (bascule de modèle) : rien n'a été
+perdu — tout vivait sur le remote — mais le toolchain a dû être reconstruit
+(template scons 23 min, xdotool, ImageMagick, python3-xlib).
+
+**§1 — contre-revue du diff T1 final** (contexte frais) : PARTIAL, trois
+FAIL — fusion sur slot illisible, fermeture de fenêtre, chemin réel jamais
+exécuté. Chacun est devenu un contrat, rouge d'abord :
+- **C10** : `load_slot` rend `{}` sur un slot corrompu ET sur un schéma plus
+  récent — l'autosave fusionnait dans `{}` et écrasait fichier ET `.bak`.
+  Garde posée : un slot présent mais illisible n'est JAMAIS réécrit.
+- **C9** : la croix de la fenêtre n'était écoutée par personne. Handler
+  `NOTIFICATION_WM_CLOSE_REQUEST` + minuterie d'autosave épinglée à 60 s +
+  « jamais en l'air » (le cas mesure un VRAI saut — un téléport de test
+  empoisonnait l'enregistreur de sol, `is_on_floor()` restant vrai un tick).
+- **C8** : vraie transition SceneFlow, fusion éprouvée par témoins
+  (`boss_defeated`/`weapons` semés avant — une affectation sèche rougit),
+  reprise par le vrai bouton du menu, débranchement prouvé sur monde libéré.
+
+Filtre t1_persistance : **10 réussis, 0 échoué, 161 assertions**. Trois
+sabotages, chacun ne rougit QUE son contrat (s1 signal → C8 seul ; s2
+fermeture+minuterie → C9 seul ; s3 garde → C10 seul). Détails de revue
+consignés ISS-079/080/081. Un rouge de plus payé en route : mon commentaire
+du jalon `[flow]` nommait le monde reconstruit dans un fichier V1 — le
+balayage d'isolation l'a pris, à raison (symétrique du faux positif ISS-073).
+
+**§3 — la chaîne, dans l'ordre imposé, sur l'arbre committé `a168dfd5`** :
+
+| Étape | Verdict |
+|---|---|
+| `validate_fast.sh` | **VERT, RC=0, 987 tests, 0 échec**, gel intact |
+| `gate_export_parite.sh` (export NEUF) | **RC=0**, 32 contrôles, 0 rouge |
+| `gate_export_t1.sh` (6 phases, user:// vierges) | **RC=0, 21 PASS, 0 FAIL** |
+
+La build autonome a fait : partie neuve → marche réelle de 103 m → CROIX →
+sauvegarde signée → relance → « Continuer » → position restaurée à 0,00 m,
+orientation restaurée → routage antichambre → fusion préservée sous autosave
+réel → slot V1 ignoré → slot corrompu intact. NON VÉRIFIÉ, dit par le
+portail : marche donjon (ISS-072), mort/Réessayer (ISS-074).
+
+Deux runs rouges du portail ont payé deux leçons de harnais, consignées dans
+`evidence/world_v2/t1_persistance/build_exportee/README.md` : `xdotool
+windowclose` DÉTRUIT la fenêtre au lieu de demander sa fermeture ; et Godot
+interne `WM_DELETE_WINDOW` avec `only_if_exists=true` — sur un Xvfb vierge
+l'atome n'existe pas et la croix est inopérante (`WM_PROTOCOLS=[0]`, mesuré
+dans le source du moteur ET sur la fenêtre). D'où `tools/x11_fermer_fenetre.py`
+(le vrai ClientMessage), Xvfb `-noreset`, et l'internement préalable.
+
+**PROCHAINE ACTION EXACTE** : publier l'artefact expérimental T1 (workflow
+`t1_experimental`, prerelease, tag `world-v2-t1-exp-<court>`), vérifier la
+release, figer T1, puis ouvrir `claude/world-v2-iss074-population-contract`
+depuis la candidate `a8d2f77` — contrat de peuplement, inventaire, portail
+rouge, règles, tranche verticale. **Interdits** : fusionner T1 avant le
+playtest d'Istvan ; aucun ennemi de production ; `GO_V2_3_B_LOT2 = FALSE`.
+La candidate de lundi reste `world-v2-candidate-iss073-98cbaf0`, inchangée.
+
+---
 ## 2026-08-28 — T1 implémenté et vert, et la contre-revue §6 a rendu son verdict
 
 Branche `claude/world-v2-t1-persistance`, toujours **séparée** de la candidate
