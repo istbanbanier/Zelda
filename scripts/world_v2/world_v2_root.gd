@@ -30,6 +30,26 @@ const WORLD_STATIC_LAYER_MASK: int = 1
 const NAV_RESOURCE_PATTERN: String = "res://resources/world_v2/nav/world_v2_navmesh_q%d.tres"
 const NAV_QUADRANTS: int = 4
 
+## T1 — PERSISTANCE. Le slot unique du jeu, celui que le menu écrit et relit.
+const SAVE_SLOT: String = "slot0"
+## Le lieu narratif que World V2 inscrit dans `checkpoint`. Le donjon écrit
+## déjà le sien (`antechamber.gd` pose `dungeon.antechamber`) : la reprise
+## route sur ce champ, et n'en invente pas un second.
+const CHECKPOINT_TAG: String = "world_v2.valley"
+## Le tag que « Réessayer » pose (`gameplay_shell.gd::_on_retry`). Il signifie
+## « reprends au dernier état sauvegardé », pas « point d'apparition » — et
+## aucune scène ne le comprenait : World V2 le traitait en tag INCONNU et
+## déposait le joueur au spawn, à 380 m du lieu de sa mort. Constat de la
+## contre-revue ISS-073.
+const RETRY_TAG: StringName = &"retry_checkpoint"
+## Bornes d'une position RELUE. Une position de sauvegarde est une entrée NON
+## FIABLE — le fichier s'édite à la main — et la doctrine du projet est celle
+## de `valley_world.gd` : toute forme douteuse retombe sur le point
+## d'apparition, jamais sur un crash. Les bornes horizontales viennent du
+## LAYOUT (`bounds.x/z`), pas d'un nombre recopié qui vieillirait en silence.
+const SAVED_POSITION_MIN_Y: float = -6.0
+const SAVED_POSITION_MAX_Y: float = 200.0
+
 ## D'où le héros a été placé à ce montage : `spawn` ou `retour_donjon`.
 ## Un test doit pouvoir le lire sans deviner d'après une distance.
 var _spawn_source: StringName = &"spawn"
@@ -105,16 +125,28 @@ func _ready() -> void:
 
 	var return_anchor: Node3D = $Landmarks.get_node_or_null(
 		WorldV2DungeonDoor.RETURN_ANCHOR_NAME) as Node3D
+	# T1 — la deuxième provenance existe maintenant. Elle est lue AVANT le
+	# branchement pour que la priorité soit visible d'un seul regard, et elle
+	# vaut `Vector3.INF` chaque fois qu'elle n'a pas le droit de s'appliquer.
+	var reprise: Vector3 = _position_de_reprise()
 	if arrival == WorldV2DungeonDoor.RETURN_TAG and return_anchor != null:
-		# Ressortir replace DEVANT la porte, jamais au spawn (PT-D1-10).
+		# Ressortir replace DEVANT la porte, jamais au spawn (PT-D1-10). Un
+		# retour de transition l'emporte sur une position sauvegardée : la
+		# sauvegarde décrit où l'on ÉTAIT, la transition où l'on ARRIVE.
 		_player.global_position = return_anchor.global_position
 		_spawn_source = &"retour_donjon"
+	elif reprise != Vector3.INF:
+		_player.global_position = reprise
+		_spawn_source = &"sauvegarde"
 	else:
 		_player.global_position = _spawn.global_position
 		_spawn_source = &"spawn"
-		if arrival != &"" and arrival != WorldV2DungeonDoor.RETURN_TAG:
+		if arrival != &"" and arrival != WorldV2DungeonDoor.RETURN_TAG \
+				and arrival != RETRY_TAG:
 			push_warning("[world_v2] tag d'apparition inconnu « %s » — "
 				% arrival + "reprise au point d'apparition")
+	if _spawn_source != &"retour_donjon":
+		_restaurer_orientation()
 	# §20.9 : reset d'interpolation après tout repositionnement instantané.
 	if _player is CharacterBody3D:
 		(_player as CharacterBody3D).velocity = Vector3.ZERO
@@ -144,6 +176,7 @@ func _ready() -> void:
 	print("[world_v2] porte donjon : %s" % ("posée au seuil §3.3"
 		if door_ok else "ABSENTE — le donjon est inatteignable"))
 	print("[world_v2] arrivée      : %s" % _spawn_source)
+	_brancher_autosave()
 
 	await get_tree().physics_frame
 	if not is_instance_valid(self) or not is_inside_tree():
@@ -299,6 +332,156 @@ func dungeon_door() -> SceneDoor:
 
 func spawn_position() -> Vector3:
 	return _spawn.global_position
+
+
+# ---------------------------------------------------------------------------
+# T1 — PERSISTANCE : écrire son état de reprise, et le relire
+# ---------------------------------------------------------------------------
+#
+# Ce que World V2 possède, et lui seul : la position du héros, son orientation,
+# et le lieu narratif où rouvrir la partie. Tout est écrit par FUSION sur le
+# payload existant — jamais en écrasement : un champ posé par une AUTRE scène
+# (l'arène pose `boss_defeated`) disparaîtrait à la première sauvegarde, et le
+# joueur perdrait sa victoire en explorant. C'est un défaut déjà payé côté V1.
+#
+# Et rien n'est relu sans signature. `world_version` dit de quel monde vient
+# une position ; son ABSENCE signifie le monde V1, dont les coordonnées n'ont
+# aucun sens ici — une position V1 peut être parfaitement dans les bornes V2 et
+# pourtant au fond d'un lac V2 (contrat de migration §4).
+
+
+## Écrit l'état de reprise de World V2. Publique : c'est le point d'entrée que
+## les contrats T1 appellent, et le seul endroit d'où V2 touche la sauvegarde.
+func autosave() -> void:
+	var save_system: Node = get_node_or_null("/root/SaveSystem")
+	if save_system == null or _player == null or not is_instance_valid(_player):
+		return
+	# ON NE SAUVEGARDE PAS LA POSITION D'UN MORT. « Réessayer » part par une
+	# transition, donc par ce point d'entrée : sans cette garde, mourir
+	# inscrirait le lieu de sa mort comme point de reprise, et le joueur
+	# ressusciterait là où il vient d'être tué. Le défaut est né avec le
+	# crochet lui-même — il n'existait pas avant T1.
+	if _player.has_method("health"):
+		var sante: Node = _player.call("health") as Node
+		if sante != null and bool(sante.call("is_dead")):
+			return
+	var payload: Dictionary = {}
+	if bool(save_system.call("has_save", SAVE_SLOT)):
+		payload = save_system.call("load_slot", SAVE_SLOT) as Dictionary
+	# Le DERNIER SOL FOULÉ, jamais la position courante : sauvegarder au milieu
+	# d'une chute ou d'un coin de décor produit une reprise dans le décor, dont
+	# on ne sort plus.
+	var pose: Vector3 = _player.global_position
+	if _player.has_method("last_grounded_position"):
+		pose = _player.call("last_grounded_position") as Vector3
+	payload.merge({
+		"world_version": String(WORLD_ID),
+		"checkpoint": CHECKPOINT_TAG,
+		"player_position": {"x": pose.x, "y": pose.y, "z": pose.z},
+		"player_yaw": _lacet_du_heros(),
+	}, true)
+	save_system.call("save_slot", SAVE_SLOT, payload)
+
+
+## Le lacet vit sur `VisualRoot` : le corps du héros ne tourne JAMAIS
+## (`PlayerController._ready`). Lire la rotation du corps rendrait 0 quoi qu'il
+## arrive — une grandeur voisine de celle qui compte, et le mode de panne
+## maison. Absent, 0 est un lacet honnête, pas une erreur.
+func _lacet_du_heros() -> float:
+	var visual: Node3D = _player.get_node_or_null("VisualRoot") as Node3D
+	return visual.rotation.y if visual != null else 0.0
+
+
+func _restaurer_orientation() -> void:
+	var data: Dictionary = _sauvegarde_de_ce_monde()
+	if data.is_empty():
+		return
+	var brut: Variant = data.get("player_yaw")
+	if not (brut is float) or not is_finite(brut as float):
+		return
+	var visual: Node3D = _player.get_node_or_null("VisualRoot") as Node3D
+	if visual != null:
+		visual.rotation.y = wrapf(brut as float, -PI, PI)
+
+
+## Position de reprise, ou `Vector3.INF` s'il n'y en a pas de valable. Un seul
+## chemin de rejet : toute forme douteuse — pas un dictionnaire, composante
+## absente ou non numérique, hors bornes, sous le filet — rend `INF`.
+func _position_de_reprise() -> Vector3:
+	var data: Dictionary = _sauvegarde_de_ce_monde()
+	if data.is_empty() or not data.has("player_position"):
+		return Vector3.INF
+	var brut: Variant = data["player_position"]
+	if not (brut is Dictionary):
+		return Vector3.INF
+	var dict: Dictionary = brut as Dictionary
+	var composantes: Array[float] = []
+	for cle: String in ["x", "y", "z"]:
+		var valeur: Variant = dict.get(cle)
+		if not (valeur is float):
+			return Vector3.INF
+		composantes.append(valeur as float)
+	var pose := Vector3(composantes[0], composantes[1], composantes[2])
+	if not _position_sauvegardee_sure(pose):
+		push_warning("[world_v2] position sauvegardée hors domaine (%s) — "
+			% pose + "reprise au point d'apparition")
+		return Vector3.INF
+	return pose
+
+
+func _position_sauvegardee_sure(pose: Vector3) -> bool:
+	if not (is_finite(pose.x) and is_finite(pose.y) and is_finite(pose.z)):
+		return false
+	var limite: float = _limite_horizontale()
+	if absf(pose.x) > limite or absf(pose.z) > limite:
+		return false
+	return pose.y > SAVED_POSITION_MIN_Y and pose.y <= SAVED_POSITION_MAX_Y
+
+
+## Bornes horizontales lues dans le LAYOUT. Recopier 256 ici marcherait
+## aujourd'hui et mentirait le jour où la carte change de taille.
+func _limite_horizontale() -> float:
+	var bounds: Dictionary = _layout.get("bounds", {}) as Dictionary
+	var x: Variant = bounds.get("x")
+	if x is Array and (x as Array).size() == 2:
+		return absf(float((x as Array)[1]))
+	return 256.0
+
+
+## La sauvegarde SI ELLE PARLE DE CE MONDE. Sans signature, rien n'est rendu :
+## c'est ici, en un seul endroit, que le contrat de migration §4 est tenu.
+func _sauvegarde_de_ce_monde() -> Dictionary:
+	var save_system: Node = get_node_or_null("/root/SaveSystem")
+	if save_system == null or not bool(save_system.call("has_save", SAVE_SLOT)):
+		return {}
+	var data: Dictionary = save_system.call("load_slot", SAVE_SLOT) as Dictionary
+	if String(data.get("world_version", "")) != String(WORLD_ID):
+		return {}
+	return data
+
+
+## L'autosave se déclenche au DÉPART d'une transition — porte du donjon, retour
+## au menu, mort. `SceneFlow.transition_started` est émis avant tout `await` :
+## le héros est encore en place, et sa position est celle qu'il faut écrire.
+func _brancher_autosave() -> void:
+	var flow: Node = get_node_or_null("/root/SceneFlow")
+	if flow == null:
+		return
+	if not flow.is_connected("transition_started", _sur_depart_de_transition):
+		flow.connect("transition_started", _sur_depart_de_transition)
+
+
+func _sur_depart_de_transition(_cible: String) -> void:
+	autosave()
+
+
+## Un autoload survit à la scène : un signal branché sur lui doit être défait,
+## sinon le prochain monde reçoit l'autosave de l'ancien sur un joueur libéré.
+func _exit_tree() -> void:
+	var flow: Node = get_node_or_null("/root/SceneFlow")
+	if flow != null and flow.is_connected(
+			"transition_started", _sur_depart_de_transition):
+		flow.disconnect("transition_started", _sur_depart_de_transition)
 
 
 ## Point d'accès commun aux scènes jouables. Le menu et la coquille chargent

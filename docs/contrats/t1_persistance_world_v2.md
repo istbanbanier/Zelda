@@ -61,6 +61,7 @@ générale de la sauvegarde.
 | C4 | une position V1 n'est jamais réappliquée en V2 | une coordonnée V1 plausible et **dans les bornes V2** ne doit pas être appliquée | vert — filet, 7 assertions |
 | C5 | une sauvegarde corrompue replie sur le spawn | quatre formes malformées + un JSON tronqué | vert — filet, 22 assertions |
 | C6 | les identifiants de lieux sont stables entre deux montages | deux montages, même carte identifiant → position | vert — filet, 40 assertions |
+| C7 | la mort ne déplace pas le point de reprise | tuer le héros ailleurs, sauvegarder, relire | **né APRÈS l'implémentation** — voir §7 |
 
 C1, C2 et C3 sont les contrats **rouges** : ils décrivent le défaut. C4, C5 et
 C6 sont des **filets** déjà verts, qui doivent le rester — c'est là qu'un T1
@@ -127,14 +128,44 @@ attend tout autre fichier de test qui monte deux fois dans un même cas.
 squelette, quand World V2 ne devait pas déranger le jeu V1. World V2 **est**
 le jeu depuis que le menu l'ouvre : le contrat a survécu à sa raison.
 
-Sa levée appartient à la passe de production et se fera comme D-055 : une
-entrée datée dans `docs/DECISIONS.md`, la raison, et le contrat de
-remplacement — car il en faut un. Le bon successeur n'est pas « V2 peut
-écrire n'importe quoi », mais « V2 n'écrit que des champs qu'il signe
-`world_version = neris_v2`, et ne touche jamais un champ qu'il ne possède
-pas » (fusion par clé, contrat de migration §6).
+**Et la mesure a tranché : la levée n'a pas été nécessaire.** World V2 n'écrit
+qu'au DÉPART d'une transition (`SceneFlow.transition_started`) ; monter puis
+démonter le monde n'en déclenche aucune, et la suite complète passe —
+`test_world_v2_skeleton.gd` compris. Le contrat garde donc son sens et sa
+force. C'était un raisonnement avant l'exécution ; c'est un constat depuis.
 
-## 6. Interdits de la passe T1
+Ce qui a bel et bien demandé une levée, c'est le gel V2.3-B sur
+`world_v2_root.gd` — une empreinte, documentée en D-056, comme D-055 l'avait
+fait pour ISS-073.
+
+## 7. C7 — le contrat que la contre-revue a fait naître
+
+C1 à C6 ont été écrits avant l'implémentation. **C7 ne pouvait pas l'être** :
+il décrit un défaut que le correctif lui-même a créé, et c'est la contre-revue
+à contexte frais (§6 de la directive ISS-073) qui l'a désigné.
+
+Le crochet d'autosave de T1 est branché sur `SceneFlow.transition_started` —
+donc sur TOUTES les transitions, « Réessayer » compris. Sans garde, mourir
+inscrivait le lieu de sa mort comme point de reprise : le joueur ressusciterait
+là où il vient d'être tué. La règle posée est aussi simple qu'elle en a l'air :
+**on ne sauvegarde pas la position d'un mort.**
+
+Le contrôle négatif a en outre PRÉCISÉ le constat que la contre-revue avait
+formulé plus largement. En retirant les deux gardes de C7, **un seul**
+assertion rougit : celle du mort. La seconde moitié — « Réessayer » reprend au
+dernier état sauvegardé — reste verte sans la constante `RETRY_TAG`, parce que
+le placement correct vient de C1. Ce que `RETRY_TAG` corrige est donc un
+avertissement FAUX (« tag d'apparition inconnu »), émis à chaque mort, pas un
+défaut de placement. La distinction est écrite dans le test lui-même.
+
+Verdict complet après implémentation : **7 réussis, 0 échoué, 115 assertions**,
+0 erreur de script. Suite complète du dépôt : **983 réussis, 0 échoué** —
+`test_world_v2_skeleton.gd` compris, ce qui règle §5 : le contrat « slot0
+identique à l'octet près » survit à T1 sans levée, parce que World V2 n'écrit
+qu'au DÉPART d'une transition, et que monter puis démonter le monde n'en
+déclenche aucune.
+
+## 8. Interdits de la passe T1
 
 - Fusionner quoi que ce soit de T1 dans la candidate de lundi avant
   contre-revue.

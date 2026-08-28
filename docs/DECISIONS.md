@@ -1527,3 +1527,49 @@ Manifeste régénéré une seconde fois ; le diff tient en UNE ligne, celle de c
 fichier. La leçon n'est pas que le gel gêne : c'est qu'un fichier neuf entre
 dans le gel **quand il est stabilisé**, pas au milieu de la passe qui le
 crée.
+
+---
+
+## D-056 — Le gel V2.3-B est levé une seconde fois sur `world_v2_root.gd`, pour que la partie se reprenne (T1)
+
+**Date** : 2026-08-28. **Décidé par** : directive ISS-073 §5, qui ouvre T1 —
+la persistance de World V2 — sur une branche séparée de la candidate de lundi.
+**Portée** : **une seule empreinte** levée, `scripts/world_v2/world_v2_root.gd`
+(`586b3841…` → `b2101d10…`). Vérifié AVANT régénération par
+`tools/gel_verifier.sh` seul : « 1 écart(s), 0 absent(s) ». Le diff du
+manifeste tient en une ligne — rien n'est absorbé en silence.
+
+**La régression démontrée.** ISS-073 a rendu la boucle atteignable ; elle ne
+se **reprenait** pas. `WorldV2Root` ne lisait ni n'écrivait une seule ligne de
+sauvegarde, et son propre commentaire l'écrivait : « une position sauvegardée
+— hors périmètre de cette corrective ». Six contrats mesurés sur un cycle réel
+— monter, écrire, démonter, remonter, mesurer la position obtenue — ont rendu
+**3 réussis / 7 échoués** avant correction
+(`evidence/world_v2/t1_persistance/rouge3.log`). Un joueur arrêté dans
+l'antichambre du boss refaisait tout le donjon à chaque reprise.
+
+Corriger cela demande de toucher `world_v2_root.gd` : c'est lui qui monte le
+monde et qui place le joueur. Aucun contournement ne l'évite.
+
+**Ce que le gel protège, et qui n'a pas bougé.** Le gel V2.3-B protège les
+géométries, les cadrages et les seuils artistiques acquis. Le changement porte
+uniquement sur le FLUX — d'où vient le héros à l'ouverture du monde, et quand
+World V2 écrit son état. Aucune constante de terrain, d'hydrologie, de
+végétation, d'atmosphère ni de caméra n'est touchée ; les 43 autres empreintes
+du périmètre sont inchangées, et c'est le verdict « 1 écart » qui le prouve,
+pas cette phrase.
+
+**La leçon de l'addendum de D-055 est appliquée.** Le fichier neuf de cette
+passe est un fichier de TEST
+(`tests/world_v2/test_world_v2_t1_persistance.gd`), hors du périmètre gelé :
+il n'entre dans aucun manifeste tant qu'il n'est pas stabilisé, et il n'a donc
+pas fait rougir le gel au milieu de sa propre écriture.
+
+**Ce qui reste à trancher, et qui n'est PAS tranché ici.**
+`test_world_v2_skeleton.gd` exige que `slot0` reste « identique à l'octet près
+après le passage en V2 ». Le raisonnement dit qu'il devrait tenir — World V2
+n'écrit qu'au DÉPART d'une transition (`SceneFlow.transition_started`), et
+monter puis démonter le monde n'en déclenche aucune — mais un raisonnement
+n'est pas une mesure. La suite complète l'a tranché : **983 réussis, 0 échoué,
+0 erreur de script**, `test_world_v2_skeleton.gd` compris. Ce contrat survit
+donc à T1 sans levée — c'est constaté, pas espéré.

@@ -533,3 +533,111 @@ func test_c6_les_identifiants_de_lieux_sont_stables_entre_deux_montages() -> voi
 			"identifiants ET positions identiques d'un montage à l'autre — "
 			+ "dérives : %s" % ", ".join(derives))
 	restore_saves()
+
+
+## Monte le monde APRÈS avoir posé un tag d'apparition, comme le fait une
+## transition réelle. `_monter()` consomme le tag pour partir propre ; il faut
+## donc un chemin explicite pour les cas qui veulent en éprouver un.
+func _monter_avec_tag(tag: StringName) -> PlayerController:
+	remember_root()
+	var gs: Node = _tree().root.get_node_or_null("GameState")
+	if gs != null:
+		gs.call("consume_pending_spawn")
+		gs.call("set_pending_spawn", tag)
+	_world = (load(WORLD_V2_SCENE) as PackedScene).instantiate() as Node3D
+	_tree().root.add_child(_world)
+	await _tree().process_frame
+	await _tree().physics_frame
+	var player: PlayerController = _world.get_node_or_null("Player") as PlayerController
+	var frames: int = 0
+	while player != null and not player.is_on_floor() and frames < 120:
+		await _tree().physics_frame
+		frames += 1
+	return player
+
+
+# --------------------------------------------------------------------------
+# C7 — ce que la contre-revue a trouvé, et que T1 doit tenir
+# --------------------------------------------------------------------------
+## Deux défauts d'un même geste, nommés par la contre-revue ISS-073 à contexte
+## frais :
+##
+## 1. `retry_checkpoint` est posé par « Réessayer » (`gameplay_shell.gd`) et
+##	  compris par AUCUNE scène : World V2 le traitait en tag inconnu. Le
+##	  contrôle négatif a PRÉCISÉ le constat, et il faut le dire exactement —
+##	  sans la constante `RETRY_TAG`, ce cas reste VERT. Le placement correct
+##	  après un « Réessayer » vient de C1 : dès qu'une position sauvegardée
+##	  existe, la reprise s'y fait. Ce que `RETRY_TAG` corrige est un
+##	  avertissement FAUX (« tag d'apparition inconnu ») émis à chaque mort.
+##	  La moitié discriminante de ce cas est donc la première, pas la seconde.
+##
+## 2. Et le crochet d'autosave de T1 se déclenche sur cette transition-là
+##	  aussi. Sans garde, mourir inscrirait le lieu de sa mort comme point de
+##	  reprise — le joueur ressusciterait là où il vient d'être tué. Le défaut
+##	  naît AVEC le correctif : c'est exactement ce qu'une contre-revue doit
+##	  attraper, et pourquoi elle passe après l'implémentation, pas avant.
+func test_c7_la_mort_ne_deplace_pas_le_point_de_reprise() -> void:
+	remember_saves()
+
+	var player: PlayerController = await _monter()
+	check_not_null(player, "le joueur est monté avec World V2")
+	if player == null:
+		await _demonter()
+		restore_saves()
+		return
+	var spawn: Vector3 = (_world.call("spawn_position") as Vector3)
+	var vivant: Vector3 = _point_de_sol_ecarte(spawn)
+	check(vivant != Vector3.INF, "un point de sol écarté est mesurable")
+	if vivant == Vector3.INF:
+		await _demonter()
+		restore_saves()
+		return
+
+	# --- Vivant : la sauvegarde suit le héros.
+	await _poser_le_heros(player, vivant)
+	var atteint: Vector3 = player.last_grounded_position()
+	_world.call(AUTOSAVE_METHOD)
+	var apres_vie: Dictionary = _lire_slot()
+	check(apres_vie.has("player_position"),
+		"vivant, l'autosave écrit bien une position")
+
+	# --- Mort AILLEURS : la sauvegarde ne doit PAS suivre.
+	var ailleurs := Vector3(spawn.x, spawn.y, spawn.z)
+	await _poser_le_heros(player, ailleurs)
+	var sante: Node = player.health()
+	check_not_null(sante, "le héros porte un HealthComponent")
+	if sante != null:
+		var coup := DamageEvent.new()
+		coup.amount = 9999.0
+		coup.damage_type = &"test"
+		sante.take_damage(coup)
+		check(sante.is_dead(), "le héros est bien mort pour la mesure")
+	_world.call(AUTOSAVE_METHOD)
+	var apres_mort: Dictionary = _lire_slot()
+	check_equal(apres_mort.get("player_position"),
+		apres_vie.get("player_position"),
+		"la mort n'a pas déplacé le point de reprise")
+	await _demonter()
+
+	# --- « Réessayer » pose `retry_checkpoint` : ce tag doit RENDRE la
+	# sauvegarde, pas produire un tag inconnu et un dépôt au spawn.
+	var slot: Dictionary = _slot_de_reprise_v2()
+	slot["player_position"] = {"x": atteint.x, "y": atteint.y, "z": atteint.z}
+	check(_ecrire_slot(slot), "sauvegarde de reprise écrite")
+	var gs: Node = _tree().root.get_node_or_null("GameState")
+	check_not_null(gs, "GameState présent")
+	var reprise: PlayerController = await _monter_avec_tag(&"retry_checkpoint")
+	check_not_null(reprise, "le monde monte après un « Réessayer »")
+	if reprise != null:
+		var obtenu: Vector3 = reprise.global_position
+		var spawn2: Vector3 = (_world.call("spawn_position") as Vector3)
+		check(_distance_horizontale(obtenu, atteint) <= TOLERANCE_HORIZONTALE_M,
+			"« Réessayer » reprend au dernier état sauvegardé "
+			+ "(attendu %s, obtenu %s)" % [atteint, obtenu])
+		check(_distance_horizontale(obtenu, spawn2) >= ECART_MINIMAL_AU_SPAWN_M,
+			"et pas au point d'apparition, à %.0f m de là"
+				% _distance_horizontale(atteint, spawn2))
+		check_equal(String(_world.call("spawn_source")), "sauvegarde",
+			"le monde nomme franchement la provenance du placement")
+	await _demonter()
+	restore_saves()

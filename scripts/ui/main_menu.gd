@@ -18,6 +18,21 @@ const WORLD_SCENE: String = "res://scenes/world_v2/WorldV2.tscn"
 ## normalement.
 const TRAINING_SCENE: String = "res://scenes/world/TrainingGrounds.tscn"
 
+## T1 — OÙ ROUVRIR LA PARTIE. La chaîne compte six scènes jouables ; la
+## sauvegarde disait déjà laquelle, et personne ne la lisait : `_on_continue()`
+## chargeait le slot, vérifiait qu'il était lisible, puis ouvrait le monde
+## ouvert quoi qu'il arrive. Un joueur arrêté dans l'antichambre du boss
+## refaisait tout le donjon à chaque reprise.
+##
+## AUCUN CHAMP NOUVEAU. Le tag `checkpoint` existe depuis toujours et le donjon
+## l'écrit déjà (`antechamber.gd` pose `dungeon.antechamber`) ; `boss_arena.gd`
+## sait déjà que ce tag désigne cette scène. Poser un second champ « scène de
+## reprise » à côté d'un champ qui existe est la façon la plus sûre de les
+## faire diverger.
+const REPRISE_PAR_CHECKPOINT: Dictionary = {
+	"dungeon.antechamber": "res://scenes/dungeon/rooms/Antechamber.tscn",
+}
+
 @onready var _continue_button: Button = %ContinueButton
 @onready var _new_game_button: Button = %NewGameButton
 @onready var _options_button: Button = %OptionsButton
@@ -152,19 +167,29 @@ func _on_continue() -> void:
 	if data.is_empty():
 		_show_error("Sauvegarde illisible — voir le journal.")
 		return
-	# Le checkpoint World V2 repart de son spawn canonique. La migration fine
-	# des positions et états V1 reste hors de ce playtest : la sauvegarde permet
-	# de reprendre le monde, elle ne réactive pas une géométrie expérimentale.
-	_enter_world()
+	_enter_scene(_scene_de_reprise(data))
+
+
+## La scène où reprendre, lue sur le tag `checkpoint`. Un tag absent, inconnu,
+## ou hérité du monde V1 rend le monde ouvert : c'est le comportement
+## historique, et il reste le bon défaut — on ne replace jamais un joueur dans
+## une salle sur la foi d'un tag qu'on ne comprend pas.
+func _scene_de_reprise(data: Dictionary) -> String:
+	var tag: String = String(data.get("checkpoint", ""))
+	return String(REPRISE_PAR_CHECKPOINT.get(tag, WORLD_SCENE))
 
 
 func _enter_world() -> void:
+	_enter_scene(WORLD_SCENE)
+
+
+func _enter_scene(chemin: String) -> void:
 	var flow: Node = get_node_or_null("/root/SceneFlow")
-	if flow == null or not bool(flow.call("can_go_to", WORLD_SCENE)):
+	if flow == null or not bool(flow.call("can_go_to", chemin)):
 		# Texte épinglé par test_main_menu — le son s'ajoute, le libellé ne bouge pas.
 		_show_error("Monde indisponible — voir le journal.")
 		return
-	flow.call("go_to", WORLD_SCENE)
+	flow.call("go_to", chemin)
 
 
 ## §17.3 : confirmation avant écrasement d'une sauvegarde. Deux appuis successifs
