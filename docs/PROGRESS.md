@@ -62,9 +62,31 @@ llvmpipe à fond et sa fenêtre visible : G5 a fait tomber G6. Un défaut, deux
 réelle publiée à chaque appel — le portail vert affiche `32 s` pour G5 et
 `2` à `4 s` ailleurs.
 
-**PROCHAINE ACTION EXACTE** : la tranche est complète et prouvée ; il ne reste
-qu'à absorber la contre-revue à contexte frais sur `b4b2e287..HEAD` si elle
-soulève un constat, puis à attendre le playtest d'Istvan. **Ne pas ouvrir le
+**La contre-revue à contexte frais a rendu quinze constats, tous absorbés.**
+Six touchaient la capacité des portails à ÉCHOUER, et ce sont les seuls qui
+comptaient : le test du portail sortait vert sans rien juger si `r05`
+disparaissait du layout ; le balayage de ressources laissait le donjon hors du
+filet ; G5 prouvait la LECTURE des morts et jamais leur RÉÉCRITURE ;
+`profil_camp.sh` ne pouvait pas échouer ; le contrat promettait un verrou de
+territoire que le code n'a pas (ISS-083 ouverte, prose corrigée) ; et
+`validate_fast_vert.log` ne décrivait pas l'arbre qu'il accompagnait —
+journal joué à 20:14, committé à 20:20 avec une modification de test.
+
+**Ce que la correction a elle-même appris.** Le verdict neuf de
+`profil_camp.sh` a rougi au run suivant, et il avait tort : le delta de p95 a
+changé de signe entre deux runs du MÊME code. Quatre runs donnent des deltas
+de moyenne de +6,587 · +0,704 · +0,873 · +1,977 ms — un facteur neuf sans
+qu'une ligne ne bouge. Le p95 est désormais publié, jamais jugé, et le
+« +6,587 ms » qu'annonçait `STATUS.md` a été remplacé par la fourchette.
+Seule `noeuds` est déterministe : **+132, aux quatre runs, au nœud près.**
+
+Chaîne rejouée en entier sur l'arbre final : `validate_fast` **999/0** avec
+sa provenance en en-tête, portail d'export **VERT en 7 étapes**, profil CPU
+**VERT** depuis un arbre propre.
+
+**PROCHAINE ACTION EXACTE** : rien n'est en attente sur cette tranche. Elle
+est complète, prouvée et contre-revue. La prochaine session attend le
+playtest d'Istvan sur la candidate de lundi, inchangée. **Ne pas ouvrir le
 Lot 2.** **Interdits inchangés** : aucune fusion dans la candidate avant le
 playtest d'Istvan ; aucun ennemi hors de r05 ; `GO_V2_3_B_LOT2 = FALSE` ;
 aucune release officielle.

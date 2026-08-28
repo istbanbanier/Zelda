@@ -57,7 +57,7 @@ la mesure elle-même qui l'a démontré.
 | run 1 (dans l'historique, commit `fbf2b524`) | machine chargée : moyenne 13,804 / 7,217 → **+6,587** ; p95 44,583 / 23,820 → **+20,763** |
 | `profil_cpu_run2_avec.log`, `profil_cpu_run2_sans.log`, `profil_cpu_run2_verdict_rouge.log` | machine calme : moyenne 2,821 / 2,117 → **+0,704** ; p95 4,580 / 5,394 → **−0,814**. Le verdict neuf a rougi — et il avait tort |
 | `profil_cpu_run3_arbre_sale.log` | verdict corrigé, VERT, mais l'arbre portait l'outil non committé : **non autoritaire**, gardé pour la traçabilité |
-| `profil_cpu_avec.log`, `profil_cpu_sans.log`, `profil_cpu_comparaison.log` | la mesure qui fait autorité, arbre propre |
+| `profil_cpu_avec.log`, `profil_cpu_sans.log`, `profil_cpu_comparaison.log` | **la mesure qui fait autorité** : arbre propre à `68da7dbf`, 0 fichier sale — moyenne 3,761 / 1,784 → **+1,977** ; p95 5,382 / 1,886 → +3,496 ; **+132 nœuds** |
 
 **Ce que quatre runs ont appris, et qu'un seul cachait.** Les absolus varient
 d'un facteur cinq selon la charge du conteneur, et la QUEUE varie davantage
@@ -72,10 +72,16 @@ n'est pas un seuil assoupli : c'est une affirmation retirée parce que la
 donnée ne peut pas la porter, et le script porte les deux séries qui le
 prouvent.
 
-**Ce qu'on peut honnêtement dire du coût** : sur conteneur calme, la garnison
-coûte **moins d'une milliseconde** de temps physique moyen et **+132 nœuds**.
-Sous charge, le même code affiche plusieurs millisecondes. Aucun de ces
-nombres n'est un budget de frame — le rendu est logiciel.
+**Ce qu'on peut honnêtement dire du coût.** Les quatre deltas de moyenne, dans
+l'ordre : **+6,587 · +0,704 · +0,873 · +1,977 ms**. Tous positifs, étalés sur
+un facteur neuf, sans qu'une seule ligne de code ait changé entre eux. La
+garnison coûte donc **quelques millisecondes de temps physique moyen et +132
+nœuds** — et c'est tout ce que quatre runs autorisent à dire. Aucun de ces
+nombres n'est un budget de frame : le rendu est logiciel.
+
+La grandeur qui a vraiment de la valeur ici est `noeuds` : **+132, aux quatre
+runs, au nœud près.** C'est la seule que le protocole mesure sans que la
+machine s'en mêle.
 
 Le journal invalide reste ici parce qu'il enseigne mieux que les bons : une
 mesure peut être exacte, reproductible et fausse quand le protocole compare

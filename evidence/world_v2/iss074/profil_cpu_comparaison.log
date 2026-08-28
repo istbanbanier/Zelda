@@ -1,9 +1,17 @@
 == COÛT CPU DE LA GARNISON — deux processus, mêmes réglages ==
    Conteneur headless sans GPU, rendu logiciel. PAS un budget de frame.
+   commit 68da7dbfb237, 0 fichier(s) sale(s) dans l'arbre au moment de la mesure
+   echantillons : 240.0 par mode, apres 60.0 d'echauffement
    grandeur                   avec       sans      delta
-   physique_ms_moyen        13.804      7.217     +6.587
-   physique_ms_p95          44.583     23.820    +20.763
-   process_ms_moyen          5.122      4.150     +0.972
+   physique_ms_moyen         3.761      1.784     +1.977
+   physique_ms_p95           5.382      1.886     +3.496
+   process_ms_moyen          5.704      4.624     +1.080
    noeuds                 4378.000   4246.000   +132.000
    gardes vivants                4          0
+   Un seul run par mode, sequentiels sur conteneur partage. Les ABSOLUS
+   varient d'un facteur cinq selon la charge de la machine ; seul
+   « noeuds » est deterministe. Le p95 est PUBLIE, jamais juge : a un
+   run par mode il est domine par l'ordonnancement. Un ECART, pas un
+   budget de frame.
+VERDICT PROFIL : VERT
 RC_PROFIL=0

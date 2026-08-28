@@ -1,6 +1,6 @@
 LANCER_GODOT: --headless ajouté (pas de --rendu : aucun affichage disponible).
 LANCER_GODOT: VERROU=/home/user/Zelda/.git/heavy_tools.lock
-LANCER_GODOT: XDG_DATA_HOME=/tmp/lancer_godot_ud_xXzkyk5C
+LANCER_GODOT: XDG_DATA_HOME=/tmp/lancer_godot_ud_Dw8zpEc7
 LANCER_GODOT: CWD=/home/user/Zelda
 LANCER_GODOT: CMD=/usr/local/bin/godot --headless --path . --script tools/godot/probe_camp_cpu_profile.gd -- --sans
 Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
@@ -8,7 +8,7 @@ Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - ht
 [hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 11520 ms
+[world_v2] terrain      : 64 chunks, montage 11616 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 15 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)
@@ -37,9 +37,9 @@ This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_err
 [profil] gardes vivants        : 0
 [profil] echantillons          : 240
 [profil] echauffement          : 60
-[profil] physique_ms_moyen     : 1.973
-[profil] physique_ms_p95       : 1.996
-[profil] process_ms_moyen      : 4.945
+[profil] physique_ms_moyen     : 1.784
+[profil] physique_ms_p95       : 1.886
+[profil] process_ms_moyen      : 4.624
 [profil] noeuds                : 4246
 [profil] plafond MAX_ACTIVE_AI : 14
 [profil] FIN NOMINALE
