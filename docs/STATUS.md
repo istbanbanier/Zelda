@@ -12,7 +12,8 @@ la première région**, pas un jeu complet.
 | Feuille de route, coût, chemin critique | **Établie** | `docs/V2_LONG_GAME_ROADMAP.md` |
 | Tranche exécutable région 1 lot 2 | **Prête, NON AUTORISÉE** | `docs/V2_REGION1_VERTICAL_SLICE.md` ; `GO_V2_3_B_LOT2 = FALSE` |
 | Audit des 18 domaines | **COMPLET** — 9 BLOQUANT, 9 MAJEUR, aucun mineur | `docs/V2_LONG_GAME_GAP_AUDIT.md` ; rapports bruts dans `evidence/world_v2/audit_jeu_long/rapports_bruts/` |
-| **Boucle jouable du build livré** | **ROMPUE — `FAIL`** : aucune `SceneDoor` en World V2, 4 retours pointent encore vers V1 ; donjon, boss et victoire inatteignables | ISS-073, vérifié à la main |
+| **Boucle jouable, en ÉDITEUR** | **`PASS`** : porte au seuil §3.3, retour devant la citadelle, chemins de campagne redressés — franchie à pied et par la touche | `--filter=iss073` (9 cas), 5 sabotages ; `evidence/world_v2/iss073/` |
+| **Boucle jouable, dans la BUILD EXPORTÉE** | **`NON VÉRIFIÉ`** — c'est l'angle mort exact d'ISS-071 : un défaut qui n'existe que hors éditeur | attend la candidate et l'essai d'Istvan |
 | Adversaires dans le monde livré | **`FAIL`** — zéro ennemi, et le vide est verrouillé par le contrat « acteur prématuré » | ISS-074 |
 | Localisation | **`ABSENT`** — zéro `tr()`, aucun fichier de traduction | ISS-075 |
 | Socle chiffré indépendant | **Mesuré** | `tools/mesures_socle.py` → `evidence/world_v2/audit_jeu_long/mesures_independantes.md` |

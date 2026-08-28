@@ -2715,7 +2715,7 @@ d'ensemble est `BLOQUÉ`.
 
 Preuves : `evidence/world_v2/v2_3_b/iss071/s1_1_gravite/`.
 
-## ISS-073 — La boucle est OUVERTE dans le build livré : donjon, boss et victoire inatteignables depuis « Nouvelle partie » — S1, OUVERT
+## ISS-073 — La boucle est OUVERTE dans le build livré : donjon, boss et victoire inatteignables depuis « Nouvelle partie » — S1, CORRIGÉ EN ÉDITEUR, EN ATTENTE DE LA BUILD
 
 **Découvert** le 2026-08-27 par l'audit des 18 domaines, **vérifié à la main**
 avant publication. Douze des dix-huit audits ont buté dessus depuis leur propre
@@ -2757,6 +2757,48 @@ quatre constantes redressées, et **un test qui franchit réellement le seuil** 
 
 Coût estimé : faible. Effet : total. C'est l'étape 0 du chemin critique
 (`docs/V2_LONG_GAME_ROADMAP.md`).
+
+### Correction du 2026-08-28 — `03e8b9d`, `b2e5bb1`
+
+**Ce qui a été fait.** Une vraie `SceneDoor` au seuil §3.3 `(0, 34, -210)`
+(`scripts/world_v2/world_v2_dungeon_door.gd`), une ancre de retour 4 m devant
+elle, la consommation de `pending_spawn` dans `WorldV2Root` avec priorité au
+retour de transition, et deux des quatre références V1 redressées.
+
+**Deux des quatre n'étaient PAS des coupables**, et le dire compte autant que
+la correction :
+
+| Référence | Verdict |
+|---|---|
+| `victory_screen.gd::VALLEY_SCENE` | chemin de campagne → redressé vers World V2 |
+| `citadel_vestibule.gd::exit_door.target_scene` | chemin de campagne → redressé |
+| `gameplay_shell.gd::world_scene_path` | `@export` dont `WorldV2.tscn:87` surcharge DÉJÀ la valeur ; le changer casserait le « Réessayer » du monde V1 — **laissé intact** |
+| `reward_anchor_shot.gd::VALLEY` | outil de capture du monde V1, jamais atteint en jeu — hors sujet |
+
+Ma première version du test comptait `gameplay_shell` comme coupable : c'était
+un faux positif, corrigé et documenté dans le test lui-même.
+
+**Preuve.** `tests/world_v2/test_world_v2_iss073_boucle.gd` (5 cas) et
+`tests/world_v2/test_world_v2_iss073_chaine.gd` (4 cas), écrits ROUGES d'abord
+— 8 échecs sur l'arbre d'avant. Ils marchent réellement jusqu'au seuil et
+appuient sur la touche d'interaction ; appeler `SceneDoor.interact()` ou
+`SceneFlow.go_to()` leur est explicitement interdit. Cinq sabotages joués,
+dont un qui reproduit le symptôme exact : retour mesuré en `(0, 170)` — le
+spawn initial — au lieu de `(0, -210)`.
+
+**Un quatrième chemin de retour, trouvé après coup.** Mourir dans le vestibule
+ramenait aussi dans la vallée V1 : « Réessayer » recharge
+`GameplayShell.world_scene_path`, dont la valeur par défaut est V1, et le
+vestibule ne la surchargeait pas — contrairement aux six salles du donjon et
+à l'arène. Mon premier portail ne l'a pas vu parce qu'il n'énumérait que les
+`SceneDoor`. Corrigé en `0600251`, avec le cas rouge qui a nommé la coupable
+avant la correction.
+
+**Pourquoi l'issue n'est pas encore FERMÉE.** Ces tests tournent dans
+l'éditeur headless. ISS-071 a montré ce que vaut cet angle-là : un défaut qui
+n'existe QUE dans une build exportée. La fermeture attend donc deux choses —
+la boucle rejouée dans la build exportée, et l'essai réel d'Istvan sur la
+candidate. Détail : `evidence/world_v2/iss073/README.md`.
 
 ## ISS-074 — Le monde livré ne contient AUCUN adversaire, et son vide est protégé par un contrat de test — S2, OUVERT
 
