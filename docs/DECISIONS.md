@@ -1573,3 +1573,13 @@ monter puis démonter le monde n'en déclenche aucune — mais un raisonnement
 n'est pas une mesure. La suite complète l'a tranché : **983 réussis, 0 échoué,
 0 erreur de script**, `test_world_v2_skeleton.gd` compris. Ce contrat survit
 donc à T1 sans levée — c'est constaté, pas espéré.
+
+**Addendum du 2026-08-28, passe T1-b (contre-revue de la décision lead).**
+La levée D-056 est étendue une fois, même fichier, même raison de fond :
+la contre-revue du diff T1 final a rendu trois FAIL (fusion sur slot
+illisible, fermeture de fenêtre, chemin réel jamais exécuté), et leurs
+corrections vivent dans `world_v2_root.gd` — garde C10, handler
+`NOTIFICATION_WM_CLOSE_REQUEST`, minuterie `AUTOSAVE_PERIODE_S`, jalon
+« héros posé » lisible par le portail d'export. Vérifié AVANT régénération :
+« 1 écart(s), 0 absent(s) » — le diff du manifeste tient en une ligne, rien
+n'est absorbé. Les 43 autres empreintes n'ont pas bougé.

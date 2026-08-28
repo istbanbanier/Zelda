@@ -2935,3 +2935,63 @@ même mesure** — et il est resté ouvert une passe de plus.
 
 **Gravité S4.** Correction : reprendre `mediane()` dans les deux outils, avec
 le même sabotage que celui d'`analyse_journal_devmode.py`.
+
+---
+
+## ISS-079 — L'autosave V1 de la vallée écrirait une position V1 sous une signature V2 si `ValleyWorld.tscn` redevenait atteignable — S4, LATENT
+
+**Découvert le 2026-08-28** par la contre-revue T1 (constat « détail » n° 5).
+
+`valley_world.gd` fusionne `player_position`/`player_yaw` dans le slot SANS
+toucher `world_version`. Aujourd'hui **aucun** `go_to` runtime ne mène à
+`ValleyWorld.tscn` (vérifié par la contre-revue ISS-073, point 4) : le défaut
+est inatteignable. Mais le jour où la scène V1 se rebranche — mode legacy,
+outil, test manuel — son premier autosave poserait une position V1 dans une
+sauvegarde signée `neris_v2`, et World V2 la RELIRAIT comme sienne : le
+contrat de migration §4 serait contourné par la porte de derrière.
+
+**Garde à poser ce jour-là** : l'autosave V1 efface `world_version`, ou
+refuse d'écrire sur un slot signé V2. À ne PAS poser maintenant — toucher la
+sauvegarde V1 est hors du périmètre T1, et un garde non exécuté par aucun
+chemin est un garde qu'aucun test ne peut prouver.
+
+---
+
+## ISS-080 — « Continuer » dans l'antichambre réécrit l'inventaire par le kit par défaut — S3, OUVERT, PRÉEXISTANT
+
+**Découvert le 2026-08-28** par la contre-revue T1 (constat « détail » n° 6).
+Préexistant à T1 : le comportement date du checkpoint d'antichambre.
+
+`antechamber.gd` (`call_deferred("_write_checkpoint")`) réécrit `weapons`,
+`arrows` et `ingredients` avec l'inventaire du Player fraîchement monté — le
+kit par défaut — parce qu'aucune salle du donjon ne RESTAURE l'inventaire
+(seule `boss_arena.gd` le fait). Un joueur qui reprend sa partie dans
+l'antichambre via T1 perd donc l'inventaire de son checkpoint et repart avec
+le kit de base.
+
+**Pourquoi ce n'est pas un S2** : le coffre de l'antichambre n'est pas
+persisté — il se re-loote — et la solvabilité du boss (loot garanti §16.7)
+reste vraie. Le joueur perd des objets, pas la partie.
+
+**Correction candidate** : restaurer l'inventaire depuis la sauvegarde au
+montage de l'antichambre (le mécanisme existe dans `boss_arena.gd`), PUIS
+écrire le checkpoint. À faire dans une passe donjon, pas dans T1.
+
+---
+
+## ISS-081 — Un `go_to` qui échoue après la porte laisse un tag d'apparition fantôme — S4, OUVERT, PRÉEXISTANT
+
+**Découvert le 2026-08-28** par la contre-revue T1 (constat « détail » n° 7).
+Préexistant : le mécanisme date de D.1R.4 (ISS-073 l'a hérité).
+
+`scene_door.gd` pose `pending_spawn` PUIS appelle `go_to()`. Si le
+chargement échoue après l'émission (`_load_and_swap` en erreur), le tag reste
+posé et sera consommé par le PROCHAIN montage de n'importe quelle scène — qui
+le traitera en tag inconnu (avertissement + spawn). Bénin — un warning et un
+placement au spawn — et rare (la scène cible est committée et testée), mais
+le motif « poser l'état avant de savoir si l'action réussit » est exactement
+la famille qu'ISS-073 a coûtée.
+
+**Correction candidate** : poser le tag dans un handler de
+`transition_finished`, ou l'effacer sur échec de `go_to`. Une passe flux,
+pas T1.

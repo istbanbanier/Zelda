@@ -11,8 +11,12 @@
 ## diagnostic, aucun asset artistique, aucun ennemi, aucune récompense —
 ## la structure spatiale est vraie, et c'est tout ce qu'elle affirme.
 ##
-## Isolation : aucun contenu spatial V1 référencé, aucune écriture de
-## sauvegarde — contrats tenus par `tests/world_v2/`.
+## Isolation : aucun contenu spatial V1 référencé — contrat tenu par
+## `tests/world_v2/`. Depuis T1, cette scène ÉCRIT sa sauvegarde : position,
+## orientation et lieu de reprise, signés `world_version`, par fusion sur le
+## payload existant, au départ de chaque transition, à la fermeture de la
+## fenêtre et toutes les `AUTOSAVE_PERIODE_S` secondes — voir `autosave()`
+## et `docs/contrats/t1_persistance_world_v2.md`.
 class_name WorldV2Root
 extends Node3D
 
@@ -49,9 +53,15 @@ const RETRY_TAG: StringName = &"retry_checkpoint"
 ## LAYOUT (`bounds.x/z`), pas d'un nombre recopié qui vieillirait en silence.
 const SAVED_POSITION_MIN_Y: float = -6.0
 const SAVED_POSITION_MAX_Y: float = 200.0
+## C9 — la FENÊTRE DE PERTE d'un arrêt brutal. Un jeu de 30-50 h ne peut pas
+## perdre un temps illimité entre deux transitions : cette minuterie borne la
+## perte au pire à ce nombre de secondes de temps moteur. Épinglée par
+## `test_c9…` — la changer est un choix de contrat, pas un accident.
+const AUTOSAVE_PERIODE_S: float = 60.0
 
-## D'où le héros a été placé à ce montage : `spawn` ou `retour_donjon`.
-## Un test doit pouvoir le lire sans deviner d'après une distance.
+## D'où le héros a été placé à ce montage : `spawn`, `retour_donjon` ou
+## `sauvegarde` (T1). Un test doit pouvoir le lire sans deviner d'après une
+## distance.
 var _spawn_source: StringName = &"spawn"
 
 @onready var _spawn: Node3D = $SpawnPoint
@@ -176,6 +186,14 @@ func _ready() -> void:
 	print("[world_v2] porte donjon : %s" % ("posée au seuil §3.3"
 		if door_ok else "ABSENTE — le donjon est inatteignable"))
 	print("[world_v2] arrivée      : %s" % _spawn_source)
+	# Jalon lisible par le portail d'export T1 : la position et le lacet
+	# RÉELLEMENT posés — la seule façon de mesurer une reprise depuis
+	# l'extérieur d'une build autonome (même famille que les jalons ISS-071).
+	var visual_pose: Node3D = _player.get_node_or_null("VisualRoot") as Node3D
+	print("[world_v2] héros posé   : (%.1f, %.1f, %.1f) lacet=%.2f" % [
+		_player.global_position.x, _player.global_position.y,
+		_player.global_position.z,
+		visual_pose.rotation.y if visual_pose != null else 0.0])
 	_brancher_autosave()
 
 	await get_tree().physics_frame
@@ -320,7 +338,8 @@ func containers_missing() -> Array[String]:
 	return missing
 
 
-## Provenance du placement : `spawn` ou `retour_donjon` (ISS-073).
+## Provenance du placement : `spawn`, `retour_donjon` ou `sauvegarde`
+## (ISS-073, puis T1).
 func spawn_source() -> StringName:
 	return _spawn_source
 
@@ -368,6 +387,17 @@ func autosave() -> void:
 	var payload: Dictionary = {}
 	if bool(save_system.call("has_save", SAVE_SLOT)):
 		payload = save_system.call("load_slot", SAVE_SLOT) as Dictionary
+		# C10 — le point le plus dangereux de tout T1. `load_slot` rend `{}`
+		# sur un fichier corrompu ET sur un schéma PLUS RÉCENT, refusé
+		# « fichier intact » précisément pour le protéger. Fusionner dans `{}`
+		# puis écrire détruirait la sauvegarde d'un futur build à la première
+		# transition d'un build ancien (§19.4 : ne jamais écraser
+		# silencieusement). Un slot présent mais illisible n'est pas le nôtre
+		# à réécrire ; « Nouvelle partie » l'écrase, lui, avec confirmation.
+		if payload.is_empty():
+			push_warning("[world_v2] slot présent mais illisible — autosave "
+				+ "refusé pour ne pas l'écraser (§19.4)")
+			return
 	# Le DERNIER SOL FOULÉ, jamais la position courante : sauvegarder au milieu
 	# d'une chute ou d'un coin de décor produit une reprise dans le décor, dont
 	# on ne sort plus.
@@ -460,15 +490,42 @@ func _sauvegarde_de_ce_monde() -> Dictionary:
 	return data
 
 
-## L'autosave se déclenche au DÉPART d'une transition — porte du donjon, retour
-## au menu, mort. `SceneFlow.transition_started` est émis avant tout `await` :
-## le héros est encore en place, et sa position est celle qu'il faut écrire.
+## Les TROIS déclencheurs d'autosave, branchés en un seul endroit :
+##   - le DÉPART d'une transition (`SceneFlow.transition_started`, émis avant
+##     tout `await` : le héros est encore en place) ;
+##   - la FERMETURE de la fenêtre (NOTIFICATION_WM_CLOSE_REQUEST, reçue via
+##     `_notification` — l'écriture est synchrone, elle précède le quit) ;
+##   - une MINUTERIE de `AUTOSAVE_PERIODE_S` : la borne de perte d'un arrêt
+##     brutal (C9). Elle meurt avec la scène — aucun débranchement à gérer —
+##     et s'arrête sous pause d'arbre, où le héros ne bouge de toute façon pas.
+## Tous convergent vers `autosave()`, qui porte seul les gardes (mort, slot
+## illisible, dernier sol foulé).
 func _brancher_autosave() -> void:
 	var flow: Node = get_node_or_null("/root/SceneFlow")
-	if flow == null:
-		return
-	if not flow.is_connected("transition_started", _sur_depart_de_transition):
+	if flow != null and not flow.is_connected(
+			"transition_started", _sur_depart_de_transition):
 		flow.connect("transition_started", _sur_depart_de_transition)
+	if get_node_or_null("AutosaveTimer") == null:
+		var minuterie: Timer = Timer.new()
+		minuterie.name = "AutosaveTimer"
+		minuterie.wait_time = AUTOSAVE_PERIODE_S
+		minuterie.one_shot = false
+		minuterie.autostart = true
+		minuterie.timeout.connect(_sur_tic_d_autosave)
+		add_child(minuterie)
+
+
+func _sur_tic_d_autosave() -> void:
+	autosave()
+
+
+func _notification(what: int) -> void:
+	# C9 — fermer la fenêtre pendant l'exploration ne perd plus la partie.
+	# Le moteur propage cette notification depuis la racine avant de quitter
+	# (`auto_accept_quit`) ; l'écriture atomique de SaveSystem est synchrone
+	# et se termine avant la fin du processus.
+	if what == NOTIFICATION_WM_CLOSE_REQUEST:
+		autosave()
 
 
 func _sur_depart_de_transition(_cible: String) -> void:

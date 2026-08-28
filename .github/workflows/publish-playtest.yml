@@ -61,6 +61,14 @@ on:
           encore une livraison officielle.
         type: boolean
         default: false
+      t1_experimental:
+        description: >-
+          Build EXPÉRIMENTALE T1 (persistance World V2) : tag
+          world-v2-t1-exp-<sha court>, PRÉ-PUBLICATION, docs/
+          PLAYTEST_T1_EXPERIMENTAL.md joint. N'est PAS la candidate de
+          lundi et ne la remplace pas.
+        type: boolean
+        default: false
       lot1r2:
         description: >-
           Checkpoint World V2 « lot 1.R.2 » : paquet et exports du chemin par
@@ -90,6 +98,12 @@ jobs:
           set -euo pipefail
           COMMIT="$(git rev-parse HEAD)"
           SHORT="$(git rev-parse --short HEAD)"
+          # Défauts SÛRS avant tout branchement : le chemin « push de tag »
+          # n'assignait ni LOT1 ni LOT1R2, et `set -u` aurait fait planter le
+          # job sur `echo "lot1r2=$LOT1R2"` — défaut latent noté à la passe
+          # ISS-073, fermé ici.
+          SELFTEST=false; FULLVIS=false; GM4=false
+          LOT1=false; LOT1R2=false; ISS073=false; T1EXP=false
           if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
             TAG="${GITHUB_REF_NAME}"
             case "$TAG" in
@@ -108,6 +122,10 @@ jobs:
               world-v2-candidate-iss073-*) ISS073=true ;;
               *)                           ISS073=false ;;
             esac
+            case "$TAG" in
+              world-v2-t1-exp-*) T1EXP=true ;;
+              *)                 T1EXP=false ;;
+            esac
           else
             SELFTEST="${{ inputs.selftest }}"
             FULLVIS="${{ inputs.full_visual }}"
@@ -115,13 +133,17 @@ jobs:
             LOT1="${{ inputs.lot1 }}"
             LOT1R2="${{ inputs.lot1r2 }}"
             ISS073="${{ inputs.iss073 }}"
+            T1EXP="${{ inputs.t1_experimental }}"
             [ "$ISS073" = "true" ] || ISS073=false
+            [ "$T1EXP" = "true" ] || T1EXP=false
             [ "$FULLVIS" = "true" ] || FULLVIS=false
             [ "$GM4" = "true" ] || GM4=false
             [ "$LOT1" = "true" ] || LOT1=false
             [ "$LOT1R2" = "true" ] || LOT1R2=false
             if [ "$SELFTEST" = "true" ]; then
               TAG="playtest-selftest-${SHORT}"
+            elif [ "$T1EXP" = "true" ]; then
+              TAG="world-v2-t1-exp-${SHORT}"
             elif [ "$ISS073" = "true" ]; then
               TAG="world-v2-candidate-iss073-${SHORT}"
             elif [ "$GM4" = "true" ]; then
@@ -145,6 +167,7 @@ jobs:
             echo "gm4=$GM4"
             echo "lot1r2=$LOT1R2"
             echo "iss073=$ISS073"
+            echo "t1exp=$T1EXP"
           } >> "$GITHUB_OUTPUT"
           echo "commit      : $COMMIT"
           echo "tag         : $TAG"
@@ -432,6 +455,16 @@ jobs:
           COMMIT="${{ steps.cible.outputs.commit }}"
           NOTES="$(mktemp)"
           {
+            if [ "${{ steps.cible.outputs.t1exp }}" = "true" ]; then
+              echo "> **BUILD EXPÉRIMENTALE T1 — n'est PAS la candidate de"
+              echo "> lundi et ne la remplace pas.** Elle ajoute la reprise"
+              echo "> de partie (position, orientation, lieu) à World V2,"
+              echo "> prouvée par dix contrats d'éditeur et un portail"
+              echo "> d'export, mais JAMAIS jouée par un être humain. La"
+              echo "> candidate de lundi reste"
+              echo "> \`world-v2-candidate-iss073-98cbaf0\`."
+              echo
+            fi
             if [ "${{ steps.cible.outputs.iss073 }}" = "true" ]; then
               echo "> **CANDIDATE, pas une livraison officielle.** Cette"
               echo "> pré-publication existe pour un essai réel : la boucle de"
@@ -540,6 +573,23 @@ jobs:
           # vide, qui serait prise pour un asset et ferait échouer `gh`.
           # Les runners GitHub sont en bash 5.
           PRERELEASE=()
+          if [ "${{ steps.cible.outputs.t1exp }}" = "true" ]; then
+            TITLE="Éclats d'Orage — EXPÉRIMENTALE T1 persistance (${{ steps.cible.outputs.short }})"
+            PRERELEASE=( --prerelease )
+            if [ -f docs/PLAYTEST_T1_EXPERIMENTAL.md ]; then
+              cp docs/PLAYTEST_T1_EXPERIMENTAL.md "$RUNNER_TEMP/PLAYTEST_T1_EXPERIMENTAL.md"
+              sed -i "s/@@SHA_LONG@@/${COMMIT}/g; s/@@SHA_COURT@@/${{ steps.cible.outputs.short }}/g" \
+                "$RUNNER_TEMP/PLAYTEST_T1_EXPERIMENTAL.md"
+              if grep -q '@@SHA' "$RUNNER_TEMP/PLAYTEST_T1_EXPERIMENTAL.md"; then
+                echo "BLOQUÉ: placeholders @@SHA non résolus (T1)" >&2
+                exit 1
+              fi
+              ASSETS+=( "$RUNNER_TEMP/PLAYTEST_T1_EXPERIMENTAL.md" )
+            else
+              echo "BLOQUÉ: docs/PLAYTEST_T1_EXPERIMENTAL.md absent — la build T1 le REQUIERT" >&2
+              exit 1
+            fi
+          fi
           if [ "${{ steps.cible.outputs.iss073 }}" = "true" ]; then
             TITLE="Éclats d'Orage — CANDIDATE boucle de campagne, ISS-073 (${{ steps.cible.outputs.short }})"
             PRERELEASE=( --prerelease )

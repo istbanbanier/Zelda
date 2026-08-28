@@ -80,6 +80,11 @@ func go_to(target_path: String) -> bool:
 
 	_busy = true
 	transition_started.emit(target_path)
+	# Diagnostic de flux structuré (même famille que les jalons [boot] et
+	# [world_v2]) : le portail d'export T1 lit cette ligne pour vérifier que
+	# « Continuer » route vers la scène que le tag `checkpoint` désigne —
+	# aucune autre trace n'existe dans une build autonome.
+	print("[flow] transition vers : %s" % target_path)
 
 	get_tree().paused = true
 	await _fade_to(1.0)

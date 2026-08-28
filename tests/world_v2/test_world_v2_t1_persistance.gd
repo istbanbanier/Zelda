@@ -641,3 +641,318 @@ func test_c7_la_mort_ne_deplace_pas_le_point_de_reprise() -> void:
 			"le monde nomme franchement la provenance du placement")
 	await _demonter()
 	restore_saves()
+
+
+# --------------------------------------------------------------------------
+# C8 — le CHEMIN RÉEL d'autosave : une vraie transition, pas un appel direct
+# --------------------------------------------------------------------------
+## Exigé par la décision lead du 2026-08-28 : « un signal connecté mais jamais
+## réellement éprouvé ne constitue pas une preuve ». C1 à C7 appellent
+## `autosave()` directement — AUCUN d'eux n'exécute `_brancher_autosave` ni le
+## trajet `SceneFlow.transition_started` → handler. Débrancher le signal les
+## laisserait tous verts : ce cas-ci est le seul qui rougirait.
+##
+## Deux moitiés, sur la vraie chaîne :
+##	 1. partir de World V2 par une VRAIE transition (`SceneFlow.go_to`) et
+##		constater que la sauvegarde s'est écrite AU DÉPART, sans aucun appel
+##		direct à `autosave()` ;
+##	 2. reprendre par le VRAI menu — appui sur « Continuer », transition
+##		complète, monde remonté par SceneFlow — et MESURER la position et
+##		l'orientation du héros dans le monde remonté.
+func test_c8_une_vraie_transition_ecrit_et_la_reprise_par_le_menu_restaure() -> void:
+	remember_saves()
+
+	# --- Moitié 1 : la transition écrit.
+	var player: PlayerController = await _monter()
+	check_not_null(player, "le joueur est monté avec World V2")
+	if player == null:
+		await _demonter()
+		restore_saves()
+		return
+	var spawn: Vector3 = (_world.call("spawn_position") as Vector3)
+	var cible: Vector3 = _point_de_sol_ecarte(spawn)
+	check(cible != Vector3.INF, "un point de sol écarté est mesurable")
+	if cible == Vector3.INF:
+		await _demonter()
+		restore_saves()
+		return
+	await _poser_le_heros(player, cible)
+	var atteint: Vector3 = player.last_grounded_position()
+	var lacet: float = 2.3
+	var visual: Node3D = player.get_node_or_null("VisualRoot") as Node3D
+	check_not_null(visual, "le héros porte un VisualRoot")
+	if visual != null:
+		visual.rotation.y = lacet
+	await _tree().physics_frame
+
+	# Un slot RICHE est semé avant la transition : la contre-revue T1 a
+	# montré que remplacer la fusion par une affectation sèche laissait toute
+	# la suite verte — aucune assertion n'éprouvait la SURVIE des champs des
+	# autres scènes à travers le chemin réel. Ces deux témoins la prouvent.
+	var seme: Dictionary = _slot_de_reprise_v2()
+	seme["boss_defeated"] = true
+	seme["weapons"] = ["temoin_t1_fusion"]
+	check(_ecrire_slot(seme), "slot riche semé avant la transition")
+
+	var flow: Node = _tree().root.get_node_or_null("SceneFlow")
+	check_not_null(flow, "SceneFlow présent")
+	var finies: Array[String] = []
+	var sur_finie: Callable = func(chemin: String) -> void: finies.append(chemin)
+	if flow != null:
+		flow.connect("transition_finished", sur_finie)
+		# LA vraie porte de sortie : aucune méthode du monde n'est appelée.
+		flow.call("go_to", MAIN_MENU_SCENE)
+	var budget: float = 0.0
+	while finies.is_empty() and budget < 20.0:
+		await _tree().process_frame
+		budget += _tree().root.get_process_delta_time()
+	check(not finies.is_empty(), "la transition réelle s'est terminée")
+
+	var ecrit: Dictionary = _lire_slot()
+	check(ecrit.has("player_position"),
+		"le DÉPART de la transition a écrit la position — sans aucun appel "
+		+ "direct à autosave()")
+	if ecrit.has("player_position") and ecrit["player_position"] is Dictionary:
+		var pos: Dictionary = ecrit["player_position"] as Dictionary
+		var relu := Vector3(float(pos.get("x", 0.0)), float(pos.get("y", 0.0)),
+			float(pos.get("z", 0.0)))
+		check(_distance_horizontale(relu, atteint) <= TOLERANCE_HORIZONTALE_M,
+			"la position écrite est celle du héros au départ "
+			+ "(écrit %s, mesuré %s)" % [relu, atteint])
+	check_equal(String(ecrit.get(WORLD_FIELD, "")), String(WorldIds.V2_WORLD_ID),
+		"la transition a signé le monde")
+	check_equal(String(ecrit.get("checkpoint", "")), "world_v2.valley",
+		"la transition a posé le lieu de reprise")
+	var yaw_ecrit: Variant = ecrit.get("player_yaw")
+	check((yaw_ecrit is float)
+		and absf(wrapf(float(yaw_ecrit) - lacet, -PI, PI)) <= 0.2,
+		"la transition a écrit le lacet (attendu %.3f, écrit %s)"
+			% [lacet, yaw_ecrit])
+	check_equal(ecrit.get("boss_defeated"), true,
+		"la victoire d'une AUTRE scène a survécu à la fusion — le chemin "
+		+ "réel n'écrase pas le payload")
+	check_equal(ecrit.get("weapons"), ["temoin_t1_fusion"],
+		"l'inventaire témoin a survécu à la fusion")
+	if flow != null:
+		flow.disconnect("transition_finished", sur_finie)
+	var propre1: bool = await restore_root()
+	check(propre1, "démontage propre après la transition — %s"
+		% restore_root_reason())
+	_world = null
+
+	# Le DÉBRANCHEMENT, prouvé : le monde est libéré, une transition émise à
+	# la main ne doit plus rien écrire. Sans le `_exit_tree`, le handler d'un
+	# monde mort tirerait sur un joueur libéré — et ce slot bougerait.
+	var octets_avant: PackedByteArray = FileAccess.get_file_as_bytes(
+		String((_save_system() as Node).call("slot_path", SLOT)))
+	if flow != null:
+		flow.emit_signal("transition_started", "res://inexistant_temoin.tscn")
+	var octets_apres: PackedByteArray = FileAccess.get_file_as_bytes(
+		String((_save_system() as Node).call("slot_path", SLOT)))
+	check(octets_apres == octets_avant,
+		"un monde LIBÉRÉ n'autosave plus — le débranchement de _exit_tree "
+		+ "est réel, pas seulement écrit")
+
+	# --- Moitié 2 : la reprise par le VRAI menu, transition complète.
+	remember_root()
+	var menu: Node = (load(MAIN_MENU_SCENE) as PackedScene).instantiate()
+	_tree().root.add_child(menu)
+	await _tree().process_frame
+	var flow2: Node = _tree().root.get_node_or_null("SceneFlow")
+	var arrivees: Array[String] = []
+	var sur_arrivee: Callable = func(chemin: String) -> void: arrivees.append(chemin)
+	if flow2 != null:
+		flow2.connect("transition_finished", sur_arrivee)
+	var bouton: Button = menu.get_node_or_null("%ContinueButton") as Button
+	check_not_null(bouton, "le menu porte son bouton « Continuer »")
+	if bouton != null:
+		check(not bouton.disabled, "« Continuer » est actif")
+		bouton.emit_signal("pressed")
+	budget = 0.0
+	while arrivees.is_empty() and budget < 30.0:
+		await _tree().process_frame
+		budget += _tree().root.get_process_delta_time()
+	check_equal(arrivees, [WORLD_V2_SCENE] as Array[String],
+		"« Continuer » a réellement rechargé World V2, transition complète")
+
+	var monde2: Node = _tree().current_scene
+	check(monde2 != null and monde2.get("WORLD_ID") != null,
+		"la scène courante est bien la racine World V2")
+	var joueurs: Array[Node] = _tree().get_nodes_in_group(&"player")
+	check_equal(joueurs.size(), 1, "exactement un joueur après la reprise")
+	if joueurs.size() == 1:
+		var reprise: PlayerController = joueurs[0] as PlayerController
+		var frames: int = 0
+		while not reprise.is_on_floor() and frames < 120:
+			await _tree().physics_frame
+			frames += 1
+		check(_distance_horizontale(reprise.global_position, atteint)
+				<= TOLERANCE_HORIZONTALE_M,
+			"le héros repris par le menu est où il s'était arrêté "
+			+ "(attendu %s, obtenu %s)" % [atteint, reprise.global_position])
+		var visual2: Node3D = reprise.get_node_or_null("VisualRoot") as Node3D
+		check(visual2 != null
+			and absf(wrapf(visual2.rotation.y - lacet, -PI, PI)) <= 0.2,
+			"l'orientation est restaurée par le chemin réel (attendu %.3f, "
+				% lacet + "obtenu %s)"
+				% str(visual2.rotation.y if visual2 != null else -99.0))
+	if flow2 != null:
+		flow2.disconnect("transition_finished", sur_arrivee)
+	var propre2: bool = await restore_root()
+	check(propre2, "démontage propre après la reprise — %s"
+		% restore_root_reason())
+	restore_saves()
+
+
+# --------------------------------------------------------------------------
+# C9 — la FERMETURE NORMALE du jeu sauvegarde ; la perte brutale est BORNÉE
+# --------------------------------------------------------------------------
+## Décision lead du 2026-08-28 : « pour un jeu de 30–50 heures, la perte de
+## progression ne peut pas être illimitée entre deux transitions ». Avant ce
+## contrat, fermer la fenêtre pendant l'exploration perdait TOUT depuis la
+## dernière transition — aucun code du dépôt n'écoutait la fermeture.
+##
+## Trois exigences, et leurs limites dites franchement :
+##	 - fermeture normale (NOTIFICATION_WM_CLOSE_REQUEST) → position écrite.
+##	   La notification est propagée sur le SOUS-ARBRE du monde, comme le
+##	   moteur le fait depuis la racine — le quit lui-même n'est pas simulable
+##	   dans un test qui doit survivre à son propre cas ;
+##	 - arrêt brutal → perte bornée par un autosave PÉRIODIQUE. Le test épingle
+##	   la période au LITTÉRAL et prouve le câblage minuterie → écriture ; la
+##	   périodicité elle-même est une garantie moteur (attendre 60 s de temps
+##	   moteur par exécution rendrait la suite inexécutable) ;
+##	 - jamais de sauvegarde en l'air : la position écrite est le DERNIER SOL
+##	   FOULÉ, pas la position courante d'un héros en chute.
+## Une coupure électrique ou un processus tué ne sont PAS couverts : rien ici
+## ne le prouve, et le prétendre serait mentir.
+func test_c9_fermer_le_jeu_sauvegarde_et_la_perte_brutale_est_bornee() -> void:
+	remember_saves()
+
+	var player: PlayerController = await _monter()
+	check_not_null(player, "le joueur est monté avec World V2")
+	if player == null:
+		await _demonter()
+		restore_saves()
+		return
+	var spawn: Vector3 = (_world.call("spawn_position") as Vector3)
+	var cible: Vector3 = _point_de_sol_ecarte(spawn)
+	check(cible != Vector3.INF, "un point de sol écarté est mesurable")
+	if cible == Vector3.INF:
+		await _demonter()
+		restore_saves()
+		return
+	await _poser_le_heros(player, cible)
+	var atteint: Vector3 = player.last_grounded_position()
+
+	# --- 1. Fermeture normale : la notification du gestionnaire de fenêtres.
+	_world.propagate_notification(Node.NOTIFICATION_WM_CLOSE_REQUEST)
+	var apres_fermeture: Dictionary = _lire_slot()
+	check(apres_fermeture.has("player_position"),
+		"fermer la fenêtre écrit la position — la partie n'est pas perdue")
+	if apres_fermeture.get("player_position") is Dictionary:
+		var pos: Dictionary = apres_fermeture["player_position"] as Dictionary
+		check(_distance_horizontale(Vector3(float(pos.get("x", 0.0)),
+				float(pos.get("y", 0.0)), float(pos.get("z", 0.0))), atteint)
+				<= TOLERANCE_HORIZONTALE_M,
+			"la position écrite à la fermeture est celle du héros")
+
+	# --- 2. Perte brutale bornée : la minuterie d'autosave périodique.
+	var minuterie: Timer = _world.get_node_or_null("AutosaveTimer") as Timer
+	check_not_null(minuterie,
+		"World V2 porte une minuterie d'autosave — sans elle, un arrêt "
+		+ "brutal perd un temps ILLIMITÉ de progression")
+	if minuterie != null:
+		check_equal(minuterie.wait_time, 60.0,
+			"la fenêtre de perte est épinglée à 60 s — la changer est un "
+			+ "choix de contrat, pas un accident")
+		check(not minuterie.is_stopped(), "la minuterie tourne")
+		check(not minuterie.one_shot, "et elle se réarme seule")
+		# Le câblage minuterie → écriture, éprouvé en vidant d'abord le slot.
+		restore_saves()
+		remember_saves()
+		check(not bool((_save_system() as Node).call("has_save", SLOT)),
+			"slot vidé avant l'épreuve du câblage")
+		minuterie.timeout.emit()
+		check(_lire_slot().has("player_position"),
+			"le tic de la minuterie écrit la sauvegarde")
+
+	# --- 3. Jamais en l'air : un héros qui SAUTE écrit son dernier sol.
+	# Un VRAI départ du sol, pas un téléport : `is_on_floor()` reste vrai un
+	# tick de plus après un repositionnement instantané (le drapeau vient du
+	# `move_and_slide` PRÉCÉDENT), et l'enregistreur aurait noté le point
+	# aérien — mesuré au premier rouge de ce cas. Un saut n'a pas ce défaut :
+	# le dernier tick au sol enregistre la position AU SOL, puis le corps
+	# quitte le sol par le mouvement, comme dans une partie réelle.
+	player.velocity = Vector3(0.0, 12.0, 0.0)
+	var essais: int = 0
+	while player.is_on_floor() and essais < 10:
+		await _tree().physics_frame
+		essais += 1
+	essais = 0
+	while essais < 8:
+		await _tree().physics_frame
+		essais += 1
+	check(not player.is_on_floor(), "le héros est bien en l'air pour la mesure")
+	var altitude: float = player.global_position.y - atteint.y
+	check(altitude >= 0.5,
+		"et nettement au-dessus de son sol (%.2f m)" % altitude)
+	_world.propagate_notification(Node.NOTIFICATION_WM_CLOSE_REQUEST)
+	var en_l_air: Dictionary = _lire_slot()
+	if en_l_air.get("player_position") is Dictionary:
+		var pos_air: Dictionary = en_l_air["player_position"] as Dictionary
+		var y_ecrit: float = float(pos_air.get("y", 0.0))
+		check(absf(y_ecrit - atteint.y) <= 1.0,
+			"la position écrite est le dernier SOL foulé (écrit y=%.1f, sol "
+				% y_ecrit + "y=%.1f), jamais le point aérien (y=%.1f)"
+				% [atteint.y, player.global_position.y])
+	await _demonter()
+	restore_saves()
+
+
+# --------------------------------------------------------------------------
+# C10 — l'autosave n'écrase JAMAIS une sauvegarde qu'il n'a pas su lire
+# --------------------------------------------------------------------------
+## Le point le plus dangereux du correctif, trouvé en le relisant : `autosave`
+## charge le slot, fusionne, réécrit. Or `load_slot` rend `{}` sur DEUX cas
+## très différents — un fichier corrompu, et un fichier d'un SCHÉMA PLUS
+## RÉCENT, refusé « fichier intact » précisément pour le protéger. Fusionner
+## dans `{}` puis écrire aurait DÉTRUIT la sauvegarde d'un futur build à la
+## première transition d'un build ancien. §19.4 : ne jamais écraser
+## silencieusement. La règle : un slot qui EXISTE mais ne se lit pas n'est
+## jamais réécrit par l'autosave.
+func test_c10_l_autosave_n_ecrase_jamais_une_sauvegarde_illisible() -> void:
+	remember_saves()
+
+	var system: Node = _save_system()
+	check_not_null(system, "SaveSystem présent")
+	if system == null:
+		restore_saves()
+		return
+	var chemin: String = String(system.call("slot_path", SLOT))
+
+	var formes: Array[Dictionary] = [
+		{"nom": "schéma FUTUR (99) — la sauvegarde d'un build plus récent",
+			"contenu": JSON.stringify({"schema_version": 99, "slot": SLOT,
+				"data": {"tresor_du_futur": true}})},
+		{"nom": "JSON tronqué — un fichier corrompu",
+			"contenu": '{"schema_version": 4, "data": {"player_pos'},
+	]
+	for forme: Dictionary in formes:
+		var f: FileAccess = FileAccess.open(chemin, FileAccess.WRITE)
+		check_not_null(f, "fichier de slot ouvrable : %s" % forme["nom"])
+		if f == null:
+			continue
+		f.store_string(String(forme["contenu"]))
+		f.close()
+		var octets_avant: PackedByteArray = FileAccess.get_file_as_bytes(chemin)
+
+		var player: PlayerController = await _monter()
+		check_not_null(player, "le monde monte malgré : %s" % forme["nom"])
+		if _world != null:
+			_world.call(AUTOSAVE_METHOD)
+		var octets_apres: PackedByteArray = FileAccess.get_file_as_bytes(chemin)
+		check(octets_apres == octets_avant,
+			"le slot illisible est INTACT à l'octet près après autosave "
+			+ "(%s)" % forme["nom"])
+		await _demonter()
+	restore_saves()
