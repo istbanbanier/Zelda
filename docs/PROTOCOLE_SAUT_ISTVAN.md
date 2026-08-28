@@ -18,8 +18,18 @@ trois heures de mesures chez moi.
 
 ## Ce qu'il te faut
 
-L'archive du jeu, celle de la Release **`world-v2-playtest-lot1r2-05d0760`**.
-Si tu l'as déjà téléchargée, c'est la bonne — je n'ai rien republié depuis.
+L'archive du jeu, celle de la Release **`world-v2-candidate-iss073-…`** — la
+plus récente, marquée « pré-publication ».
+
+**Ce n'est plus `world-v2-playtest-lot1r2-05d0760`.** Cette page pointait
+dessus jusqu'au 2026-08-28 ; entre-temps la boucle de campagne a été réparée
+(ISS-073) et une nouvelle candidate a été publiée. Les gestes ci-dessous sont
+identiques, mais la mesure doit venir de la build que je vais promouvoir, pas
+de celle d'avant — sinon je validerais une gravité sur un jeu qui n'est plus
+celui qu'on livre.
+
+Le protocole complet de cette candidate, essai de la boucle compris, est dans
+`docs/PLAYTEST_ISS073.md`, joint à la Release.
 
 ---
 

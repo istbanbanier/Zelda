@@ -52,6 +52,15 @@ on:
           tags (403) — le nom du jalon doit donc naître ici.
         type: boolean
         default: false
+      iss073:
+        description: >-
+          CANDIDATE de lundi « boucle de campagne » (ISS-073) : paquet et
+          exports du chemin par défaut, tag
+          world-v2-candidate-iss073-<sha court>, docs/PLAYTEST_ISS073.md
+          joint, et la Release est marquée PRÉ-PUBLICATION — ce n'est pas
+          encore une livraison officielle.
+        type: boolean
+        default: false
       lot1r2:
         description: >-
           Checkpoint World V2 « lot 1.R.2 » : paquet et exports du chemin par
@@ -95,18 +104,26 @@ jobs:
               world-v2-playtest-r2a-gm4-*) GM4=true ;;
               *)                           GM4=false ;;
             esac
+            case "$TAG" in
+              world-v2-candidate-iss073-*) ISS073=true ;;
+              *)                           ISS073=false ;;
+            esac
           else
             SELFTEST="${{ inputs.selftest }}"
             FULLVIS="${{ inputs.full_visual }}"
             GM4="${{ inputs.gm4 }}"
             LOT1="${{ inputs.lot1 }}"
             LOT1R2="${{ inputs.lot1r2 }}"
+            ISS073="${{ inputs.iss073 }}"
+            [ "$ISS073" = "true" ] || ISS073=false
             [ "$FULLVIS" = "true" ] || FULLVIS=false
             [ "$GM4" = "true" ] || GM4=false
             [ "$LOT1" = "true" ] || LOT1=false
             [ "$LOT1R2" = "true" ] || LOT1R2=false
             if [ "$SELFTEST" = "true" ]; then
               TAG="playtest-selftest-${SHORT}"
+            elif [ "$ISS073" = "true" ]; then
+              TAG="world-v2-candidate-iss073-${SHORT}"
             elif [ "$GM4" = "true" ]; then
               TAG="world-v2-playtest-r2a-gm4-${SHORT}"
             elif [ "$LOT1R2" = "true" ]; then
@@ -127,6 +144,7 @@ jobs:
             echo "full_visual=$FULLVIS"
             echo "gm4=$GM4"
             echo "lot1r2=$LOT1R2"
+            echo "iss073=$ISS073"
           } >> "$GITHUB_OUTPUT"
           echo "commit      : $COMMIT"
           echo "tag         : $TAG"
@@ -216,19 +234,23 @@ jobs:
               echo
               echo "CE QUI EST VÉRIFIÉ, ET CE QUI NE L'EST PAS"
               echo "------------------------------------------"
-              echo "La suite automatique est verte : 816 tests, 0 échec. Cela veut dire"
-              echo "qu'aucun des défauts que la machine sait mesurer n'est présent. Cela"
-              echo "ne veut PAS dire que le jeu est agréable : la caméra, la lisibilité,"
-              echo "le son, la manette et la compréhension de l'objectif n'ont jamais été"
-              echo "essayés par un être humain — le conteneur qui a construit ce fichier"
-              echo "n'a ni écran, ni clavier, ni carte graphique."
+              echo "La suite automatique est verte. Cela veut dire qu'aucun des défauts"
+              echo "que la machine sait mesurer n'est présent. Cela ne veut PAS dire que"
+              echo "le jeu est agréable : la caméra, la lisibilité, le son, la manette et"
+              echo "la compréhension de l'objectif n'ont jamais été essayés par un être"
+              echo "humain — le conteneur qui a construit ce fichier n'a ni écran, ni"
+              echo "clavier, ni carte graphique. (Le compte exact de tests vit dans"
+              echo "docs/TEST_REPORT.md, daté : un nombre recopié ici se périmerait.)"
               echo
               echo "C'est exactement ce que ce build vous demande de faire."
               echo
-              echo "Autre limite : au-delà de la salle 1 du donjon, rien n'a été atteint"
-              echo "depuis une partie normale. Salles 2 à 4, salle centrale, antichambre,"
-              echo "boss et victoire existent et sont jouables séparément, mais personne"
-              echo "n'a vérifié qu'on y arrive en jouant."
+              echo "Autre limite, et elle a changé. Le seuil du donjon est désormais"
+              echo "ATTEINT À PIED depuis une partie normale et franchi par la touche"
+              echo "d'interaction, et les deux retours vers la vallée sont joués par des"
+              echo "tests. En revanche l'INTÉRIEUR du donjon — salles 2 à 4, salle"
+              echo "centrale, antichambre, boss — n'est vérifié qu'en CÂBLAGE : les"
+              echo "portes existent et se relient, mais personne n'a marché d'une salle"
+              echo "à l'autre en jouant."
               echo
               echo "TOUCHES (AZERTY)"
               echo "----------------"
@@ -410,6 +432,15 @@ jobs:
           COMMIT="${{ steps.cible.outputs.commit }}"
           NOTES="$(mktemp)"
           {
+            if [ "${{ steps.cible.outputs.iss073 }}" = "true" ]; then
+              echo "> **CANDIDATE, pas une livraison officielle.** Cette"
+              echo "> pré-publication existe pour un essai réel : la boucle de"
+              echo "> campagne World V2 → donjon → boss → victoire → World V2"
+              echo "> vient d'être réparée (ISS-073) et n'a jamais été jouée"
+              echo "> par un être humain. Elle sera promue — ou corrigée —"
+              echo "> après le retour d'essai."
+              echo
+            fi
             echo "Archive jouable d'Éclats d'Orage, construite à partir du"
             echo "commit \`${COMMIT}\`."
             echo
@@ -500,6 +531,32 @@ jobs:
               exit 1
             fi
           fi
+          # CANDIDATE ISS-073 : marquée PRÉ-PUBLICATION. La directive demande
+          # un artefact candidat lié à son SHA exact, PAS encore une release
+          # officielle — et « candidat » doit se voir sur la page, pas
+          # seulement dans le corps du texte.
+          # Tableau vide + `set -u` : bash >= 4.4 n'émet AUCUN mot pour
+          # `"${arr[@]}"` quand le tableau est vide — pas même une chaîne
+          # vide, qui serait prise pour un asset et ferait échouer `gh`.
+          # Les runners GitHub sont en bash 5.
+          PRERELEASE=()
+          if [ "${{ steps.cible.outputs.iss073 }}" = "true" ]; then
+            TITLE="Éclats d'Orage — CANDIDATE boucle de campagne, ISS-073 (${{ steps.cible.outputs.short }})"
+            PRERELEASE=( --prerelease )
+            if [ -f docs/PLAYTEST_ISS073.md ]; then
+              cp docs/PLAYTEST_ISS073.md "$RUNNER_TEMP/PLAYTEST_ISS073.md"
+              sed -i "s/@@SHA_LONG@@/${COMMIT}/g; s/@@SHA_COURT@@/${{ steps.cible.outputs.short }}/g" \
+                "$RUNNER_TEMP/PLAYTEST_ISS073.md"
+              if grep -q '@@SHA' "$RUNNER_TEMP/PLAYTEST_ISS073.md"; then
+                echo "BLOQUÉ: placeholders @@SHA non résolus dans le protocole" >&2
+                exit 1
+              fi
+              ASSETS+=( "$RUNNER_TEMP/PLAYTEST_ISS073.md" )
+            else
+              echo "BLOQUÉ: docs/PLAYTEST_ISS073.md absent — la candidate le REQUIERT" >&2
+              exit 1
+            fi
+          fi
           if [ "${{ steps.cible.outputs.full_visual }}" = "true" ]; then
             TITLE="Éclats d'Orage — Full World Visual Finish ${{ steps.cible.outputs.short }}"
             if [ -f docs/GUIDE_JOUEUR.md ]; then
@@ -521,6 +578,7 @@ jobs:
             --title "$TITLE" \
             --notes-file "$NOTES" \
             --target "$COMMIT" \
+            "${PRERELEASE[@]}" \
             "${ASSETS[@]}"
 
       # Créer n'est pas publier : on relit la Release pour constater que les
