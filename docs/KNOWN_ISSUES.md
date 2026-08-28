@@ -2715,7 +2715,7 @@ d'ensemble est `BLOQUÉ`.
 
 Preuves : `evidence/world_v2/v2_3_b/iss071/s1_1_gravite/`.
 
-## ISS-073 — La boucle est OUVERTE dans le build livré : donjon, boss et victoire inatteignables depuis « Nouvelle partie » — S1, CORRIGÉ EN ÉDITEUR, EN ATTENTE DE LA BUILD
+## ISS-073 — La boucle est OUVERTE dans le build livré : donjon, boss et victoire inatteignables depuis « Nouvelle partie » — S1, CORRIGÉ ET PROUVÉ EN BUILD, EN ATTENTE DE L'ESSAI RÉEL
 
 **Découvert** le 2026-08-27 par l'audit des 18 domaines, **vérifié à la main**
 avant publication. Douze des dix-huit audits ont buté dessus depuis leur propre
@@ -2794,11 +2794,20 @@ vestibule ne la surchargeait pas — contrairement aux six salles du donjon et
 `SceneDoor`. Corrigé en `0600251`, avec le cas rouge qui a nommé la coupable
 avant la correction.
 
-**Pourquoi l'issue n'est pas encore FERMÉE.** Ces tests tournent dans
-l'éditeur headless. ISS-071 a montré ce que vaut cet angle-là : un défaut qui
-n'existe QUE dans une build exportée. La fermeture attend donc deux choses —
-la boucle rejouée dans la build exportée, et l'essai réel d'Istvan sur la
-candidate. Détail : `evidence/world_v2/iss073/README.md`.
+**La build exportée répond aussi, et c'était l'angle qui manquait.**
+`tools/gate_export_iss073.sh` rend RC=0 sur un binaire AUTONOME
+(398 840 568 octets, sha256 `6ba985ef…`) lancé sous Xvfb en installation
+vierge : porte posée au seuil §3.3, arrivée au point d'apparition, 15 lieux
+posés, montage mené à son terme, zéro erreur de script ou de ressource. Et
+`gate_export_parite.sh` rend RC=0 sur 32 contrôles — ISS-071 ne rechute pas.
+
+**Pourquoi l'issue n'est TOUJOURS pas fermée.** Rien de tout cela ne prouve
+qu'un joueur MARCHE jusqu'à la porte dans la build : l'horloge de jeu y est
+découplée du temps réel d'un facteur 17 à 76 (ISS-072), et 380 m de marche n'y
+seraient pas mesurables honnêtement. La marche est prouvée en ÉDITEUR,
+l'empaquetage dans la BUILD, et le plaisir par ni l'un ni l'autre. La
+fermeture attend l'essai d'Istvan. Détail :
+`evidence/world_v2/iss073/README.md`.
 
 ## ISS-074 — Le monde livré ne contient AUCUN adversaire, et son vide est protégé par un contrat de test — S2, OUVERT
 
