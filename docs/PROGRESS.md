@@ -4,6 +4,41 @@ Ordre **anti-chronologique** : l'entrée la plus récente est en haut. La derni�
 entrée fait office de handoff et doit indiquer **exactement** la prochaine action.
 
 ---
+## 2026-08-28 — T1 FIGÉE : artefact expérimental publié et revérifié, ISS-074 ouverte en branche indépendante
+
+**T1 est figée, non fusionnée.** SHA final de la branche
+`claude/world-v2-t1-persistance` : celui de ce commit de preuve, dont le
+parent `53a64932` est le commit lié à l'artefact.
+
+**Artefact expérimental vérifié depuis GitHub** (jamais depuis la sortie du
+dispatch) : run `33188161790` **success** ; release **prerelease**
+`world-v2-t1-exp-53a6493` (id 378607024) liée à `53a64932` ; bandeau « n'est
+PAS la candidate de lundi » présent ; quatre archives dont les SHA-256
+concordent à trois sources (digests GitHub, corps, `SHA256SUMS.txt`) ;
+`PLAYTEST_T1_EXPERIMENTAL.md` re-téléchargé, haché conforme, **0**
+placeholder. Écart honnête consigné : la preuve locale (21 PASS) porte sur
+l'export de `a168dfd5`, l'artefact CI sur `53a64932` — diff entre les deux :
+**zéro** fichier de jeu (`.gd`/`.tscn`/`.tres`/`.glb`/`project.godot`),
+uniquement outils/docs/preuves. Détail :
+`evidence/world_v2/t1_persistance/build_exportee/release_experimentale.md`.
+
+**ISS-074 ouverte** sur `claude/world-v2-iss074-population-contract` depuis la
+candidate `a8d2f77` (commit `71a8ec37`, remote vérifié) : contrat de
+peuplement, inventaire des systèmes de combat/IA réellement fonctionnels,
+portail ROUGE (0 réussi, 2 échoué — aucun adversaire atteignable, aucun
+coordinateur : c'est le constat voulu), règles de densité/territoire/respawn/
+budget, tranche verticale proposée (garnison du camp braise, r05). **Aucun
+ennemi de production posé. Cette branche porte UN rouge délibéré** — ne jamais
+y attendre un `validate_fast` vert, ne jamais publier depuis elle.
+
+**PROCHAINE ACTION EXACTE** : rien n'est en vol côté T1. Lundi, Istvan joue la
+candidate `world-v2-candidate-iss073-98cbaf0` (inchangée, sur `a8d2f77`).
+Après son playtest, deux fronts au choix du propriétaire : fusionner T1 dans
+la candidate (alors rejouer `gate_export_t1.sh` sur l'arbre fusionné), ou
+lancer la tranche verticale ISS-074 selon son contrat. **Interdits inchangés** :
+`GO_V2_3_B_LOT2 = FALSE` ; pas de fusion T1 sans décision du propriétaire ;
+pas d'ennemis de production avant validation du contrat ISS-074.
+
 ## 2026-08-28 — T1 §2-§3 : contre-revue absorbée, C8/C9/C10, et la reprise prouvée dans la build exportée
 
 Branche `claude/world-v2-t1-persistance`, toujours séparée de la candidate.
