@@ -22,10 +22,10 @@ Le menu principal ouvre `WorldV2.tscn` depuis le passage à World V2
 tools/lancer_godot.sh --path . --script tools/godot/test_runner.gd -- --filter=iss073
 ```
 
-- `tests/world_v2/test_world_v2_iss073_boucle.gd` — 5 cas, 23 assertions.
+- `tests/world_v2/test_world_v2_iss073_boucle.gd` — 5 cas, 24 assertions.
   Part du menu principal, monte World V2, MARCHE la route officielle jusqu'au
   seuil, franchit par la touche d'interaction, puis vérifie le retour.
-- `tests/world_v2/test_world_v2_iss073_chaine.gd` — 4 cas, 29 assertions.
+- `tests/world_v2/test_world_v2_iss073_chaine.gd` — 5 cas, 36 assertions.
   Les deux retours vers World V2 sont JOUÉS ; l'intérieur du donjon est
   vérifié en câblage, et le fichier le dit en toutes lettres.
 
@@ -119,3 +119,19 @@ GitHub avec les templates officiels ; la mienne venait d'un template compilé
 ici. Les deux partent du même code de jeu, et c'est la CANDIDATE qui doit être
 jouée lundi — pas `world-v2-playtest-lot1r2-05d0760`, qui est antérieure à la
 réparation de la boucle.
+
+
+## Rectification des compteurs — 2026-08-28
+
+La contre-revue §6 a relevé trois chiffres de prose divergents : ce fichier
+annonçait « 5 cas, 23 assertions » et « 4 cas, 29 assertions », et
+`docs/STATUS.md` « 9 cas ». Recomptés dans `suite_unitaire_c3f1819.log`, qui
+est la preuve datée :
+
+    boucle  5 cas, 24 assertions
+    chaîne  5 cas, 36 assertions
+    total  10 cas, 60 assertions
+
+Les deux lignes ci-dessus sont corrigées ; `docs/STATUS.md` ne porte plus de
+compteur du tout, conformément à la règle d'ancrage — le chiffre vit dans la
+preuve datée, pas dans la prose qui le recopie.

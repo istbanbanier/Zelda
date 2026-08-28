@@ -12,9 +12,11 @@ la première région**, pas un jeu complet.
 | Feuille de route, coût, chemin critique | **Établie** | `docs/V2_LONG_GAME_ROADMAP.md` |
 | Tranche exécutable région 1 lot 2 | **Prête, NON AUTORISÉE** | `docs/V2_REGION1_VERTICAL_SLICE.md` ; `GO_V2_3_B_LOT2 = FALSE` |
 | Audit des 18 domaines | **COMPLET** — 9 BLOQUANT, 9 MAJEUR, aucun mineur | `docs/V2_LONG_GAME_GAP_AUDIT.md` ; rapports bruts dans `evidence/world_v2/audit_jeu_long/rapports_bruts/` |
-| **Boucle jouable, en ÉDITEUR** | **`PASS`** : porte au seuil §3.3, retour devant la citadelle, chemins de campagne redressés — franchie à pied et par la touche | `--filter=iss073` (9 cas), 5 sabotages ; `evidence/world_v2/iss073/` |
+| **Boucle jouable, en ÉDITEUR** | **`PASS`** : porte au seuil §3.3, retour devant la citadelle, chemins de campagne redressés — franchie à pied et par la touche | `--filter=iss073`, 5 sabotages ; le compte de cas et d'assertions vit dans le log, pas ici — `evidence/world_v2/iss073/` |
 | **Boucle jouable, dans la BUILD EXPORTÉE** | **`PASS` pour l'EMPAQUETAGE** : porte posée, arrivée au spawn, 15 lieux, montage complet, zéro erreur — lus dans le journal du binaire autonome | `tools/gate_export_iss073.sh` RC=0 ; `evidence/world_v2/iss073/build_exportee/` |
 | **Boucle jouable, MARCHÉE dans la build** | **`NON VÉRIFIÉ`** — l'horloge de jeu y est découplée du réel d'un facteur 17 à 76 (ISS-072) ; 380 m de marche n'y sont pas mesurables honnêtement | attend l'essai d'Istvan (`docs/PLAYTEST_ISS073.md`) |
+| **Reprise de partie (T1), en ÉDITEUR** | **`PASS`** sur branche SÉPARÉE `claude/world-v2-t1-persistance` — World V2 écrit et relit position, orientation et lieu de reprise ; une position V1 n'est jamais réappliquée ; la mort ne déplace pas le point de reprise. **Non fusionné** dans la candidate de lundi. | `--filter=t1_persistance`, deux contrôles négatifs ; `docs/contrats/t1_persistance_world_v2.md` ; `evidence/world_v2/t1_persistance/` |
+| **Contre-revue ISS-073 (§6, contexte frais)** | **8 constats** — 3 « à corriger », dont 1 déjà fermé (C7) et 2 ouverts (ISS-077, ISS-078) ; les 5 autres sont des détails, tous traités ou consignés | `evidence/world_v2/iss073/contre_revue_fable5.md` |
 | Adversaires dans le monde livré | **`FAIL`** — zéro ennemi, et le vide est verrouillé par le contrat « acteur prématuré » | ISS-074 |
 | Localisation | **`ABSENT`** — zéro `tr()`, aucun fichier de traduction | ISS-075 |
 | Socle chiffré indépendant | **Mesuré** | `tools/mesures_socle.py` → `evidence/world_v2/audit_jeu_long/mesures_independantes.md` |

@@ -2877,3 +2877,61 @@ une correction en V1.
 elle se reperdra une troisième fois. **Volontairement HORS du périmètre
 d'ISS-073** : la directive interdit toute retouche artistique dans cette
 corrective, et ce défaut ne casse pas la boucle.
+
+
+---
+
+## ISS-077 — Un seul relevé aérien par saut : l'appareil ne peut pas distinguer « pas de saut » de « F4 trop tard » — S3, OUVERT
+
+**Découvert le 2026-08-28** par la contre-revue ISS-073 à contexte frais.
+
+`docs/PROTOCOLE_SAUT_ISTVAN.md` et `docs/PLAYTEST_ISS073.md` demandent **un**
+appui sur `F4` en l'air par saut, et exigent 3 sauts sur 3. Le vol nominal dure
+0,683 s (`jump_velocity = 8.2`, `gravity = 24.0`) : un appui plus de ~0,55 s
+après `Espace` relève une altitude sous le seuil `EXCURSION_MIN_M = 0.50`, et
+`analyse_journal_devmode.py` rend alors `FAIL`.
+
+**Le contrat initial prenait le MAX de deux repères aériens**, précisément
+pour cette marge. Le protocole à neuf appuis l'a perdue.
+
+**Pourquoi ce n'est pas réparable pour la partie de lundi.** Les deux voies de
+correction touchent le jeu, pas l'appareil :
+- descendre `SAMPLE_INTERVAL` (1,0 s aujourd'hui dans `dev_mode.gd`) pour que
+  les échantillons automatiques attrapent l'apex — le vol dure 0,683 s, donc
+  1 Hz le rate presque toujours ;
+- ou demander deux marqueurs aériens et prendre leur maximum.
+La build publiée (`world-v2-candidate-iss073-98cbaf0`) porte
+`SAMPLE_INTERVAL = 1.0` et le protocole à un marqueur. Aucun changement du
+dépôt ne changera cette build.
+
+**Ce qui A été fait, faute de mieux.** L'appareil ne ment plus sur la cause :
+quand l'excursion est sous le seuil ET que le retour au sol est correct, le
+constat porte désormais « CAUSE NON TRANCHÉE : saut absent, ou F4 appuyé après
+la retombée. Un seul relevé aérien ne permet pas de choisir ; ne pas relayer
+ceci comme un défaut prouvé du jeu. » Le seuil, lui, n'a pas bougé — le
+déplacer pour obtenir un vert est interdit.
+
+**Gravité S3** : aucun effet sur le jeu. L'effet est sur le VERDICT, et il va
+dans le sens dangereux — accuser le produit d'un défaut du protocole. C'est la
+faute que `docs/contrats/s1_1_gravite.md` nomme lui-même.
+
+**Propriétaire** : la prochaine passe qui touche `dev_mode.gd`.
+
+---
+
+## ISS-078 — `fumee_gravite.py` prend le MINIMUM des repos là où son outil frère prend la médiane — S4, OUVERT
+
+**Découvert le 2026-08-28** par la contre-revue ISS-073.
+
+`tools/fumee_gravite.py` calcule `sol = min(ys)` sur le lot de marqueurs de
+repos. `tools/analyse_journal_devmode.py` a reçu la correction — la MÉDIANE —
+avec son sabotage décisif : un héros qui oscille de 0,6 m sans jamais sauter
+serait déclaré vert par le minimum, et refusé par la médiane.
+
+Sans conséquence pratique aujourd'hui : le critère de bruit (≤ 0,10 m) borne
+l'écart entre minimum et médiane sur un lot valide. Mais c'est exactement le
+piège que `tools/CLAUDE.md` nomme — **chercher les AUTRES endroits qui font la
+même mesure** — et il est resté ouvert une passe de plus.
+
+**Gravité S4.** Correction : reprendre `mediane()` dans les deux outils, avec
+le même sabotage que celui d'`analyse_journal_devmode.py`.

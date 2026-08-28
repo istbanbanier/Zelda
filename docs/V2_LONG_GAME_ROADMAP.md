@@ -254,7 +254,7 @@ littéralement la suivante.
 
 | # | Étape | Pourquoi elle gouverne la date |
 |---|---|---|
-| **0** | ~~**Refermer la boucle**~~ — **FAIT EN ÉDITEUR le 2026-08-28** (`03e8b9d`…`0600251`) : porte au seuil §3.3, ancre de retour, consommation du tag d'arrivée, chemins de campagne redressés. **La build exportée reste à prouver.** | sans elle, donjon, boss et victoire sont inatteignables et **aucune** durée de campagne n'est mesurable. Coût faible, effet total : c'est la meilleure affaire de tout l'audit |
+| **0** | ~~**Refermer la boucle**~~ — **FAIT EN ÉDITEUR le 2026-08-28** (`03e8b9d`…`0600251`) : porte au seuil §3.3, ancre de retour, consommation du tag d'arrivée, chemins de campagne redressés. **Prouvé aussi dans une build exportée** le même jour — `tools/gate_export_iss073.sh` RC=0, 5 constats PASS, `evidence/world_v2/iss073/build_exportee/`. Ce qui reste `NON VÉRIFIÉ` n'est pas l'entrée du donjon mais la MARCHE des 380 m qui y mène : l'horloge du moteur est décrochée du temps mural dans ce conteneur (ISS-072). | sans elle, donjon, boss et victoire sont inatteignables et **aucune** durée de campagne n'est mesurable. Coût faible, effet total : c'est la meilleure affaire de tout l'audit |
 | **1** | **Mesurer un temps de parcours réel** | possible seulement après 0 ; toute estimation d'heures reste une opinion tant qu'elle n'a pas eu lieu |
 | **2** | **Finir la région 1** (21 lieux) | c'est ce qui calibre le coût unitaire pour de bon, sur la seule région dont le relief et les limites existent déjà |
 | **3** | **PNJ + dialogue** | brique la plus basse de la chaîne rouge ; rien de la campagne longue n'existe sans elle |

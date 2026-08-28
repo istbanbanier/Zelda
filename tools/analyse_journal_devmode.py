@@ -113,6 +113,29 @@ def mediane(valeurs: list[float]) -> float:
     return t[n // 2] if n % 2 else (t[n // 2 - 1] + t[n // 2]) / 2.0
 
 
+def queue_de_protocole(m: list[dict], attendus: int) -> list[dict] | None:
+    """Les `attendus` DERNIERS marqueurs, s'ils ont la forme d'un protocole.
+
+    Le document remis au testeur dit « si tu t'es trompé, refais simplement » :
+    une session peut donc porter plus de marqueurs que la séquence n'en exige,
+    et ce sont les DERNIERS qui comptent. Prendre les premiers en silence —
+    ce que faisait cette fonction avant — décale toutes les paires dès qu'un
+    repos est refait, et fait rendre FAIL sur une faute de protocole.
+
+    La forme est vérifiée, jamais supposée : les `REPOS_INITIAL` premiers de
+    la queue doivent ressembler à un repos, c'est-à-dire ne pas dériver de
+    plus de `BRUIT_MAX_M`. Sinon on rend `None`, et l'appelant BLOQUE plutôt
+    que de juger une séquence qu'il n'a pas su reconnaître.
+    """
+    if len(m) < attendus:
+        return None
+    queue = m[-attendus:]
+    ys = [float(e["y"]) for e in queue[:REPOS_INITIAL]]
+    if max(ys) - min(ys) > BRUIT_MAX_M:
+        return None
+    return queue
+
+
 # --------------------------------------------------------------------------
 def juger_horloge(evts: list[dict], constats: list[dict]) -> bool:
     """GATE SÉPARÉ. Elle ne juge pas la gravité : elle dit si le temps du
@@ -166,8 +189,26 @@ def juger(evts: list[dict], constats: list[dict], source: str) -> None:
              f"montée/sol) — la séquence de docs/PROTOCOLE_SAUT_ISTVAN.md "
              f"n'a pas été jouée en entier, rien n'est jugeable")
         return
-    note(constats, "protocole de marqueurs suivi", "PASS",
-         f"{len(m)} marqueur(s) F4 ; {attendus} exigés")
+    if len(m) > attendus:
+        queue = queue_de_protocole(m, attendus)
+        if queue is None:
+            note(constats, "protocole de marqueurs suivi", "BLOQUÉ",
+                 f"{len(m)} marqueur(s) F4 pour {attendus} attendus, et les "
+                 f"{attendus} derniers n'ont pas la forme de la séquence "
+                 f"(les {REPOS_INITIAL} premiers d'entre eux ne ressemblent "
+                 f"pas à un repos). L'appareil REFUSE de juger plutôt que de "
+                 f"deviner : recommence la session — F3, {attendus} appuis "
+                 f"sur F4, F3.")
+            return
+        note(constats, "protocole de marqueurs suivi", "PASS",
+             f"{len(m)} marqueur(s) F4 pour {attendus} attendus — les "
+             f"{attendus} DERNIERS sont retenus, les {len(m) - attendus} "
+             f"premiers ignorés (le protocole dit « si tu t'es trompé, "
+             f"refais simplement »)")
+        m = queue
+    else:
+        note(constats, "protocole de marqueurs suivi", "PASS",
+             f"{len(m)} marqueur(s) F4 ; {attendus} exigés")
 
     # --- Le SOL : médiane des trois premiers, jamais un minimum -----------
     repos = m[:REPOS_INITIAL]
@@ -205,12 +246,21 @@ def juger(evts: list[dict], constats: list[dict], source: str) -> None:
         ok_b = ret <= RETOUR_MAX_M
         if ok_h and ok_b:
             reussis += 1
+        # Une excursion trop faible a DEUX causes indiscernables sur un seul
+        # relevé : le saut n'a pas eu lieu, ou le marqueur est arrivé après la
+        # retombée. L'appareil ne peut pas trancher — il le DIT, au lieu de
+        # laisser lire « vrai défaut du jeu ». Le seuil, lui, ne bouge pas.
+        ambigu = (not ok_h) and ok_b
         note(constats, f"saut {i + 1}/{SAUTS_MIN}",
              "PASS" if (ok_h and ok_b) else "FAIL",
              f"montée Y={yh:.2f} m soit +{exc:.2f} "
              f"({'≥' if ok_h else '<'} {EXCURSION_MIN_M} exigé) ; "
              f"retour Y={yb:.2f} m soit écart {ret:.2f} "
-             f"({'≤' if ok_b else '>'} {RETOUR_MAX_M} toléré)")
+             f"({'≤' if ok_b else '>'} {RETOUR_MAX_M} toléré)"
+             + ("  — CAUSE NON TRANCHÉE : saut absent, ou F4 appuyé après la "
+                "retombée. Un seul relevé aérien ne permet pas de choisir ; "
+                "ne pas relayer ceci comme un défaut prouvé du jeu."
+                if ambigu else ""))
 
     note(constats, f"critère 5 — {SAUTS_MIN} sauts complets",
          "PASS" if reussis >= SAUTS_MIN else
@@ -257,6 +307,22 @@ def autotest() -> int:
             evts.append(mq(h, etat))
             evts.append(mq(b, etat))
         evts += pos(auto if auto is not None else [SOL] * int(mural), mural)
+        return evts
+
+    def renumerote(evts: list[dict]) -> list[dict]:
+        """Renumérote les marqueurs dans l'ORDRE DE LA LISTE.
+
+        `mq` numérote dans l'ordre d'APPEL et `sequence()` remet le compteur à
+        zéro ; `marqueurs()` trie ensuite par `numero`. Sans cette remise en
+        ordre, un marqueur ajouté DEVANT se retrouve numéroté après, donc trié
+        à la fin — et le cas ne teste pas ce qu'il annonce. Piège mesuré : mes
+        deux premiers cas de repos refait passaient au vert AVANT le
+        correctif, parce qu'ils simulaient en réalité un marqueur de queue."""
+        k = 0
+        for e in evts:
+            if str(e.get("type")) == "marqueur":
+                k += 1
+                e["numero"] = k
         return evts
 
     TROIS = [(HAUT, SOL)] * 3
@@ -317,6 +383,23 @@ def autotest() -> int:
         ("horloge décrochée mais marqueurs bons : PARTIAL sur l'horloge, "
          "la gravité reste jugeable",
          sequence(TROIS, auto=[SOL, SOL], mural=150.0), 1),
+
+        # --- Constat 2 de la contre-revue ISS-073 : le document remis au
+        # testeur dit « si tu t'es trompé, refais simplement ». Une session
+        # porte donc légitimement PLUS de 9 marqueurs, et les 9 premiers
+        # étaient pris en silence — un repos refait décalait toutes les
+        # paires, et l'appareil rendait FAIL sur une faute de protocole.
+        ("SABOTAGE — un repos REFAIT (10 marqueurs) : les 9 DERNIERS forment "
+         "la séquence, le verdict doit rester VERT",
+         renumerote([mq(23.2)] + sequence(TROIS)), 0),
+
+        ("SABOTAGE — DEUX repos refaits (11 marqueurs) : même exigence",
+         renumerote([mq(23.1), mq(23.3)] + sequence(TROIS)), 0),
+
+        ("SABOTAGE — un marqueur SURNUMÉRAIRE À LA FIN : la queue n'a plus "
+         "la forme d'un repos, l'appareil doit REFUSER de juger plutôt que "
+         "de deviner",
+         renumerote(sequence(TROIS) + [mq(HAUT)]), 3),
     ]
 
     echecs = 0
