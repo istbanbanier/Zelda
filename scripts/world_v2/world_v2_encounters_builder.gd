@@ -46,6 +46,8 @@ const CHAMP_MORTS: String = "enemies_slain"
 var _built: bool = false
 var _coordinator: CombatCoordinator = null
 var _vivants: Dictionary = {}
+var _engages: Dictionary = {}
+var _touches: Dictionary = {}
 
 
 func _ready() -> void:
@@ -72,7 +74,11 @@ func _build() -> void:
 	for entree: Variant in (donnees.get("garrisons", []) as Array):
 		var garnison: Dictionary = entree as Dictionary
 		var hote: Node3D = Node3D.new()
-		hote.name = String(garnison.get("id", "garrison"))
+		# Godot ASSAINIT les points dans un nom de nœud, en silence : sans ce
+		# remplacement, l'hôte s'appellerait `garrison_ember_camp` sans que
+		# rien ne le dise, et tout test qui le désignerait par son id
+		# échouerait sur un nom qu'il n'a jamais choisi.
+		hote.name = String(garnison.get("id", "garrison")).replace(".", "_")
 		add_child(hote)
 		for brut: Variant in (garnison.get("enemies", []) as Array):
 			var fiche: Dictionary = brut as Dictionary
@@ -107,6 +113,12 @@ func _poser(hote: Node3D, fiche: Dictionary, id: String) -> bool:
 		reglage.vision_range = float(fiche["vision_range"])
 	if fiche.has("max_pursuit_distance"):
 		reglage.max_pursuit_distance = float(fiche["max_pursuit_distance"])
+	# L'OUÏE ferme le trou que la seule vision laissait : `hear_noise()`,
+	# `receive_alert()` et `witness_ally_death()` réveillent un ennemi sans
+	# jamais consulter `max_pursuit_distance`. Laissée au défaut (15 m braise,
+	# 20 m azur), elle porterait hors du territoire gardé.
+	if fiche.has("hearing_range"):
+		reglage.hearing_range = float(fiche["hearing_range"])
 	ennemi.tuning = reglage
 
 	# Piège 1 : la position AVANT `add_child()`.
@@ -135,12 +147,36 @@ func _poser(hote: Node3D, fiche: Dictionary, id: String) -> bool:
 	# `EnemyBase.died` est SANS argument — celui de `HealthComponent` en porte
 	# un. Se brancher sur le mauvais des deux donne une erreur d'arité.
 	ennemi.died.connect(_sur_mort.bind(id))
+	# JALONS — bornés à un par ennemi et par événement, jamais par frame. Ils
+	# sont la seule façon d'observer une rencontre depuis une build EXPORTÉE,
+	# où aucun test ne peut entrer. Ils suivent la forme des jalons déjà
+	# imprimés par le monde et par les transitions.
+	ennemi.state_changed.connect(_sur_etat.bind(id))
+	var sante: HealthComponent = ennemi.health()
+	if sante != null:
+		sante.damaged.connect(_sur_degats.bind(id))
 	return true
+
+
+func _sur_etat(etat: StringName, id: String) -> void:
+	if etat == &"chase" and not _engages.has(id):
+		_engages[id] = true
+		print("[peuplement] engagement : %s" % id)
+
+
+func _sur_degats(_evenement: DamageEvent, id: String) -> void:
+	if _touches.has(id):
+		return
+	_touches[id] = true
+	print("[peuplement] touché : %s" % id)
 
 
 func _sur_mort(id: String) -> void:
 	_vivants.erase(id)
+	print("[peuplement] tombé : %s" % id)
 	_persister_mort(id)
+	if _vivants.is_empty():
+		print("[peuplement] garnison vaincue")
 
 
 ## La mort est écrite dans la sauvegarde EXISTANTE. Elle n'en fabrique jamais

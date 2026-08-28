@@ -650,3 +650,29 @@ MSG
 
 Le `'MSG'` entre apostrophes est ce qui compte : sans elles, le heredoc
 substitue exactement comme les guillemets doubles.
+
+## Un navmesh CUIT est un artefact daté — le comparer à la géométrie qu'il décrit
+
+Mesuré le 2026-08-28, sur ISS-074, et trouvé par une revue de complétude, pas
+par un test.
+
+Quatre positions d'ennemis avaient été choisies « sur mesure » : 240 points
+sondés dans la région, 239 sur navmesh, 238 atteignables. Chiffres exacts,
+sonde honnête, conclusion fausse — parce que le navmesh interrogé datait du
+**2026-08-13** et que la géométrie du camp était née le **2026-08-19**. La
+sonde décrivait un terrain nu là où le jeu allait poser une palissade.
+
+```bash
+git log -1 --format='%h %ad' --date=short -- resources/world_v2/nav/
+git log -1 --format='%h %ad' --date=short -- <la géométrie que le navmesh doit décrire>
+```
+
+Après recuit, **les quatre quadrants ont changé de sha256** — la dérive était
+réelle, pas théorique — et l'une des quatre positions est passée de 0,010 m à
+0,830 m d'écart au navmesh : la géométrie du camp occupait désormais le point.
+
+C'est la troisième forme du même piège dans ce fichier, après le `.glb`
+réexporté depuis une source périmée et le `.godot/imported` d'un conteneur
+recréé. La règle générale, une fois de plus : **avant de mesurer contre un
+artefact dérivé, prouver qu'il descend de la version courante de sa source.**
+Un mtime ne le prouve pas ; une date de commit comparée, si.

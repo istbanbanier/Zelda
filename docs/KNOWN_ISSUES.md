@@ -2998,6 +2998,31 @@ présent mais illisible n'est plus jamais réécrit par l'antichambre.
 
 ---
 
+## ISS-082 — Le trou de C10 subsiste hors de l'antichambre — S3, OUVERT, PRÉEXISTANT
+
+**Trouvé le 2026-08-28** par la revue de complétude d'ISS-074, en cherchant
+autre chose. C10 puis ISS-080 ont fermé, chacun à son endroit, le même défaut :
+`SaveSystem.load_slot()` rend `{}` aussi bien pour un JSON tronqué que pour un
+`schema_version` PLUS RÉCENT refusé « fichier intact ». Repartir de `{}` écrase
+alors le fichier ET sa copie de secours.
+
+La garde est posée dans `world_v2_root.gd::autosave()` (C10) et dans
+`antechamber.gd::_write_checkpoint()` (ISS-080). Elle NE l'est PAS dans
+`dungeon_room.gd::save_room_state()` ni dans `boss_arena.gd::_on_boss_died()`,
+qui font encore `if data.is_empty(): data = {"schema": 2}` puis `save_slot`.
+
+**Conséquence** : un joueur dont le slot vient d'un build plus récent perd tout
+— y compris `enemies_slain` — à la première salle de donjon résolue. Le fichier
+n'est pas corrompu par le jeu, il est REMPLACÉ par un état neuf et rétrogradé.
+
+**Pourquoi ce n'est pas corrigé ici** : la directive de la passe ISS-074 dit
+« corrige ISS-080 sans élargir la passe ». Ces deux appels sont sur le chemin
+du donjon et du boss, pas sur celui du peuplement. La correction est un
+copier-coller de la garde existante, mais elle appartient à une passe donjon
+qui pourra la prouver — pas à celle-ci, qui ne le peut pas.
+
+---
+
 ## ISS-081 — Un `go_to` qui échoue après la porte laisse un tag d'apparition fantôme — S4, OUVERT, PRÉEXISTANT
 
 **Découvert le 2026-08-28** par la contre-revue T1 (constat « détail » n° 7).

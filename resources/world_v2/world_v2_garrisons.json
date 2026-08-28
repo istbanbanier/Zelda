@@ -6,47 +6,95 @@
       "id": "garrison.ember_camp",
       "region": "r05_terrasse_du_camp",
       "doc": "La garnison du camp braise — la PREMIÈRE rencontre du jeu. Le layout dit de r05 : fonction « première rencontre 3 approches, cuisine, checkpoint camp », encounters « garnison braise du camp ». Trois braise tiennent le camp, un azur veille au nord.",
-      "positions_doc": "Chaque position vient de tools/godot/probe_camp_braise_navmesh.gd, exécutée AVANT tout placement : 240 points sondés dans r05, 239 sur navmesh, 238 atteignables depuis le spawn. Les quatre retenues ont un écart au navmesh <= 0,02 m. Les altitudes sont celles MESURÉES, pas devinées.",
+      "positions_doc": "Chaque position vient de tools/godot/probe_camp_braise_navmesh.gd, executee AVANT tout placement PUIS REJOUEE apres un recuit du navmesh : la premiere mesure portait sur des tuiles cuites le 2026-08-13, anterieures de six jours a la geometrie du camp (2026-08-19). Le recuit a change les quatre quadrants ; les positions ont ete re-choisies sur le resultat FRAIS. 240 points sondes dans r05, 239 sur navmesh, 238 atteignables depuis le spawn ; les quatre retenues ont un ecart au navmesh <= 0,01 m et des altitudes MESUREES.",
       "bounds_doc": "Fenêtre de placement x[28,44] z[60,80] : c'est l'ensemble des centres dont le disque de rayon 20 m tient dans r05 (x[8,64], z[40,100]). C'est ce qui rend la règle des calmes vraie par CONSTRUCTION plutôt que par vérification au cas par cas.",
       "tuning_doc": "Vision et poursuite sont VOLONTAIREMENT plus courtes que les défauts sauvages (braise 22 m de vision et 45 m de poursuite ; azur 30 et 50). Une garnison garde son camp, elle ne traverse pas la vallée — et surtout : avec 30 m de vision, AUCUNE position de r05 ne satisfait la règle des calmes, la région ne mesurant que 56 x 60 m. Le contrat impose la règle ; la donnée s'y plie.",
       "enemies": [
         {
           "id": "garrison.ember_camp.red.01",
           "scene": "res://scenes/enemies/RaiderRed.tscn",
-          "position": [36.0, 6.28, 64.0],
-          "yaw_deg": 180.0,
+          "position": [
+            36.0,
+            6.5,
+            64.0
+          ],
+          "yaw_deg": 9.5,
           "vision_range": 18.0,
           "max_pursuit_distance": 20.0,
-          "patrol_offsets": []
+          "patrol_offsets": [],
+          "facing": "le coeur du camp (37, 70)",
+          "hearing_range": 14.0
         },
         {
           "id": "garrison.ember_camp.red.02",
           "scene": "res://scenes/enemies/RaiderRed.tscn",
-          "position": [40.0, 6.35, 68.0],
-          "yaw_deg": 215.0,
+          "position": [
+            40.0,
+            6.47,
+            68.0
+          ],
+          "yaw_deg": -56.3,
           "vision_range": 18.0,
           "max_pursuit_distance": 20.0,
-          "patrol_offsets": [[0.0, 0.0, 0.0], [-5.0, 0.0, 3.0]]
+          "patrol_offsets": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              -5.0,
+              0.0,
+              3.0
+            ]
+          ],
+          "facing": "le coeur du camp (37, 70)",
+          "hearing_range": 14.0
         },
         {
           "id": "garrison.ember_camp.red.03",
           "scene": "res://scenes/enemies/RaiderRed.tscn",
-          "position": [32.0, 6.14, 72.0],
-          "yaw_deg": 140.0,
+          "position": [
+            32.0,
+            6.14,
+            72.0
+          ],
+          "yaw_deg": 111.8,
           "vision_range": 18.0,
           "max_pursuit_distance": 20.0,
-          "patrol_offsets": [[0.0, 0.0, 0.0], [4.0, 0.0, -4.0]]
+          "patrol_offsets": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              -4.0
+            ]
+          ],
+          "facing": "le coeur du camp (37, 70)",
+          "hearing_range": 14.0
         },
         {
           "id": "garrison.ember_camp.blue.01",
           "scene": "res://scenes/enemies/RaiderBlue.tscn",
-          "position": [40.0, 6.34, 76.0],
+          "position": [
+            36.0,
+            6.25,
+            76.0
+          ],
           "yaw_deg": 0.0,
           "vision_range": 20.0,
           "max_pursuit_distance": 20.0,
-          "patrol_offsets": []
+          "patrol_offsets": [],
+          "facing": "l'approche nord (+Z) — le joueur descend du spawn",
+          "hearing_range": 16.0
         }
-      ]
+      ],
+      "facing_doc": "L'AVANT D'UN ENNEMI EST +Z, pas -Z : `EnemyBase._face()` calcule `atan2(direction.x, direction.z)` et `_tick_perception()` lit `_pivot.global_transform.basis.z`. Un lacet de 0 regarde donc vers les z CROISSANTS. Le joueur descend du spawn (0, 24, 170) vers le camp (z ~ 65) : il arrive donc par les z décroissants, et un guetteur qui le voit venir regarde vers +Z, lacet 0. Les trois braise regardent le coeur du camp (37, 70), lacet = atan2(dx, dz) en degrés. Ces valeurs sont CALCULÉES, pas choisies a l'oeil.",
+      "hearing_doc": "`hearing_range` est surchargé lui aussi, et c'est ce qui ferme le vrai trou de la regle des calmes : `hear_noise()`, `receive_alert()` et `witness_ally_death()` reveillent un ennemi SANS jamais consulter `max_pursuit_distance`. Une ouie de 15-20 m laissee au defaut porterait donc au-dela du territoire garde. Le portail verifie desormais les TROIS disques : vision, ouie, poursuite."
     }
   ]
 }

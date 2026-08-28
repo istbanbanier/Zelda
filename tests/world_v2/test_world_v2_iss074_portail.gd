@@ -160,6 +160,28 @@ func _checkpoints_hors_objectif() -> Array[Dictionary]:
 	return sortie
 
 
+## Les ancres de sauvegarde de toutes les régions SAUF celle de la garnison.
+func _ancres_des_autres_regions() -> Array[Dictionary]:
+	var layout: Dictionary = JSON.parse_string(
+		FileAccess.get_file_as_string(LAYOUT)) as Dictionary
+	var sortie: Array[Dictionary] = []
+	for entree: Variant in (layout.get("regions", []) as Array):
+		var region: Dictionary = entree as Dictionary
+		if String(region.get("id", "")) == REGION_ID:
+			continue
+		var ancre: Variant = region.get("save_anchor")
+		if ancre == null:
+			continue
+		var pos: Array = (ancre as Dictionary).get("pos", []) as Array
+		if pos.size() < 3:
+			continue
+		sortie.append({
+			"id": String((ancre as Dictionary).get("id", "?")),
+			"pos": Vector3(float(pos[0]), float(pos[1]), float(pos[2])),
+		})
+	return sortie
+
+
 func _save_system() -> Node:
 	return _tree().root.get_node_or_null("SaveSystem")
 
@@ -366,8 +388,14 @@ func test_territoires_bornes_et_calmes_preserves() -> void:
 		# position courante : c'est bien ce disque-là que le jeu utilise.
 		var origine: Vector3 = e.call("territory_origin") as Vector3
 		var ici: Vector3 = (e as Node3D).global_position
+		# TROIS disques, pas deux. L'ouïe est la porte dérobée : `hear_noise()`,
+		# `receive_alert()` et `witness_ally_death()` réveillent un ennemi sans
+		# jamais consulter `max_pursuit_distance`. Un territoire gardé sur la
+		# seule vision laisse donc un ennemi entendre — puis poursuivre — bien
+		# au-delà de sa région.
+		var ouie: float = float(tuning.get("hearing_range"))
 		for couple: Array in [[origine, poursuite, "poursuite"],
-				[ici, vision, "vision"]]:
+				[ici, vision, "vision"], [ici, ouie, "ouïe"]]:
 			var centre: Vector3 = couple[0] as Vector3
 			var rayon: float = couple[1] as float
 			var quoi: String = couple[2] as String
@@ -386,9 +414,14 @@ func test_territoires_bornes_et_calmes_preserves() -> void:
 		+ "n'est hors de portée par construction — débordements : %s"
 			% ", ".join(debordements))
 
-	# Et, explicitement, aucun checkpoint AUTRE que l'objectif nommé.
+	# Et, explicitement, aucun checkpoint ni aucune ancre de sauvegarde d'une
+	# AUTRE région sous perception. Les ancres comptent autant que les
+	# checkpoints : ce sont les points de reprise du masterplan, et elles sont
+	# assez proches pour que cette clause puisse réellement rougir — le seul
+	# checkpoint restant, `dungeon_gate`, est à ~260 m et rendrait la clause
+	# vraie de tout placement concevable.
 	var vus: Array[String] = []
-	for cp: Dictionary in _checkpoints_hors_objectif():
+	for cp: Dictionary in _checkpoints_hors_objectif() + _ancres_des_autres_regions():
 		for e: Node in ennemis:
 			var tuning: Variant = e.get("tuning")
 			if tuning == null:
