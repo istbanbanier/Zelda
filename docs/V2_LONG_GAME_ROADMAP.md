@@ -254,7 +254,7 @@ littéralement la suivante.
 
 | # | Étape | Pourquoi elle gouverne la date |
 |---|---|---|
-| **0** | **Refermer la boucle** — une `SceneDoor` vers le donjon dans World V2, et les **quatre** retours qui pointent encore vers `ValleyWorld.tscn` (V1) redressés | sans elle, donjon, boss et victoire sont inatteignables et **aucune** durée de campagne n'est mesurable. Coût faible, effet total : c'est la meilleure affaire de tout l'audit |
+| **0** | ~~**Refermer la boucle**~~ — **FAIT EN ÉDITEUR le 2026-08-28** (`03e8b9d`…`0600251`) : porte au seuil §3.3, ancre de retour, consommation du tag d'arrivée, chemins de campagne redressés. **La build exportée reste à prouver.** | sans elle, donjon, boss et victoire sont inatteignables et **aucune** durée de campagne n'est mesurable. Coût faible, effet total : c'est la meilleure affaire de tout l'audit |
 | **1** | **Mesurer un temps de parcours réel** | possible seulement après 0 ; toute estimation d'heures reste une opinion tant qu'elle n'a pas eu lieu |
 | **2** | **Finir la région 1** (21 lieux) | c'est ce qui calibre le coût unitaire pour de bon, sur la seule région dont le relief et les limites existent déjà |
 | **3** | **PNJ + dialogue** | brique la plus basse de la chaîne rouge ; rien de la campagne longue n'existe sans elle |
@@ -267,6 +267,24 @@ littéralement la suivante.
 quatre constantes, puis cinq minutes de jeu lundi. Elles débloquent la mesure
 de tout le reste. Rien d'autre dans cette feuille de route n'a ce rapport
 effet/coût.
+
+> **CE QUE L'ÉTAPE 0 A RÉELLEMENT COÛTÉ, mesuré et non estimé** (2026-08-28).
+> « Une porte et quatre constantes » était juste sur le principe et faux sur
+> le compte. Deux des quatre références n'étaient pas des coupables — dont un
+> **faux positif de mon propre test**, qui accusait du code qui fonctionne. Et
+> il manquait une pièce que l'audit n'avait pas vue : World V2 ne consommait
+> **aucun** `pending_spawn`, donc même avec la porte, ressortir du vestibule
+> replaçait le héros à 380 m de la citadelle. Un cinquième chemin de retour est
+> apparu en cours de route — « Réessayer » dans le vestibule.
+>
+> Le vrai coût s'est réparti ainsi : deux portails écrits ROUGES d'abord (9 cas
+> aujourd'hui verts), cinq sabotages joués, une levée de gel documentée, deux
+> épingles de test qui avaient survécu à leur raison, et **trois défauts dans
+> mes propres outils de mesure** — un produit scalaire calculé sur le mauvais
+> nœud, un lambda GDScript qui capture par valeur, un compte extrait du mauvais
+> nombre d'une ligne de journal. C'est l'ordre de grandeur à retenir pour les
+> prochaines étapes : le câblage est petit, l'**appareil de preuve** ne l'est
+> pas.
 
 L'étape 3 est le vrai premier chantier de contenu : elle n'a **aucune** dépendance
 absente, elle est purement additive, et elle débloque à elle seule trois nœuds
