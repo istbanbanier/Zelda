@@ -1514,3 +1514,16 @@ naissance. C'est **plus strict** que l'état d'avant, pas moins.
 **Les six lieux gelés ne sont pas concernés** : leurs empreintes et celles des
 quatre golden masters R2a sont inchangées, ce que le « 0 absent(s), 2
 écart(s) » atteste avant comme après.
+
+**Addendum du même jour — j'ai gelé un fichier que j'écrivais encore.** La
+régénération ci-dessus a figé `world_v2_dungeon_door.gd` alors que je n'avais
+pas fini d'y travailler : le balayage d'isolation V1/V2 m'a ensuite obligé à
+reformuler un commentaire, l'empreinte a bougé, et `validate_fast` a rougi
+deux fois pour cette seule raison — à l'étape 0b et dans
+`test_world_v2_lot1_defauts.gd::test_d8`. Deux couches indépendantes, ce qui
+est le comportement voulu.
+
+Manifeste régénéré une seconde fois ; le diff tient en UNE ligne, celle de ce
+fichier. La leçon n'est pas que le gel gêne : c'est qu'un fichier neuf entre
+dans le gel **quand il est stabilisé**, pas au milieu de la passe qui le
+crée.
