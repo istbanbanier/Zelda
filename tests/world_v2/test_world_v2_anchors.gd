@@ -48,7 +48,7 @@ func test_les_ancres_immuables_ont_un_sol_conforme() -> void:
 		check(heightmap.slope_deg_at(x, z) <= ANCHOR_MAX_SLOPE_DEG,
 			"pente au %s compatible (%.1f° ≤ %.0f°)"
 				% [anchor_name, heightmap.slope_deg_at(x, z), ANCHOR_MAX_SLOPE_DEG])
-		var hit: Dictionary = _ray_down(space, x, z)
+		var hit: Dictionary = _ray_down_terrain(space, x, z)
 		check(not hit.is_empty(), "sol PHYSIQUE sous l'ancre %s" % anchor_name)
 		if not hit.is_empty():
 			check((hit["collider"] as Node).is_in_group(&"world_v2_terrain"),
@@ -193,3 +193,38 @@ func _ray_down(space: PhysicsDirectSpaceState3D, x: float, z: float) -> Dictiona
 	var query: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(
 		Vector3(x, 200.0, z), Vector3(x, -60.0, z), 1)
 	return space.intersect_ray(query)
+
+
+## LE SOL, PAS CE QUI SE TIENT DESSUS.
+##
+## `_ray_down` rend le PREMIER corps rencontré. C'était équivalent au sol tant
+## qu'aucune ancre ne portait de structure. ISS-073 en a posé une : la porte du
+## donjon se dresse exactement sur l'ancre §3.3 `(0, 34, -210)`, et le rayon
+## butait sur son sommet à 37,20 m au lieu du terrain à 34,00 m.
+##
+## Le CRITÈRE ne change pas d'un iota — altitude contractuelle et tolérance
+## identiques, et le sol doit toujours être un chunk `world_v2_terrain`. C'est
+## le SCÉNARIO qui était devenu faux : l'assertion dit « le sol de X est un
+## chunk V2 », donc la sonde doit chercher le SOL. Traverser la porte est ce
+## que l'assertion demandait déjà ; la déplacer pour esquiver une sonde aurait
+## été contorsionner le monde pour l'arranger à la mesure.
+##
+## Reste strict : sans terrain sous l'ancre, le résultat est vide et le test
+## rougit — ce n'est pas un assouplissement, c'est une sonde qui vise juste.
+const _TRAVERSEES_MAX: int = 8
+
+
+func _ray_down_terrain(space: PhysicsDirectSpaceState3D, x: float,
+		z: float) -> Dictionary:
+	var exclus: Array[RID] = []
+	for _i: int in range(_TRAVERSEES_MAX):
+		var query: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D \
+			.create(Vector3(x, 200.0, z), Vector3(x, -60.0, z), 1, exclus)
+		var hit: Dictionary = space.intersect_ray(query)
+		if hit.is_empty():
+			return hit
+		var collider: Node = hit["collider"] as Node
+		if collider != null and collider.is_in_group(&"world_v2_terrain"):
+			return hit
+		exclus.append(hit["rid"] as RID)
+	return {}
