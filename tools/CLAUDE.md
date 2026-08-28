@@ -676,3 +676,37 @@ réexporté depuis une source périmée et le `.godot/imported` d'un conteneur
 recréé. La règle générale, une fois de plus : **avant de mesurer contre un
 artefact dérivé, prouver qu'il descend de la version courante de sa source.**
 Un mtime ne le prouve pas ; une date de commit comparée, si.
+
+## Un délai d'attente choisi sans mesure ne mesure pas ce qu'on croit
+
+Mesuré le 2026-08-28, sur `tools/gate_export_garnison.sh`. Le portail attendait
+**30 s** que le jeu exporté meure après `WM_DELETE_WINDOW`. Chronométré ensuite,
+seul sur la machine : **32 s**. Deux secondes.
+
+Ce qui rend le cas instructif, c'est que le budget ne mesurait pas la fermeture.
+Sur un profil au cache de shaders **froid**, le premier rendu llvmpipe d'une
+vallée complète occupe la boucle principale ; l'événement X n'est lu qu'après.
+Le même scénario, cache chaud, meurt en **2 s**. Le portail chronométrait donc
+la compilation des shaders et rendait rouge une étape qui fonctionnait.
+
+Le corollaire coûte plus cher que le seuil lui-même : **la branche d'échec
+laissait un orphelin.** `fermer_fenetre` rendait 1 sans tuer le processus ni
+vider `PID_JEU`. Le jeu survivant gardait llvmpipe à fond *et* sa fenêtre
+visible — l'étape suivante héritait d'une machine chargée et d'une fenêtre que
+`xdotool … | tail -1` pouvait désigner à sa place. Un défaut, deux échecs
+affichés, et le second accusait un innocent.
+
+Trois règles, dans cet ordre d'importance :
+
+1. **Une branche d'échec nettoie derrière elle** — tuer, *attendre la mort
+   réelle*, vider la référence. Un garde-fou qui abandonne en laissant le
+   processus vivant transforme un échec en contamination.
+2. **Publier l'attente réelle**, pas seulement le verdict : `(fermeture honorée
+   en 32 s)` se lit ; un dépassement muet se subit. Même famille que la règle
+   « un verdict publie la taille de ce qu'il a examiné ».
+3. **Viser un processus par son PID**, jamais par le dernier de la liste. Sous
+   Xvfb sans gestionnaire de fenêtres, X recycle les identifiants et une
+   fenêtre moribonde reste visible.
+
+Et la règle qui les précède toutes : **avant d'écrire un délai, le mesurer une
+fois.** Un nombre rond choisi de mémoire est un pari, pas un budget.

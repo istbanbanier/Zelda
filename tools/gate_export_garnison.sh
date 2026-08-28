@@ -32,6 +32,7 @@ HAUTEUR=768
 TITRE_FENETRE="Eclats d'Orage"
 DELAI_FENETRE=120
 DELAI_JALON=900
+DELAI_FERMETURE=180
 MARCHE_MUR_S="${GATE_MARCHE_S:-70}"
 
 PID_JEU=""
@@ -98,8 +99,15 @@ lancer_jeu() {  # $1 = profil
       echo "BLOQUÉ: le jeu s'est arrêté avant sa fenêtre ($PROFIL)" >&2
       tail -30 "$JOURNAL_JEU" >&2; return 1
     fi
-    FENETRE="$(DISPLAY="$DISPLAY_NUM" xdotool search --onlyvisible \
-      --name "$TITRE_FENETRE" 2>/dev/null | tail -1)"
+    # VISER PAR LE PID, jamais `tail -1`. Quand une étape précédente a
+    # laissé un processus en cours d'arrêt, sa fenêtre est encore visible :
+    # `tail -1` pouvait la désigner, la demande de fermeture partait au
+    # mauvais jeu, et l'étape échouait en accusant le bon.
+    for w in $(DISPLAY="$DISPLAY_NUM" xdotool search --onlyvisible \
+        --name "$TITRE_FENETRE" 2>/dev/null); do
+      if [ "$(DISPLAY="$DISPLAY_NUM" xdotool getwindowpid "$w" 2>/dev/null)" \
+           = "$PID_JEU" ]; then FENETRE="$w"; break; fi
+    done
     [ -n "$FENETRE" ] && break
     sleep 1
   done
@@ -125,10 +133,38 @@ fermer_fenetre() {
   # Le seul geste fidèle est le ClientMessage WM_PROTOCOLS/WM_DELETE_WINDOW :
   # `xdotool windowclose` DÉTRUIT la fenêtre et le jeu ne reçoit jamais la
   # demande (mesuré, portail T1 run 1).
+  #
+  # COMBIEN DE TEMPS ATTENDRE, ET POURQUOI CE N'EST PAS 30 s. Mesuré le
+  # 2026-08-28, scénario G5 seul sur la machine : sur un profil au cache de
+  # shaders FROID, le premier rendu llvmpipe d'une vallée complète occupe la
+  # boucle principale, et l'événement X n'est lu qu'ensuite. Le jeu a mis
+  # **32 s** à mourir — deux secondes de plus que l'ancien budget de 30 s. Le
+  # MÊME scénario, cache chaud, meurt en 2 s. Un budget serré ne mesurait donc
+  # pas la fermeture : il mesurait la compilation des shaders, et rendait le
+  # portail rouge pour une raison qui n'a rien à voir avec ce qu'il prouve.
+  # On publie l'attente RÉELLE à chaque appel : le jour où elle dérive, on le
+  # lira au lieu de le subir.
+  local t0=$SECONDS
   DISPLAY="$DISPLAY_NUM" python3 "$ARBRE/tools/x11_fermer_fenetre.py" \
     "$FENETRE" || true
-  for _ in $(seq 1 30); do kill -0 "$PID_JEU" 2>/dev/null || break; sleep 1; done
-  if kill -0 "$PID_JEU" 2>/dev/null; then return 1; fi
+  for _ in $(seq 1 "$DELAI_FERMETURE"); do
+    kill -0 "$PID_JEU" 2>/dev/null || break
+    sleep 1
+  done
+  if kill -0 "$PID_JEU" 2>/dev/null; then
+    # NE JAMAIS LAISSER D'ORPHELIN. Un jeu resté vivant garde llvmpipe à fond
+    # ET sa fenêtre visible : l'étape suivante hérite d'une machine chargée et
+    # d'une fenêtre parasite. C'est ainsi que G5 a fait tomber G6 le
+    # 2026-08-28 — deux échecs affichés pour une seule cause.
+    echo "        (fermeture refusée après ${DELAI_FERMETURE}s — processus tué)"
+    kill "$PID_JEU" 2>/dev/null
+    for _ in $(seq 1 20); do kill -0 "$PID_JEU" 2>/dev/null || break; sleep 1; done
+    kill -9 "$PID_JEU" 2>/dev/null
+    wait "$PID_JEU" 2>/dev/null
+    PID_JEU=""
+    return 1
+  fi
+  echo "        (fermeture honorée en $((SECONDS - t0)) s)"
   PID_JEU=""
   return 0
 }

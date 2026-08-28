@@ -1,0 +1,21 @@
+
+######## g5 ########
+  pid du jeu : 32289
+  jalon atteint : [peuplement] garnison :
+  --- fenêtres visibles au moment de la fermeture ---
+      fenêtre 2097155  pid=32289
+  cible choisie par tail -1 : 2097155  pid=32289
+      WM_DELETE_WINDOW envoyé à 2097155
+  >>> MORT après 32 s
+
+######## g6 ########
+  pid du jeu : 32453
+  jalon atteint : [flow] transition vers : res://scenes/dungeon/rooms/Antechamber.tscn
+  --- fenêtres visibles au moment de la fermeture ---
+      fenêtre 2097155  pid=32453
+  cible choisie par tail -1 : 2097155  pid=32453
+      WM_DELETE_WINDOW envoyé à 2097155
+  >>> MORT après 2 s
+
+RC=0
+RC_DIAG=0
