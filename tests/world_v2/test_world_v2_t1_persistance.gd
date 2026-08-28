@@ -956,3 +956,209 @@ func test_c10_l_autosave_n_ecrase_jamais_une_sauvegarde_illisible() -> void:
 			+ "(%s)" % forme["nom"])
 		await _demonter()
 	restore_saves()
+
+
+# --------------------------------------------------------------------------
+# C11 — ISS-080 : reprendre dans l'antichambre ne doit PAS effacer l'inventaire
+# --------------------------------------------------------------------------
+## Le défaut, mesuré et consigné ISS-080 le 2026-08-28 : `antechamber.gd`
+## pose son checkpoint par `call_deferred("_write_checkpoint")`, et cette
+## écriture RECOPIE dans la sauvegarde l'inventaire du `Player` fraîchement
+## monté — c'est-à-dire le kit par défaut de `Player.tscn`, une seule
+## `worn_sword` et huit flèches. Aucune salle du donjon ne RESTAURE
+## l'inventaire ; seule `boss_arena.gd` le fait. Un joueur que T1 route vers
+## `dungeon.antechamber` perd donc, à la seconde où sa partie se rouvre, tout
+## ce qu'il portait.
+##
+## Le contrat que ce cas épingle est celui du lead, mot pour mot :
+## inventaire riche sauvegardé dans l'antichambre → « Continuer » → écriture
+## différée du checkpoint → fermeture → relance → inventaire STRICTEMENT
+## identique.
+##
+## POURQUOI CE CAS NE PEUT PAS ÊTRE VERT SANS LA CORRECTION, et c'est là que
+## se joue sa valeur : il vérifie D'ABORD que l'écriture différée a réellement
+## eu lieu (`checkpoint_written()`), avant de comparer quoi que ce soit. Sans
+## cette garde, une antichambre qui n'écrirait RIEN laisserait la graine
+## intacte et le cas passerait au vert en n'ayant rien prouvé — c'est
+## exactement le mode de panne d'ISS-018, un test vert sur une grandeur qui
+## n'est pas celle qu'on croit mesurer.
+##
+## Il mesure les deux moitiés du mot « relance » :
+##   1. ce qu'une relance LIRA  — le slot sur disque après l'écriture ;
+##   2. ce qu'une relance JOUERA — l'inventaire VIVANT du héros après un
+##      remontage de l'antichambre depuis ce même slot.
+## Les deux sont rouges aujourd'hui, pour deux causes différentes : la
+## première parce que l'écriture écrase, la seconde parce que rien ne restaure.
+
+## Trois armes aux durabilités distinctes, des flèches, des ingrédients et un
+## plat : rien ici ne ressemble au kit par défaut (une `worn_sword`, huit
+## flèches, zéro ingrédient, zéro plat), et chaque durabilité est sous le
+## maximum de son arme — 16, 20 et 28 — pour qu'aucun écrêtage ne puisse être
+## confondu avec une perte.
+func _inventaire_riche() -> Dictionary:
+	return {
+		"weapons": [
+			{"id": "conductive_blade", "durability": 9},
+			{"id": "heavy_axe", "durability": 17},
+			{"id": "simple_bow", "durability": 25},
+		],
+		"equipped_index": 1,
+		"arrows": 37,
+		"ingredients": {"storm_berry": 3, "heal_fruit": 2, "rare_spice": 1},
+		"meals": [{
+			"valid": true,
+			"heal": 42,
+			"effect": "electric_resist",
+			"duration": 180.0,
+		}],
+	}
+
+
+## Compare champ par champ plutôt que par `==` sur des conteneurs : un écart
+## doit DIRE lequel, sinon le rouge n'apprend rien à celui qui le lit.
+func _ecarts_d_inventaire(obtenu: Dictionary, attendu: Dictionary,
+		ou: String) -> Array[String]:
+	var ecarts: Array[String] = []
+
+	var armes_obtenues: Array = obtenu.get("weapons", []) as Array
+	var armes_attendues: Array = attendu.get("weapons", []) as Array
+	if armes_obtenues.size() != armes_attendues.size():
+		ecarts.append("%s : %d arme(s) au lieu de %d"
+			% [ou, armes_obtenues.size(), armes_attendues.size()])
+	else:
+		for i: int in range(armes_attendues.size()):
+			var a: Dictionary = armes_obtenues[i] as Dictionary
+			var b: Dictionary = armes_attendues[i] as Dictionary
+			if String(a.get("id", "")) != String(b.get("id", "")):
+				ecarts.append("%s : arme %d = « %s » au lieu de « %s »"
+					% [ou, i, String(a.get("id", "")), String(b.get("id", ""))])
+			elif int(a.get("durability", -1)) != int(b.get("durability", -1)):
+				ecarts.append("%s : durabilité de « %s » = %d au lieu de %d"
+					% [ou, String(b.get("id", "")),
+						int(a.get("durability", -1)),
+						int(b.get("durability", -1))])
+
+	if int(obtenu.get("equipped_index", -1)) \
+			!= int(attendu.get("equipped_index", -1)):
+		ecarts.append("%s : arme équipée n° %d au lieu de %d"
+			% [ou, int(obtenu.get("equipped_index", -1)),
+				int(attendu.get("equipped_index", -1))])
+
+	if int(obtenu.get("arrows", -1)) != int(attendu.get("arrows", -1)):
+		ecarts.append("%s : %d flèche(s) au lieu de %d"
+			% [ou, int(obtenu.get("arrows", -1)),
+				int(attendu.get("arrows", -1))])
+
+	var ing_obtenus: Dictionary = obtenu.get("ingredients", {}) as Dictionary
+	var ing_attendus: Dictionary = attendu.get("ingredients", {}) as Dictionary
+	for cle: Variant in ing_attendus.keys():
+		var nom: String = String(cle)
+		if int(ing_obtenus.get(nom, 0)) != int(ing_attendus[cle]):
+			ecarts.append("%s : %d « %s » au lieu de %d"
+				% [ou, int(ing_obtenus.get(nom, 0)), nom,
+					int(ing_attendus[cle])])
+	for cle: Variant in ing_obtenus.keys():
+		if not ing_attendus.has(String(cle)) \
+				and not ing_attendus.has(StringName(String(cle))):
+			ecarts.append("%s : ingrédient « %s » apparu de nulle part"
+				% [ou, String(cle)])
+
+	var plats_obtenus: Array = obtenu.get("meals", []) as Array
+	var plats_attendus: Array = attendu.get("meals", []) as Array
+	if plats_obtenus.size() != plats_attendus.size():
+		ecarts.append("%s : %d plat(s) au lieu de %d"
+			% [ou, plats_obtenus.size(), plats_attendus.size()])
+	else:
+		for i: int in range(plats_attendus.size()):
+			var pa: Dictionary = plats_obtenus[i] as Dictionary
+			var pb: Dictionary = plats_attendus[i] as Dictionary
+			if int(pa.get("heal", -1)) != int(pb.get("heal", -1)) \
+					or String(pa.get("effect", "")) \
+						!= String(pb.get("effect", "")):
+				ecarts.append("%s : plat %d altéré (soin %d/« %s » au lieu de "
+					% [ou, i, int(pa.get("heal", -1)),
+						String(pa.get("effect", ""))]
+					+ "%d/« %s »)" % [int(pb.get("heal", -1)),
+						String(pb.get("effect", ""))])
+	return ecarts
+
+
+## L'inventaire VIVANT du héros, dans la forme exacte du schéma de sauvegarde,
+## pour que les deux moitiés se comparent à la même graine.
+func _inventaire_vivant(player: PlayerController) -> Dictionary:
+	if player == null or player.inventory() == null:
+		return {}
+	var inventaire: InventoryComponent = player.inventory()
+	var armes: Array = []
+	for arme: WeaponInstance in inventaire.weapons():
+		armes.append({
+			"id": String(arme.definition_id()),
+			"durability": arme.current_durability,
+		})
+	return {
+		"weapons": armes,
+		"equipped_index": inventaire.equipped_index(),
+		"arrows": inventaire.arrows(),
+		"ingredients": inventaire.ingredients_snapshot(),
+		"meals": inventaire.meals_snapshot(),
+	}
+
+
+func _monter_l_antichambre() -> Node:
+	var salle: Node = (load(ANTICHAMBRE_SCENE) as PackedScene).instantiate()
+	_tree().root.add_child(salle)
+	await _tree().process_frame
+	# `call_deferred` s'exécute à la fin de l'image courante : deux images
+	# suffisent, et la garde `checkpoint_written()` le PROUVE plutôt que de
+	# l'espérer.
+	await _tree().process_frame
+	await _tree().process_frame
+	return salle
+
+
+func test_c11_reprendre_dans_l_antichambre_ne_vide_pas_l_inventaire() -> void:
+	remember_saves()
+	var graine: Dictionary = _inventaire_riche()
+	var slot: Dictionary = _slot_de_reprise_v2()
+	slot["checkpoint"] = TAG_ANTICHAMBRE
+	for cle: Variant in graine.keys():
+		slot[String(cle)] = graine[cle]
+	check(_ecrire_slot(slot),
+		"sauvegarde « arrêté dans l'antichambre, sac plein » écrite")
+
+	remember_root()
+	var salle: Node = await _monter_l_antichambre()
+	check_not_null(salle, "l'antichambre se monte")
+
+	# --- LA GARDE. Sans écriture différée, tout ce qui suit serait vert pour
+	# --- rien : la graine serait simplement restée intacte.
+	var ecrit: bool = salle != null \
+		and bool(salle.call("checkpoint_written"))
+	check(ecrit,
+		"l'écriture différée du checkpoint a RÉELLEMENT eu lieu — sans elle "
+		+ "ce cas ne prouverait rien")
+
+	# --- Moitié 1 : ce qu'une relance LIRA sur le disque.
+	var apres: Dictionary = _lire_slot()
+	check_equal(String(apres.get("checkpoint", "")), TAG_ANTICHAMBRE,
+		"le checkpoint reste l'antichambre après l'écriture")
+	var ecarts_disque: Array[String] = _ecarts_d_inventaire(
+		apres, graine, "sur le disque")
+	check(ecarts_disque.is_empty(),
+		"l'écriture du checkpoint PRÉSERVE l'inventaire sauvegardé — %s"
+			% ("aucun écart" if ecarts_disque.is_empty()
+				else ", ".join(ecarts_disque)))
+
+	# --- Moitié 2 : ce qu'une relance JOUERA, capsule et sac en main.
+	var vivant: Dictionary = _inventaire_vivant(
+		salle.call("player") as PlayerController if salle != null else null)
+	var ecarts_vivants: Array[String] = _ecarts_d_inventaire(
+		vivant, graine, "dans les mains du héros")
+	check(ecarts_vivants.is_empty(),
+		"le héros REPART avec ce qu'il portait — %s"
+			% ("aucun écart" if ecarts_vivants.is_empty()
+				else ", ".join(ecarts_vivants)))
+
+	var propre: bool = await restore_root()
+	check(propre, "démontage propre — %s" % restore_root_reason())
+	restore_saves()

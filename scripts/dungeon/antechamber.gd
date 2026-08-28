@@ -21,6 +21,7 @@ var _chest: Chest = null
 var _campfire: Campfire = null
 var _berries: Array[IngredientPickup] = []
 var _checkpoint_saved: bool = false
+var _inventory_restored: bool = false
 
 @onready var _player: PlayerController = get_node_or_null("Player") \
 	as PlayerController
@@ -52,6 +53,12 @@ func _ready() -> void:
 		# §15.11 : on ressort de l'arène DEVANT son seuil, pas au spawn.
 		&"antechamber_from_arena": Vector3(6.0, 0.3, -8.0),
 	})
+	# ISS-080 : on REPREND d'abord ce que le joueur portait. L'écriture
+	# différée ci-dessous recopie l'inventaire du `Player` dans la
+	# sauvegarde ; sans cette restauration elle y recopie le kit par défaut
+	# de `Player.tscn` — une `worn_sword` et huit flèches — et efface le sac
+	# du joueur à la seconde où sa partie se rouvre ici.
+	_restore_inventory_from_checkpoint()
 	# §19.5 : le checkpoint est POSÉ en entrant, pas promis.
 	call_deferred("_write_checkpoint")
 
@@ -276,6 +283,14 @@ func _write_checkpoint() -> void:
 	var data: Dictionary = {}
 	if bool(save_system.call("has_save", SAVE_SLOT)):
 		data = save_system.call("load_slot", SAVE_SLOT) as Dictionary
+		# Un slot PRÉSENT mais illisible — corrompu, ou d'un schéma plus
+		# récent que celui qu'on sait lire — rend `{}` exactement comme un
+		# slot absent. Repartir de `{}` écraserait le fichier ET sa copie de
+		# secours par un état neuf : on refuse, bruyamment (§19.4).
+		if data.is_empty():
+			push_warning("[antichambre] slot présent mais illisible — "
+				+ "checkpoint refusé pour ne pas l'écraser (§19.4)")
+			return
 	if data.is_empty():
 		data = {"schema": 2}
 	data["checkpoint"] = "dungeon.antechamber"
@@ -293,6 +308,48 @@ func _write_checkpoint() -> void:
 		data["ingredients"] = inventory.ingredients_snapshot()
 		data["meals"] = inventory.meals_snapshot()
 	_checkpoint_saved = bool(save_system.call("save_slot", SAVE_SLOT, data))
+
+
+## ISS-080. Le mécanisme est celui de `boss_arena.gd`, qui relit ce même
+## checkpoint pour rendre le « Réessayer » honnête ; l'antichambre ne le
+## faisait pas, et c'est tout le défaut. On restaure l'INVENTAIRE et rien
+## d'autre : la santé, la position et les circuits ne sont pas l'affaire de
+## ce ticket.
+##
+## Aucun contrôle d'identité de monde ici, et c'est délibéré : un identifiant
+## d'arme ou d'ingrédient ne dépend d'aucune carte, contrairement à une
+## position. Ce qui se restaure est valable partout.
+func _restore_inventory_from_checkpoint() -> void:
+	var save_system: Node = get_node_or_null("/root/SaveSystem")
+	if save_system == null or _player == null \
+			or not bool(save_system.call("has_save", SAVE_SLOT)):
+		return
+	var data: Dictionary = save_system.call("load_slot", SAVE_SLOT) as Dictionary
+	if data.is_empty() or _player.inventory() == null:
+		return
+	var inventory: InventoryComponent = _player.inventory()
+	if data.has("weapons"):
+		inventory.clear_weapons()
+		for entry: Variant in (data["weapons"] as Array):
+			var weapon_data: Dictionary = entry as Dictionary
+			var id: String = String(weapon_data.get("id", ""))
+			var path: String = "res://resources/weapons/%s.tres" % id
+			if not ResourceLoader.exists(path):
+				push_warning("[antichambre] arme inconnue ignorée : %s" % id)
+				continue
+			var instance: WeaponInstance = WeaponInstance.create(
+				load(path) as WeaponDefinition)
+			instance.current_durability = int(weapon_data.get("durability",
+				instance.current_durability))
+			inventory.add_weapon(instance)
+		inventory.equip_index(int(data.get("equipped_index", 0)))
+	if data.has("arrows"):
+		inventory.set_arrows(int(data["arrows"]))
+	if data.has("ingredients"):
+		inventory.set_ingredients(data["ingredients"] as Dictionary)
+	if data.has("meals"):
+		inventory.set_meals(data["meals"] as Array)
+	_inventory_restored = true
 
 
 func _setup_lighting() -> void:
@@ -330,6 +387,12 @@ func berries() -> Array[IngredientPickup]:
 
 func checkpoint_written() -> bool:
 	return _checkpoint_saved
+
+
+## Observable d'ISS-080 : un portail peut ainsi distinguer « rien à
+## restaurer » de « restauration effectuée ».
+func inventory_restored() -> bool:
+	return _inventory_restored
 
 
 func player() -> PlayerController:

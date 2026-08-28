@@ -2957,7 +2957,7 @@ chemin est un garde qu'aucun test ne peut prouver.
 
 ---
 
-## ISS-080 — « Continuer » dans l'antichambre réécrit l'inventaire par le kit par défaut — S3, OUVERT, PRÉEXISTANT
+## ISS-080 — « Continuer » dans l'antichambre réécrit l'inventaire par le kit par défaut — S3, **FERMÉ le 2026-08-28**
 
 **Découvert le 2026-08-28** par la contre-revue T1 (constat « détail » n° 6).
 Préexistant à T1 : le comportement date du checkpoint d'antichambre.
@@ -2973,9 +2973,28 @@ le kit de base.
 persisté — il se re-loote — et la solvabilité du boss (loot garanti §16.7)
 reste vraie. Le joueur perd des objets, pas la partie.
 
-**Correction candidate** : restaurer l'inventaire depuis la sauvegarde au
-montage de l'antichambre (le mécanisme existe dans `boss_arena.gd`), PUIS
-écrire le checkpoint. À faire dans une passe donjon, pas dans T1.
+**Correction appliquée le 2026-08-28**, telle qu'elle était prescrite :
+`antechamber.gd::_restore_inventory_from_checkpoint()` restaure l'inventaire
+depuis la sauvegarde AVANT l'écriture différée du checkpoint — le mécanisme
+est celui de `boss_arena.gd`, repris sans le modifier. On restaure
+l'inventaire et rien d'autre : ni santé, ni position, ni circuits.
+
+**Prouvé par C11** (`tests/world_v2/test_world_v2_t1_persistance.gd`), rouge
+d'abord. Le premier rouge, mot pour mot : « 1 arme(s) au lieu de 3 · arme
+équipée n° 0 au lieu de 1 · 8 flèche(s) au lieu de 37 · 0 storm_berry au lieu
+de 3 · 0 plat(s) au lieu de 1 » — soit exactement le contenu de `Player.tscn`.
+Après correction : 11 réussis, 0 échoué. Contrôle négatif : retirer la seule
+ligne d'appel rougit C11 et **rien d'autre** (10 réussis, 2 échoués).
+Preuves : `evidence/world_v2/iss080/`.
+
+**Deux effets consignés, parce qu'ils dépassent la lettre du ticket.**
+(1) Aucune salle du donjon ne restaurait l'inventaire ; un joueur venu de la
+salle centrale retrouve désormais aussi ce que son checkpoint portait — une
+amélioration, mais c'en est une. (2) `_write_checkpoint` repartait de
+`{"schema": 2}` quand `load_slot` rendait `{}` : un slot seulement
+*illisible* était donc écrasé par un état neuf et rétrogradé de schéma — le
+défaut que C10 venait de fermer dans l'autosave, ici à l'identique. Un slot
+présent mais illisible n'est plus jamais réécrit par l'antichambre.
 
 ---
 

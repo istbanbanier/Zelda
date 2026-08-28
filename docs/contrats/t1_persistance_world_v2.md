@@ -65,6 +65,7 @@ générale de la sauvegarde.
 | C8 | le chemin RÉEL d'autosave | vraie transition `SceneFlow`, fusion éprouvée par témoins, reprise par le vrai bouton du menu, débranchement prouvé sur monde libéré | né de la contre-revue §9 — vert, 23 assertions |
 | C9 | fermer le jeu sauvegarde ; la perte brutale est bornée | `NOTIFICATION_WM_CLOSE_REQUEST` + minuterie épinglée à 60 s + « jamais en l'air » (vrai saut) | **rouge d'abord** (2 échecs), puis vert, 14 assertions |
 | C10 | l'autosave n'écrase jamais un slot illisible | schéma futur et JSON tronqué : fichier intact à l'octet près | **rouge d'abord** (2 échecs), puis vert, 9 assertions |
+| C11 | reprendre dans l'antichambre ne vide pas l'inventaire | graine riche → « Continuer » → écriture différée **prouvée** → ce qu'une relance LIRA (le slot) et ce qu'elle JOUERA (le sac du héros) | **rouge d'abord** (2 échecs), puis vert — ferme ISS-080 |
 
 C1, C2 et C3 sont les contrats **rouges** : ils décrivent le défaut. C4, C5 et
 C6 sont des **filets** déjà verts, qui doivent le rester — c'est là qu'un T1
@@ -201,6 +202,67 @@ Les trois FAIL de la revue sont devenus trois contrats :
 Les détails non corrigés sont consignés : ISS-079 (autosave V1 sous signature
 V2, latent), ISS-080 (inventaire par défaut au « Continuer » antichambre,
 préexistant), ISS-081 (tag fantôme sur `go_to` échoué, préexistant).
+
+## 10. C11 — ISS-080 fermée, et pourquoi ce cas ne peut pas mentir
+
+La décision lead du 2026-08-28 a rouvert le détail n° 6 de cette contre-revue.
+ISS-080 n'était pas une gêne cosmétique : `antechamber.gd` posait son
+checkpoint par `call_deferred("_write_checkpoint")`, et cette écriture
+recopiait dans la sauvegarde l'inventaire du `Player` **fraîchement monté** —
+le kit par défaut de `Player.tscn`. Or T1 route désormais une reprise vers
+`dungeon.antechamber`. Le joueur qui rouvrait sa partie là perdait donc tout
+ce qu'il portait, **à la seconde du chargement**, sans un message.
+
+Mesuré, pas déduit — le premier rouge de C11, mot pour mot :
+
+> 1 arme(s) au lieu de 3 · arme équipée n° 0 au lieu de 1 · 8 flèche(s) au
+> lieu de 37 · 0 « storm_berry » au lieu de 3 · 0 « heal_fruit » au lieu de 2
+> · 0 « rare_spice » au lieu de 1 · 0 plat(s) au lieu de 1
+
+C'est exactement le contenu de `Player.tscn` : une `worn_sword`, huit flèches,
+rien d'autre.
+
+**La garde qui empêche C11 d'être vert pour rien.** Un cas qui se contenterait
+de comparer la sauvegarde avant et après serait vert si l'antichambre
+n'écrivait **rien du tout** — la graine serait simplement restée intacte.
+C'est le mode de panne d'ISS-018 : un test vert sur une grandeur qui n'est pas
+celle qu'on croit mesurer. C11 vérifie donc D'ABORD, par `checkpoint_written()`,
+que l'écriture différée a réellement eu lieu ; ce n'est qu'ensuite qu'il
+compare. Cette assertion-là était **verte dès le premier rouge**, et c'est ce
+qui rend les deux autres décisives.
+
+**Les deux moitiés du mot « relance ».** Une reprise n'est pas seulement un
+fichier : c'est aussi une partie qui se joue. C11 mesure donc
+
+1. ce qu'une relance **LIRA** — le slot sur disque après l'écriture ;
+2. ce qu'une relance **JOUERA** — l'inventaire vivant du héros après un
+   remontage de l'antichambre depuis ce même slot.
+
+Les deux étaient rouges, pour deux causes différentes : la première parce que
+l'écriture écrasait, la seconde parce que **rien ne restaurait**.
+
+**La correction, et sa retenue.** Le mécanisme existait déjà dans
+`boss_arena.gd`, qui relit ce même checkpoint pour rendre le « Réessayer »
+honnête. L'antichambre le fait désormais aussi, avant son écriture différée.
+On restaure l'inventaire et **rien d'autre** : ni la santé, ni la position, ni
+les circuits — ils ne sont pas l'affaire de ce ticket. Aucun contrôle
+d'identité de monde n'est posé, et c'est délibéré : un identifiant d'arme ou
+d'ingrédient ne dépend d'aucune carte, contrairement à une position (§4 du
+contrat de migration ne s'applique donc pas ici).
+
+**Un effet de bord, dit honnêtement.** Aucune salle du donjon ne restaurait
+l'inventaire ; chaque salle monte un `Player` neuf au kit par défaut. En
+restaurant à l'entrée de l'antichambre, un joueur venu de la salle centrale
+retrouve désormais aussi ce que son dernier checkpoint portait. C'est une
+amélioration, pas une régression — mais c'en est une, et elle est notée ici
+plutôt que découverte plus tard.
+
+**Une garde de plus, du même sang que C10.** `_write_checkpoint` repartait de
+`{"schema": 2}` quand `load_slot` rendait `{}` — donc écrasait un slot
+seulement *illisible* par un état neuf **et rétrogradé de schéma**. C'était,
+dans l'antichambre, très exactement le défaut que C10 venait de fermer dans
+l'autosave. Un slot présent mais illisible n'est plus jamais réécrit ici non
+plus.
 
 ## 8. Interdits de la passe T1
 
