@@ -1,0 +1,37 @@
+
+### 1. l'artefact mesuré est-il bien CELUI du commit courant ?
+    sha git    : c3f181923c540519590c5322a9f29be8310b05d8
+    binaire    : /home/user/iss073_out/build/EclatsDOrage.x86_64
+    octets     : 398840568
+    sha256     : 6ba985ef76228747b349308f4e6b0bd7b0ec9fe0b464d57a7dc71801a3605ac4
+
+### 2. installation NEUVE — ni sauvegarde, ni option, ni cache
+    profil vierge : /home/user/iss073_out/profil_vierge_iss073 (0 entrée(s), 0 attendu)
+
+### 3. Xvfb + lancement de la build AUTONOME
+    Xvfb PID 6769 sur :93
+    jeu PID 6774 ; journal /home/user/iss073_out/journaux/iss073_jeu_exporte.log
+
+### 4. « Nouvelle partie » — par le FOCUS X, jamais par --window
+    fenêtre : 2097155
+    Return envoyé par le focus
+
+### 5. attente du jalon de montage
+    jalon : [world_v2] fondation V2 vérifiée — vallée whitebox prête.
+
+### 6. les constats ISS-073, lus dans ce que le jeu dit de LUI-MÊME
+    ligne lue : [world_v2] porte donjon : posée au seuil §3.3
+    [PASS] la porte du donjon est POSÉE dans la build exportée
+    ligne lue : [world_v2] arrivée      : spawn
+    [PASS] une partie NEUVE arrive bien au point d'apparition
+    ligne lue : [world_v2] lieux        : 15 scène(s) posée(s) par le layout
+    [PASS] les 15 lieux du layout sont posés (ISS-071 ne rechute pas)
+    [PASS] le monde s'est monté jusqu'au bout
+    erreurs de script/ressource dans le journal : 0
+    [PASS] aucune erreur de script ni de ressource au montage
+
+### 7. verdict
+    tous les constats sont PASS
+
+=== VERDICT PORTAIL EXPORT ISS-073 : code 0
+RC=0

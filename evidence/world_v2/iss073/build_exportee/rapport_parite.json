@@ -1,0 +1,201 @@
+{
+  "verdict": "VERT",
+  "code": 0,
+  "editeur": "/home/user/iss073_out/manifeste_editeur.json",
+  "export": "/home/user/iss073_out/manifeste_export.json",
+  "journal": "/home/user/iss073_out/journaux/jeu_exporte_stdout.log",
+  "constats": [
+    {
+      "controle": "lecture du manifeste editeur",
+      "verdict": "VERT",
+      "examine": "/home/user/iss073_out/manifeste_editeur.json (37368 o)",
+      "mesure": "environnement « editeur », godot 4.7.1-stable (custom_build), monde neris_v2"
+    },
+    {
+      "controle": "lecture du manifeste export",
+      "verdict": "VERT",
+      "examine": "/home/user/iss073_out/manifeste_export.json (37367 o)",
+      "mesure": "environnement « export », godot 4.7.1-stable (custom_build), monde neris_v2"
+    },
+    {
+      "controle": "lecture du journal du jeu",
+      "verdict": "VERT",
+      "examine": "/home/user/iss073_out/journaux/jeu_exporte_stdout.log (52 lignes)",
+      "mesure": "jalon « fondation V2 vérifiée » présent"
+    },
+    {
+      "controle": "I7 AssetRegistry — ordre des répertoires inchangé",
+      "verdict": "VERT",
+      "examine": "6 répertoire(s) éditeur, 6 export, comparés position par position",
+      "mesure": "listes identiques dans le même ordre"
+    },
+    {
+      "controle": "I1 index AssetRegistry — mêmes noms canoniques indexés",
+      "verdict": "VERT",
+      "examine": "160 clés éditeur contre 160 clés export, union 160",
+      "mesure": "0 différence(s) : 0 seulement en éditeur, 0 seulement en export"
+    },
+    {
+      "controle": "I2/I3 index AssetRegistry — même chemin source pour un même nom",
+      "verdict": "VERT",
+      "examine": "160 couple(s) nom→chemin comparés un à un (comparaison de couples, jamais de cardinaux)",
+      "mesure": "0 couple(s) divergent(s)"
+    },
+    {
+      "controle": "I6 AssetRegistry — collisions publiées à l'identique",
+      "verdict": "VERT",
+      "examine": "0 collision(s) publiée(s) en éditeur, 0 en export",
+      "mesure": "mêmes collisions des deux côtés"
+    },
+    {
+      "controle": "§4 AssetRegistry — différence des modèles DEMANDÉS",
+      "verdict": "VERT",
+      "examine": "21 nom(s) demandés en éditeur, 21 en export",
+      "mesure": "0 différence(s)"
+    },
+    {
+      "controle": "§4 AssetRegistry — différence des modèles CHARGÉS",
+      "verdict": "VERT",
+      "examine": "21 nom(s) chargés en éditeur, 21 en export",
+      "mesure": "0 différence(s)"
+    },
+    {
+      "controle": "§4 AssetRegistry — modèle DEMANDÉ mais NON CHARGÉ",
+      "verdict": "VERT",
+      "examine": "table « manques » des deux manifestes : 0 nom(s) distincts en éditeur, 0 en export",
+      "mesure": "0 appel(s) manqué(s) en éditeur, 0 en export"
+    },
+    {
+      "controle": "I7 WorldV2PlaceKit — ordre des répertoires inchangé",
+      "verdict": "VERT",
+      "examine": "6 répertoire(s) éditeur, 6 export, comparés position par position",
+      "mesure": "listes identiques dans le même ordre"
+    },
+    {
+      "controle": "I1 index WorldV2PlaceKit — mêmes noms canoniques indexés",
+      "verdict": "VERT",
+      "examine": "215 clés éditeur contre 215 clés export, union 215",
+      "mesure": "0 différence(s) : 0 seulement en éditeur, 0 seulement en export"
+    },
+    {
+      "controle": "I2/I3 index WorldV2PlaceKit — même chemin source pour un même nom",
+      "verdict": "VERT",
+      "examine": "215 couple(s) nom→chemin comparés un à un (comparaison de couples, jamais de cardinaux)",
+      "mesure": "0 couple(s) divergent(s)"
+    },
+    {
+      "controle": "I6 WorldV2PlaceKit — collisions publiées à l'identique",
+      "verdict": "VERT",
+      "examine": "0 collision(s) publiée(s) en éditeur, 0 en export",
+      "mesure": "mêmes collisions des deux côtés"
+    },
+    {
+      "controle": "§4 WorldV2PlaceKit — différence des modèles DEMANDÉS",
+      "verdict": "VERT",
+      "examine": "99 nom(s) demandés en éditeur, 99 en export",
+      "mesure": "0 différence(s)"
+    },
+    {
+      "controle": "§4 WorldV2PlaceKit — différence des modèles CHARGÉS",
+      "verdict": "VERT",
+      "examine": "99 nom(s) chargés en éditeur, 99 en export",
+      "mesure": "0 différence(s)"
+    },
+    {
+      "controle": "§4 WorldV2PlaceKit — modèle DEMANDÉ mais NON CHARGÉ",
+      "verdict": "VERT",
+      "examine": "table « manques » des deux manifestes : 0 nom(s) distincts en éditeur, 0 en export",
+      "mesure": "0 appel(s) manqué(s) en éditeur, 0 en export"
+    },
+    {
+      "controle": "§4 modules_instancies — positif et identique",
+      "verdict": "VERT",
+      "examine": "clé « modules_instancies » des deux manifestes",
+      "mesure": "éditeur=459, export=459"
+    },
+    {
+      "controle": "§4 cellules_emises — positif et identique",
+      "verdict": "VERT",
+      "examine": "clé « cellules_emises » des deux manifestes",
+      "mesure": "éditeur=631, export=631"
+    },
+    {
+      "controle": "§4 cellules_manquees — nulles des deux côtés",
+      "verdict": "VERT",
+      "examine": "clé « vegetation.cellules_manquees » des deux manifestes",
+      "mesure": "éditeur=0, export=0 — une cellule manquée est une cellule de MultiMesh sautée ENTIÈRE, donc bien plus d'objets absents que d'appels manqués"
+    },
+    {
+      "controle": "§3 lieux_poses — positif et identique",
+      "verdict": "VERT",
+      "examine": "clé « lieux_poses » des deux manifestes",
+      "mesure": "éditeur=15, export=15"
+    },
+    {
+      "controle": "§4 journal — lignes « kit : modèle inconnu »",
+      "verdict": "VERT",
+      "examine": "52 ligne(s) de journal balayées",
+      "mesure": "0 ligne(s), 0 modèle(s) distinct(s)"
+    },
+    {
+      "controle": "§4 journal — lignes « modèle végétal introuvable »",
+      "verdict": "VERT",
+      "examine": "52 ligne(s) de journal balayées",
+      "mesure": "0 ligne(s), 0 modèle(s) distinct(s)"
+    },
+    {
+      "controle": "§4 journal — lignes « flower_field : modèle inconnu »",
+      "verdict": "VERT",
+      "examine": "52 ligne(s) de journal balayées",
+      "mesure": "0 ligne(s), 0 modèle(s) distinct(s)"
+    },
+    {
+      "controle": "§4 journal — lignes « flower_field : modèle de dalle inconnu »",
+      "verdict": "VERT",
+      "examine": "52 ligne(s) de journal balayées",
+      "mesure": "0 ligne(s), 0 modèle(s) distinct(s)"
+    },
+    {
+      "controle": "I9 — aucun manque silencieux",
+      "verdict": "VERT",
+      "examine": "0 manque(s) comptés aux manifestes contre 0 ligne(s) d'erreur au journal",
+      "mesure": "compteurs et journal concordent (tous deux nuls, ou tous deux positifs)"
+    },
+    {
+      "controle": "I4/I5 editeur/WorldV2PlaceKit — chemins indexés réellement chargeables",
+      "verdict": "VERT",
+      "examine": "215 chemin(s) éprouvés par un vrai load(), pour 215 chemin(s) publiés dans l'index",
+      "mesure": "215/215 chargés"
+    },
+    {
+      "controle": "I4/I5 editeur/AssetRegistry — chemins indexés réellement chargeables",
+      "verdict": "VERT",
+      "examine": "160 chemin(s) éprouvés par un vrai load(), pour 160 chemin(s) publiés dans l'index",
+      "mesure": "160/160 chargés"
+    },
+    {
+      "controle": "I4/I5 export/WorldV2PlaceKit — chemins indexés réellement chargeables",
+      "verdict": "VERT",
+      "examine": "215 chemin(s) éprouvés par un vrai load(), pour 215 chemin(s) publiés dans l'index",
+      "mesure": "215/215 chargés"
+    },
+    {
+      "controle": "I4/I5 export/AssetRegistry — chemins indexés réellement chargeables",
+      "verdict": "VERT",
+      "examine": "160 chemin(s) éprouvés par un vrai load(), pour 160 chemin(s) publiés dans l'index",
+      "mesure": "160/160 chargés"
+    },
+    {
+      "controle": "I8 — plafond de rétention des PackedScene de kit (ISS-059)",
+      "verdict": "VERT",
+      "examine": "scripts/world_v2/poi/world_v2_place_kit.gd (512 lignes) cherché pour le littéral « const SCENE_CACHE_MAX: int = 256 »",
+      "mesure": "littéral présent, à l'identique"
+    },
+    {
+      "controle": "I8 — plafond de rétention des PackedScene du registre (ISS-059)",
+      "verdict": "VERT",
+      "examine": "scripts/core/asset_registry.gd (295 lignes) cherché pour le littéral « const MODEL_CACHE_MAX: int = 48 »",
+      "mesure": "littéral présent, à l'identique"
+    }
+  ]
+}
