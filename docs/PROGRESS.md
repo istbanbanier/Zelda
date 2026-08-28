@@ -39,13 +39,35 @@ Piège consigné dans `tools/CLAUDE.md`. Deux autres : l'avant d'un ennemi est
 **+Z** (les lacets sont désormais calculés, pas posés à l'œil), et l'ouïe
 contournait la garde de territoire (le portail vérifie trois disques).
 
-**PROCHAINE ACTION EXACTE** : exécuter `tools/gate_export_parite.sh` (le
-conteneur a été re-provisionné, il n'existe AUCUN arbre d'export) puis
-`tools/gate_export_garnison.sh`. Tout le volet export est **NON VÉRIFIÉ** à
-cette heure. Ensuite : produire le profil CPU du camp à garnison pleine exigé
-par `docs/contrats/iss074_peuplement_world_v2.md` §6.6. **Interdits
-inchangés** : aucune fusion dans la candidate avant le playtest d'Istvan ;
-aucun ennemi hors de r05 ; `GO_V2_3_B_LOT2 = FALSE` ; aucune release.
+**Le coût CPU du camp** (§6.6) est mesuré : **+6,587 ms en moyenne,
++20,763 ms au p95, +132 nœuds**. La première sonde donnait un monde témoin
+DEUX FOIS plus cher que le monde peuplé — elle montait les deux mondes dans
+le même processus et le témoin payait la démolition du premier. Le journal
+absurde est gardé sous `profil_cpu_INVALIDE_un_seul_processus.log` : il
+enseigne mieux que le bon.
+
+**Le volet export est VERT** — `gate_export_garnison_vert.log`, build liée à
+`86bc5570`, arbre propre. Arrivée réelle au camp (71,33 m marchés, un garde
+qui VOIT), zéro ressource manquante dans le PCK, aucune duplication à la
+relance, morts persistées qui ne reviennent pas, inventaire d'antichambre
+intact après une VRAIE fermeture de processus.
+
+Il a d'abord rougi deux fois, et sur **aucune affirmation du jeu** : le
+harnais attendait 30 s la mort du processus là où il en fallait 32. Sur un
+cache de shaders froid, le premier rendu llvmpipe d'une vallée entière occupe
+la boucle principale ; le budget chronométrait la compilation des shaders, pas
+la fermeture. Pire, sa branche d'échec laissait un orphelin qui gardait
+llvmpipe à fond et sa fenêtre visible : G5 a fait tomber G6. Un défaut, deux
+échecs affichés. Corrigé dans le harnais seul (`86bc5570`), avec l'attente
+réelle publiée à chaque appel — le portail vert affiche `32 s` pour G5 et
+`2` à `4 s` ailleurs.
+
+**PROCHAINE ACTION EXACTE** : la tranche est complète et prouvée ; il ne reste
+qu'à absorber la contre-revue à contexte frais sur `b4b2e287..HEAD` si elle
+soulève un constat, puis à attendre le playtest d'Istvan. **Ne pas ouvrir le
+Lot 2.** **Interdits inchangés** : aucune fusion dans la candidate avant le
+playtest d'Istvan ; aucun ennemi hors de r05 ; `GO_V2_3_B_LOT2 = FALSE` ;
+aucune release officielle.
 
 ---
 ## 2026-08-28 — T1 FIGÉE : artefact expérimental publié et revérifié, ISS-074 ouverte en branche indépendante
