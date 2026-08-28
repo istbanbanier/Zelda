@@ -4,6 +4,70 @@ Ordre **anti-chronologique** : l'entrée la plus récente est en haut. La derni�
 entrée fait office de handoff et doit indiquer **exactement** la prochaine action.
 
 ---
+## 2026-08-28 — T1 ouvert sur branche séparée : six contrats de persistance, écrits rouges
+
+Branche `claude/world-v2-t1-persistance`, partie de `a8d2f77` — la candidate de
+lundi. **Aucune ligne de production.** Cette entrée ne rapporte que des
+contrats et leur verdict.
+
+**Le défaut, écrit noir sur blanc aux deux bouts du code.** ISS-073 a rendu la
+boucle atteignable ; elle ne se **reprend** toujours pas. `world_v2_root.gd`
+énumère trois provenances de placement et en écarte une — « une position
+sauvegardée — hors périmètre de cette corrective » ; `main_menu.gd` charge la
+sauvegarde, vérifie qu'elle est lisible, puis appelle `_enter_world()` sans
+jamais la regarder. Un joueur arrêté dans l'antichambre du boss refait tout le
+donjon.
+
+**Six contrats** dans `tests/world_v2/test_world_v2_t1_persistance.gd`, chacun
+mesuré sur un cycle réel — monter, écrire, DÉMONTER, REMONTER, mesurer la
+position obtenue. Verdict : **3 réussis, 7 échoués, 0 erreur de script**.
+C1 position, C2 orientation et C3 scène de reprise sont ROUGES ; C4 (une
+position V1 n'est jamais réappliquée en V2), C5 (sauvegarde corrompue) et C6
+(identifiants stables) sont des filets déjà VERTS — 69 assertions — qui
+doivent le rester.
+
+**Un seul sabotage, trois preuves.** Restauration aveugle posée dans
+`world_v2_root.gd` (relire `player_position` sans regarder `world_version`) :
+C1 passe de 3 échecs à 1 — sa moitié lecture verdit, donc le cas est
+satisfiable — pendant que C4 rougit et que C5 rougit sur exactement les deux
+formes dont les composantes sont des `float`. L'implémentation qui verdirait
+C1 le plus vite est prise en étau. Sabotage retiré, identité du fichier
+vérifiée au sha256.
+
+**Deux corrections de méthode, faites avant de committer.** (1) Le premier
+jet inventait un champ `resume_scene` pour C3 : retiré — le donjon écrit DÉJÀ
+son lieu dans `checkpoint`, et `docs/WORLD_V2_SAVE_MIGRATION.md` (écrit dès
+V2.0) tranchait déjà la question ; poser une seconde source de vérité à côté
+d'une qui existe est la façon la plus sûre de les faire diverger. (2) Le
+premier jet demandait à V2 de réappliquer une position non signée : contraire
+au §4 du même contrat — « pas bornée : ignorée », parce qu'une position V1
+peut être dans les bornes V2 et pourtant au fond d'un lac V2. C4 est né de
+cette correction.
+
+**Un piège de harnais, trouvé par le premier rouge, qui attend tout le monde.**
+`restore_root()` VIDE sa photo en sortant. Un cas qui monte deux fois appelait
+donc `restore_root()` deux fois pour une seule `remember_root()`, et le second
+balayage — photo vide — prenait les autoloads pour des intrus : `GameState`,
+`EventBus` et `SaveSystem` **supprimés**. Correction : une photo par montage,
+prise dans le montage. Consigné dans le contrat T1 §4.
+
+**Ce que T1 devra lever, et qui n'est pas levé ici.**
+`test_world_v2_skeleton.gd` exige que `slot0` reste « identique à l'octet près
+après le passage en V2 » — contrat né du squelette, quand V2 ne devait pas
+déranger V1. V2 EST le jeu depuis que le menu l'ouvre. Sa levée est une
+décision de production, à écrire dans `DECISIONS.md` avec son contrat de
+remplacement (fusion par clé, champs signés `world_version = neris_v2`).
+
+**PROCHAINE ACTION EXACTE** : implémenter T1 sur cette branche, dans l'ordre
+C1 → C2 → C3, en relançant `--filter=t1_persistance` après chaque contrat, et
+en vérifiant à chaque fois que C4, C5 et C6 restent verts — c'est là que
+l'implémentation naïve se fait prendre. **Interdits** : fusionner quoi que ce
+soit de T1 dans la candidate de lundi avant la contre-revue §6 ; modifier ou
+supprimer un champ existant du schéma 4 ; verdir un contrat en changeant sa
+mesure. La candidate `world-v2-candidate-iss073-98cbaf0` reste ce qu'Istvan
+doit jouer lundi.
+
+---
 ## 2026-08-28 — ISS-073 : la boucle de campagne est refermée, et prouvée dans une build
 
 **Le donjon était inatteignable.** Le menu ouvre World V2 ; World V2 ne portait
