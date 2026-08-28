@@ -203,6 +203,14 @@ Les détails non corrigés sont consignés : ISS-079 (autosave V1 sous signature
 V2, latent), ISS-080 (inventaire par défaut au « Continuer » antichambre,
 préexistant), ISS-081 (tag fantôme sur `go_to` échoué, préexistant).
 
+## 8. Interdits de la passe T1
+
+- Fusionner quoi que ce soit de T1 dans la candidate de lundi avant
+  contre-revue.
+- Modifier ou supprimer un champ existant du schéma 4.
+- Écrire `world_version = neris_v2` depuis autre chose que `scenes/world_v2/`.
+- Verdir un contrat en changeant sa mesure plutôt que le produit.
+
 ## 10. C11 — ISS-080 fermée, et pourquoi ce cas ne peut pas mentir
 
 La décision lead du 2026-08-28 a rouvert le détail n° 6 de cette contre-revue.
@@ -263,11 +271,3 @@ seulement *illisible* par un état neuf **et rétrogradé de schéma**. C'était
 dans l'antichambre, très exactement le défaut que C10 venait de fermer dans
 l'autosave. Un slot présent mais illisible n'est plus jamais réécrit ici non
 plus.
-
-## 8. Interdits de la passe T1
-
-- Fusionner quoi que ce soit de T1 dans la candidate de lundi avant
-  contre-revue.
-- Modifier ou supprimer un champ existant du schéma 4.
-- Écrire `world_version = neris_v2` depuis autre chose que `scenes/world_v2/`.
-- Verdir un contrat en changeant sa mesure plutôt que le produit.

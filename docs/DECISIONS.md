@@ -1616,3 +1616,29 @@ n'est absorbé. Les 43 autres empreintes n'ont pas bougé.
   de `scripts/world_v2/` refera rougir le gel, et devra refaire ce diff.
   C'est un coût par fichier, pas une dette qui grossit — et il achète que
   personne ne puisse ajouter du code non gelé à cet endroit sans le dire.
+
+### D-057, addendum du 2026-08-28 — le fichier entré au gel a été modifié le jour même
+
+Le manifeste exige que **toute ligne modifiée** soit justifiée ici. Elle l'est.
+
+`scripts/world_v2/world_v2_encounters_builder.gd` est entré au gel au commit
+`9c82b6cc` (empreinte `7ffa7b73…`). Le commit suivant, `b4b2e287`, l'a modifié
+— surcharge de `hearing_range`, jalons `[peuplement]` bornés, assainissement du
+nom de nœud hôte — et le manifeste porte désormais `b9b186a7…`.
+
+**La régression qui l'exige** est celle qu'une revue de complétude à contexte
+frais a mesurée : `hear_noise()`, `receive_alert()` et `witness_ally_death()`
+réveillent un ennemi sans jamais consulter `max_pursuit_distance`. Une ouïe
+laissée au défaut portait donc **hors du territoire gardé**, et la règle des
+calmes était fausse alors que le portail la disait vraie. Le correctif vit dans
+ce fichier ; le gel devait donc bouger avec lui.
+
+**Le contrôle qui rend ce mouvement lisible** : `git diff 9c82b6cc..b4b2e287 --
+docs/contrats/gel_v2_3_b.sha256` rend **une seule ligne modifiée, aucune autre
+touchée**. Les 44 autres empreintes sont identiques au caractère près.
+
+**La règle qu'on en tire, pour ne pas la redécouvrir** : un fichier NEUF entré
+au gel pendant une passe reste modifiable *dans cette même passe*, à condition
+que chaque régénération porte son diff (une ligne, la sienne) et sa
+justification. Un fichier entré au gel dans une passe ANTÉRIEURE relève, lui,
+de la procédure lourde de D-055 et D-056.

@@ -86,8 +86,37 @@ contrat de BUDGET à quatre règles — chacune exécutable :
 4. **Calmes garantis** : AUCUNE perception ennemie ne déborde sur les zones
    calmes du masterplan (WORLD_V2_MASTERPLAN §8 : crête, prairie, lit de
    rivière, source, sanctuaire, belvédère, berges du lac) ni sur un
-   checkpoint — vérifiable par distance(spawn ennemi, zone) > portée de
-   vision du tuning.
+   checkpoint.
+
+   **La règle exécutable retenue est plus stricte que cette phrase, et elle
+   ne demande aucune liste à tenir à la main** : les disques de VISION,
+   d'OUÏE et de POURSUITE de chaque ennemi tiennent entièrement dans les
+   bornes de sa propre région. Toute zone calme étant hors de cette région,
+   aucune ne peut être atteinte. L'ouïe compte autant que la vision :
+   `hear_noise()`, `receive_alert()` et `witness_ally_death()` réveillent un
+   ennemi **sans jamais consulter** `max_pursuit_distance`.
+
+   **UNE EXCEPTION, NOMMÉE, ET UNE SEULE** : le checkpoint `camp`
+   (45, 6, 65) est DANS r05. Le layout en fait la fonction même de la région
+   — « première rencontre 3 approches, cuisine, checkpoint camp » — et sa
+   ligne `encounters` dit « garnison braise du camp ». Ce checkpoint est
+   l'OBJECTIF de la rencontre, pas un sanctuaire ; exiger qu'aucun garde ne
+   le voie rendrait la région impossible à peupler et contredirait le layout.
+   Il est donc exclu **par identifiant**, dans une constante unique du
+   portail (`CHECKPOINT_OBJECTIF`), pour qu'aucune autre exclusion ne puisse
+   se glisser en silence.
+
+   **CE QUE CETTE RÈGLE NE COUVRE PAS, dit ici plutôt que découvert plus
+   tard** : elle borne les disques à la position de POSE. Un garde attiré
+   par des bruits répétés entre en `INVESTIGATE` vers `_last_known` **sans
+   clamp cumulatif sur son origine**, et `FLEE` n'est pas borné davantage.
+   Un joueur qui kite délibérément peut donc tirer un garde hors de sa
+   région. Ce qui reste garanti en toutes circonstances, et qui est le
+   verrou réel : `_tick_perception()` refuse toute ACQUISITION de cible
+   au-delà de `max_pursuit_distance` mesurée depuis `_territory_origin` —
+   un garde égaré ne peut pas prendre une nouvelle cible hors de son
+   territoire. Le clamp du retour appartient à `EnemyBase`, donc à une passe
+   qui pourra le prouver.
 
 Jusqu'à ce jour-là, le contrat actuel RESTE en vigueur sur la candidate :
 cette branche ne le modifie pas.
@@ -147,7 +176,7 @@ r05, camp déjà construit :
    supposer).
 2. **`WorldV2EncountersBuilder`** (fichier NEUF — le gel V2.3-B énumère, il
    n'interdit pas d'ajouter) : lit une table de placement data-driven
-   (`resources/world_v2/encounters/…`), instancie sous `$Encounters`,
+   (`resources/world_v2/world_v2_garrisons.json — chemin réel, l'ancien `resources/world_v2/encounters/` n'a pas été retenu : …`), instancie sous `$Encounters`,
    instancie UN `CombatCoordinator`, assigne territoire et patrouilles.
    AUCUNE position codée en dur dans le bâtisseur — la leçon de
    `_spawn_bestiary()`, dont la table littérale n'a jamais parlé aux

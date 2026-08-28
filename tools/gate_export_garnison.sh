@@ -221,7 +221,14 @@ else
 fi
 
 # Zéro ressource manquante — la famille ISS-071, qui n'existe QUE dans un PCK.
-MANQUANTS="$(grep -cE "modèle inconnu|modèle végétal introuvable|Failed loading resource|No loader found" "$JOURNAL_JEU" 2>/dev/null || true)"
+# `grep -c` sur un fichier absent rend vide, et `${:-0}` le transformerait en
+# « zéro manquant » : un journal disparu deviendrait une bonne nouvelle.
+if [ ! -s "$JOURNAL_JEU" ]; then
+  ko "journal du jeu absent ou vide — impossible de conclure sur les ressources"
+  MANQUANTS=0
+else
+  MANQUANTS="$(grep -cE "modèle inconnu|modèle végétal introuvable|Failed loading resource|No loader found|Resource file not found|Cannot open file" "$JOURNAL_JEU" || true)"
+fi
 [ "${MANQUANTS:-0}" -eq 0 ] \
   && ok "aucun modèle ni ressource manquant dans le PCK" \
   || ko "$MANQUANTS ligne(s) de ressource manquante dans le PCK"
@@ -238,6 +245,12 @@ case "$LIGNE2" in
   *"4 posé(s)"*) ok "quatre gardes, pas huit — aucune duplication" ;;
   *) ko "compte inattendu à la relance : $LIGNE2" ;;
 esac
+# Et UNE SEULE construction dans le processus : deux passages du bâtisseur
+# afficheraient deux lignes « 4 posé(s) » — huit gardes dans le monde — sans
+# que le test de contenu ci-dessus ne bronche.
+[ "$NB_LIGNES" -eq 1 ] \
+  && ok "le bâtisseur n'a construit QU'UNE fois dans ce processus" \
+  || ko "$NB_LIGNES constructions dans un seul processus — duplication"
 fermer_fenetre || ko "le jeu n'a pas quitté (G4)"
 
 # --- G5 : une mort traverse un VRAI redémarrage de processus ---------------
@@ -277,6 +290,27 @@ attendre_motif "[flow] transition vers : res://scenes/dungeon/rooms/Antechamber.
   || ko "le menu n'a pas routé vers l'antichambre"
 sleep 8
 fermer_fenetre || ko "le jeu n'a pas quitté (G6)"
+# LA GARDE QUI MANQUAIT, et c'est exactement le mode de panne que C11 avait
+# refusé : si l'antichambre n'écrit RIEN — écriture cassée, refusée, ou
+# fermeture avant le `call_deferred` — le slot semé reste intact, les quatre
+# valeurs concordent, et ce gate serait vert en n'ayant rien prouvé. On exige
+# donc d'abord la PREUVE qu'une écriture a eu lieu : `SaveSystem` réhorodate
+# à chaque `save_slot`, et la graine porte un horodatage figé.
+HORODATAGE="$(python3 - "$(sauvegarde_du_profil "$P3")" <<'PYEOF'
+import json, sys
+try:
+    print(json.load(open(sys.argv[1])).get("saved_at_utc", "?"))
+except Exception:
+    print("ERREUR_LECTURE")
+PYEOF
+)"
+if [ "$HORODATAGE" = "2026-08-28T00:00:00" ]; then
+  ko "l'antichambre n'a RIEN écrit (horodatage inchangé) — la comparaison qui suit ne prouverait rien"
+elif [ "$HORODATAGE" = "ERREUR_LECTURE" ]; then
+  ko "slot illisible après la reprise antichambre"
+else
+  ok "une écriture a RÉELLEMENT eu lieu (horodatage : $HORODATAGE)"
+fi
 NB_ARMES="$(lire_champ_slot "$P3" "len(d.get('weapons',[]))")"
 FLECHES="$(lire_champ_slot "$P3" "d.get('arrows')")"
 BAIES="$(lire_champ_slot "$P3" "d.get('ingredients',{}).get('storm_berry')")"

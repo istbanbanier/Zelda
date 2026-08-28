@@ -4,6 +4,50 @@ Ordre **anti-chronologique** : l'entrée la plus récente est en haut. La derni�
 entrée fait office de handoff et doit indiquer **exactement** la prochaine action.
 
 ---
+## 2026-08-28 — ISS-074 : la garnison du camp braise existe, et ISS-080 est fermée
+
+Branche `claude/world-v2-iss074-garnison`, créée depuis le point T1 gelé
+`0c000bf0` sur **décision lead** du 2026-08-28 (« continuation immédiate »),
+qui autorise la tranche verticale. Le seul commit contractuel ISS-074
+(`71a8ec37`) a été repris par **cherry-pick**, sans merge ni rebase. La
+candidate de lundi `world-v2-candidate-iss073-98cbaf0` (`a8d2f77`) reste
+inchangée ; T1 reste figée et NON fusionnée.
+
+**ISS-080 fermée.** `antechamber.gd` restaure l'inventaire depuis la
+sauvegarde AVANT son écriture différée du checkpoint — le mécanisme de
+`boss_arena.gd`, repris sans le modifier. Contrat **C11**, rouge d'abord :
+« 1 arme au lieu de 3 · 8 flèches au lieu de 37 · 0 plat au lieu de 1 », soit
+exactement le kit de `Player.tscn`. Puis 11/0. Contrôle négatif : retirer la
+seule ligne d'appel rougit C11 et **rien d'autre**.
+
+**La garnison.** `WorldV2EncountersBuilder` (script du conteneur `Encounters`,
+non gelé) + `resources/world_v2/world_v2_garrisons.json` : 3 `raider_red` et
+1 `raider_blue` en r05, un `CombatCoordinator` unique, `enemies_slain`
+additif. **Aucun fichier gelé modifié** — le gel est resté à « 0 absent » à
+chaque contrôle ; le manifeste n'a fait qu'accueillir le fichier neuf (D-057).
+
+**Portail renforcé** (9 exigences) : rouge d'abord 0/10, puis 6/0.
+**Combat prouvé en moteur** : 5/5. **Contrat de budget** (remplaçant « aucun
+acteur prématuré ») : 5/5. Trois contrôles négatifs chirurgicaux.
+
+**Ce que la revue de complétude a rattrapé, et c'est le vrai gain.** Le
+navmesh datait du 13 août, la géométrie du camp du 19 : mes « 238 points
+atteignables » portaient sur un terrain nu là où le jeu pose une palissade.
+Recuit → les quatre quadrants ont changé de sha256, et une position est passée
+de 0,010 m à 0,830 m d'écart. Positions re-choisies sur le résultat frais.
+Piège consigné dans `tools/CLAUDE.md`. Deux autres : l'avant d'un ennemi est
+**+Z** (les lacets sont désormais calculés, pas posés à l'œil), et l'ouïe
+contournait la garde de territoire (le portail vérifie trois disques).
+
+**PROCHAINE ACTION EXACTE** : exécuter `tools/gate_export_parite.sh` (le
+conteneur a été re-provisionné, il n'existe AUCUN arbre d'export) puis
+`tools/gate_export_garnison.sh`. Tout le volet export est **NON VÉRIFIÉ** à
+cette heure. Ensuite : produire le profil CPU du camp à garnison pleine exigé
+par `docs/contrats/iss074_peuplement_world_v2.md` §6.6. **Interdits
+inchangés** : aucune fusion dans la candidate avant le playtest d'Istvan ;
+aucun ennemi hors de r05 ; `GO_V2_3_B_LOT2 = FALSE` ; aucune release.
+
+---
 ## 2026-08-28 — T1 FIGÉE : artefact expérimental publié et revérifié, ISS-074 ouverte en branche indépendante
 
 **T1 est figée, non fusionnée.** SHA final de la branche
