@@ -221,7 +221,11 @@ case "$LIGNE_ARRIVEE" in
 esac
 
 LIGNE_LIEUX="$(grep -F "[world_v2] lieux" "$JOURNAL_JEU" | head -1 || true)"
-NB_LIEUX="$(printf '%s' "$LIGNE_LIEUX" | grep -oE '[0-9]+' | head -1 || true)"
+# LE PREMIER NOMBRE DE LA LIGNE N'EST PAS LE COMPTE : le préfixe
+# « [world_v2] » en contient un. Prendre le premier chiffre venu aurait rendu
+# « 2 » sur toutes les exécutions, et le portail aurait rougi éternellement
+# pour une raison qui n'est pas la sienne. On lit APRÈS le deux-points.
+NB_LIEUX="$(printf '%s' "$LIGNE_LIEUX" | sed -n 's/.*: *\([0-9][0-9]*\).*/\1/p')"
 info "ligne lue : ${LIGNE_LIEUX:-<ABSENTE>}"
 if [ "${NB_LIEUX:-x}" = "$LIEUX_ATTENDUS" ]; then
   constat "les $LIEUX_ATTENDUS lieux du layout sont posés (ISS-071 ne rechute pas)" 0
