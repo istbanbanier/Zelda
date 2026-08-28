@@ -394,8 +394,19 @@ func test_territoires_bornes_et_calmes_preserves() -> void:
 		# seule vision laisse donc un ennemi entendre — puis poursuivre — bien
 		# au-delà de sa région.
 		var ouie: float = float(tuning.get("hearing_range"))
-		for couple: Array in [[origine, poursuite, "poursuite"],
-				[ici, vision, "vision"], [ici, ouie, "ouïe"]]:
+		# LES POINTS DE RONDE COMPTENT AUTANT QUE LE POINT DE POSE. Un garde
+		# en patrouille EST à son offset, et sa vision comme son ouïe y
+		# portent. Vérifier la seule position de montage laisserait un offset
+		# de 30 m dans la donnée passer au vert — la revue de complétude l'a
+		# nommé avant qu'il ne coûte quoi que ce soit.
+		var postes: Array[Vector3] = [ici]
+		for decalage: Variant in (e.get("patrol_offsets") as Array):
+			postes.append(origine + (decalage as Vector3))
+		var couples: Array = [[origine, poursuite, "poursuite"]]
+		for poste: Vector3 in postes:
+			couples.append([poste, vision, "vision"])
+			couples.append([poste, ouie, "ouïe"])
+		for couple: Array in couples:
 			var centre: Vector3 = couple[0] as Vector3
 			var rayon: float = couple[1] as float
 			var quoi: String = couple[2] as String

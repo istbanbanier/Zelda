@@ -14,6 +14,19 @@
 ##
 ## Le contrôle est ce qui donne son sens au chiffre : sans lui, on publierait
 ## le coût du monde entier en croyant publier celui de la garnison.
+##
+## UN PROCESSUS PAR MESURE, ET C'EST UNE CORRECTION PAYÉE. La première version
+## montait les deux mondes dans LE MÊME processus, l'un après l'autre. Résultat
+## mesuré : le monde SANS garnison sortait à 12,6 ms de physique contre 3,9 ms
+## AVEC — retirer quatre ennemis rendait la physique trois fois plus lente. Le
+## chiffre était précis et absurde : le second monde payait la destruction du
+## premier. Un delta négatif de -8,8 ms publié tel quel aurait été une preuve
+## fausse, de la famille d'ISS-018. Chaque mesure vit donc désormais dans son
+## propre processus, et `tools/profil_camp.sh` les compare.
+##
+## Usage réel :
+##   tools/lancer_godot.sh --path . --script <ce fichier> -- --avec
+##   tools/lancer_godot.sh --path . --script <ce fichier> -- --sans
 extends SceneTree
 
 const WORLD: String = "res://scenes/world_v2/WorldV2.tscn"
@@ -29,29 +42,22 @@ func _init() -> void:
 
 
 func _run() -> void:
-	var avec: Dictionary = await _mesurer(true)
-	var sans: Dictionary = await _mesurer(false)
-	if avec.is_empty() or sans.is_empty():
+	var arguments: PackedStringArray = OS.get_cmdline_user_args()
+	var avec_garnison: bool = not arguments.has("--sans")
+	var mesure: Dictionary = await _mesurer(avec_garnison)
+	if mesure.is_empty():
 		push_error("[profil] mesure impossible")
 		quit(3)
 		return
-
-	print("[profil] ---------------------------------------------------------")
-	print("[profil] CONTENEUR HEADLESS SANS GPU, RENDU LOGICIEL.")
-	print("[profil] Ceci n'est PAS un budget de frame. C'est un DELTA CPU,")
-	print("[profil] comparable à lui-même d'une passe à l'autre.")
-	print("[profil] ---------------------------------------------------------")
-	for cle: String in ["physique_ms_moyen", "physique_ms_p95",
-			"process_ms_moyen", "noeuds"]:
-		print("[profil] %-22s  avec garnison %8.3f   sans %8.3f   delta %+8.3f"
-			% [cle, float(avec[cle]), float(sans[cle]),
-				float(avec[cle]) - float(sans[cle])])
-	print("[profil] gardes actifs mesurés : %d" % int(avec["ennemis"]))
-	print("[profil] plafond du coordinateur (MAX_ACTIVE_AI) : %d"
-		% CombatCoordinator.MAX_ACTIVE_AI)
-	var marge: float = float(CombatCoordinator.MAX_ACTIVE_AI) \
-		- float(avec["ennemis"])
-	print("[profil] marge avant plafond : %.0f agent(s)" % marge)
+	print("[profil] CONTENEUR HEADLESS SANS GPU, RENDU LOGICIEL — pas un budget.")
+	print("[profil] mode                  : %s"
+		% ("AVEC garnison" if avec_garnison else "SANS garnison (contrôle)"))
+	print("[profil] gardes vivants        : %d" % int(mesure["ennemis"]))
+	print("[profil] physique_ms_moyen     : %.3f" % float(mesure["physique_ms_moyen"]))
+	print("[profil] physique_ms_p95       : %.3f" % float(mesure["physique_ms_p95"]))
+	print("[profil] process_ms_moyen      : %.3f" % float(mesure["process_ms_moyen"]))
+	print("[profil] noeuds                : %.0f" % float(mesure["noeuds"]))
+	print("[profil] plafond MAX_ACTIVE_AI : %d" % CombatCoordinator.MAX_ACTIVE_AI)
 	print("[profil] FIN NOMINALE")
 	quit(0)
 
