@@ -75,8 +75,15 @@ la preuve elle-même, au lieu d'être caché derrière un verdict.
   contrat de BUDGET : 5/0.
 - `portail_vert_rondes.log` — le portail rejoué après que les décalages de
   ronde ont été repliés dans le contrôle des disques : **6/0**.
-- `validate_fast_vert.log` — la suite complète, jouée UNE fois sur l'arbre
-  final : **999 réussi, 0 échoué**, code retour 0.
+- `validate_fast_vert.log` — **PÉRIMÉ, et gardé pour le dire.** La suite a
+  bien rendu 999/0, mais elle a été jouée à 20:14 et committée à 20:20 DANS
+  LE MÊME COMMIT qu'une modification de `test_world_v2_iss074_portail.gd` :
+  ce journal ne décrit donc pas l'arbre qu'il accompagne, et « jouée sur
+  l'arbre final » était faux. Constat d'une contre-revue à contexte frais.
+  Le journal ne portait ni commit ni état de l'arbre — c'est ce qui rendait
+  l'écart invisible ; `validate_fast.sh` imprime désormais sa provenance en
+  étape `0a`. Voir `validate_fast_arbre_final.log` pour la mesure qui fait
+  autorité.
 
 ## Ce qui n'est PAS ici, et le restera
 

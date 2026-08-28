@@ -101,6 +101,16 @@ if pgrep -f "test_runner\.gd" >/dev/null 2>&1; then
   exit 3
 fi
 
+# PROVENANCE, imprimée AVANT toute mesure. Un journal de suite sans commit ni
+# état de l'arbre est invérifiable : rien n'y distingue « joué sur l'arbre
+# final » de « joué trois commits plus tôt ». Constat d'une contre-revue du
+# 2026-08-28, sur ce dépôt, à propos d'un journal committé AVEC la
+# modification de test qu'il n'avait pas vue.
+step "0a. Provenance de cette exécution"
+echo "  commit          : $(git -C "$PROJECT_DIR" rev-parse HEAD 2>/dev/null || echo '?')"
+echo "  fichiers sales  : $(git -C "$PROJECT_DIR" status --porcelain 2>/dev/null | wc -l)"
+echo "  branche         : $(git -C "$PROJECT_DIR" rev-parse --abbrev-ref HEAD 2>/dev/null || echo '?')"
+
 step "0. Version du moteur"
 VERSION="$("$GODOT_BIN" --version 2>&1 | tail -1)"
 echo "  $VERSION"

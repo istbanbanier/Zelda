@@ -35,6 +35,8 @@ const WORLD: String = "res://scenes/world_v2/WorldV2.tscn"
 const AU_CAMP: Vector3 = Vector3(37.0, 6.5, 70.0)
 const ECHAUFFEMENT: int = 60
 const ECHANTILLONS: int = 240
+## Le compte que « garnison pleine » (contrat §6.6) veut dire, en clair.
+const ATTENDU_AVEC: int = 4
 
 
 func _init() -> void:
@@ -53,11 +55,26 @@ func _run() -> void:
 	print("[profil] mode                  : %s"
 		% ("AVEC garnison" if avec_garnison else "SANS garnison (contrôle)"))
 	print("[profil] gardes vivants        : %d" % int(mesure["ennemis"]))
+	print("[profil] echantillons          : %d" % ECHANTILLONS)
+	print("[profil] echauffement          : %d" % ECHAUFFEMENT)
 	print("[profil] physique_ms_moyen     : %.3f" % float(mesure["physique_ms_moyen"]))
 	print("[profil] physique_ms_p95       : %.3f" % float(mesure["physique_ms_p95"]))
 	print("[profil] process_ms_moyen      : %.3f" % float(mesure["process_ms_moyen"]))
 	print("[profil] noeuds                : %.0f" % float(mesure["noeuds"]))
 	print("[profil] plafond MAX_ACTIVE_AI : %d" % CombatCoordinator.MAX_ACTIVE_AI)
+	# LE VERDICT QUI MANQUAIT. Le contrat §6.6 demande le coût du camp à
+	# garnison PLEINE ; rien n'exigeait que la garnison le soit. Un monde
+	# « avec » qui n'aurait posé aucun garde sortait en 0, et le delta publié
+	# aurait comparé deux mondes vides. La sonde refuse désormais de rendre
+	# une mesure qui ne porte pas ce qu'elle annonce.
+	var vivants: int = int(mesure["ennemis"])
+	var attendus: int = ATTENDU_AVEC if avec_garnison else 0
+	if vivants != attendus:
+		push_error("[profil] mode %s : %d garde(s) au lieu de %d — la mesure "
+			% ["avec" if avec_garnison else "sans", vivants, attendus]
+			+ "ne porte pas sur ce que le contrat §6.6 demande")
+		quit(3)
+		return
 	print("[profil] FIN NOMINALE")
 	quit(0)
 

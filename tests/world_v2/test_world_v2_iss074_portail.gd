@@ -360,6 +360,14 @@ func test_territoires_bornes_et_calmes_preserves() -> void:
 	var ennemis: Array[Node] = _ennemis()
 	check_equal(ennemis.size(), ATTENDU_TOTAL,
 		"la garnison est au complet avant de juger ses territoires")
+	# LE MODE DE PANNE QUE LA CONTRE-REVUE A NOMMÉ. Sans ce `check`, une r05
+	# renommée ou disparue du layout rendait `{}` : le test sortait VERT en
+	# n'ayant jugé que le compte — ni territoires, ni disques, ni rondes, ni
+	# calmes — et rien n'aurait rougi. Un test qui ne peut pas échouer sur la
+	# chose qu'il annonce ne prouve rien (PROMPT4_METHOD §2).
+	check(not bornes.is_empty(),
+		"la région %s existe dans le layout — sans ses bornes, ce test ne "
+		% REGION_ID + "jugerait RIEN et sortirait vert")
 	if ennemis.size() != ATTENDU_TOTAL or bornes.is_empty():
 		await _demonter()
 		restore_saves()
@@ -402,7 +410,7 @@ func test_territoires_bornes_et_calmes_preserves() -> void:
 		var postes: Array[Vector3] = [ici]
 		for decalage: Variant in (e.get("patrol_offsets") as Array):
 			postes.append(origine + (decalage as Vector3))
-		var couples: Array = [[origine, poursuite, "poursuite"]]
+		var couples: Array[Array] = [[origine, poursuite, "poursuite"]]
 		for poste: Vector3 in postes:
 			couples.append([poste, vision, "vision"])
 			couples.append([poste, ouie, "ouïe"])

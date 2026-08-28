@@ -111,12 +111,28 @@ contrat de BUDGET à quatre règles — chacune exécutable :
    par des bruits répétés entre en `INVESTIGATE` vers `_last_known` **sans
    clamp cumulatif sur son origine**, et `FLEE` n'est pas borné davantage.
    Un joueur qui kite délibérément peut donc tirer un garde hors de sa
-   région. Ce qui reste garanti en toutes circonstances, et qui est le
-   verrou réel : `_tick_perception()` refuse toute ACQUISITION de cible
-   au-delà de `max_pursuit_distance` mesurée depuis `_territory_origin` —
-   un garde égaré ne peut pas prendre une nouvelle cible hors de son
-   territoire. Le clamp du retour appartient à `EnemyBase`, donc à une passe
-   qui pourra le prouver.
+   région.
+
+   **Correction du 2026-08-28, apportée par une contre-revue à contexte
+   frais.** Ce paragraphe affirmait auparavant que `_tick_perception()`
+   « refuse toute ACQUISITION de cible au-delà de `max_pursuit_distance` »
+   et que c'était « garanti en toutes circonstances ». C'est FAUX du code,
+   et la phrase se présentait comme le verrou réel. Ce qui est vrai, lu
+   dans `scripts/enemies/enemy_base.gd` :
+
+   - la garde de `max_pursuit_distance` ne couvre que le chemin **vision**
+     de `_tick_perception()` ;
+   - `receive_alert()` et l'acquisition sur **coup reçu** appellent
+     `_acquire_target()` **sans** la consulter — une flèche tirée de loin,
+     ou le cri d'un allié, fait donc prendre une cible hors territoire ;
+   - ce qui borne réellement la chasse est l'**abandon** en poursuite, pas
+     l'acquisition.
+
+   Conséquence pratique inchangée : un joueur qui kite délibérément peut
+   tirer un garde hors de r05. La correction du comportement appartient à
+   `EnemyBase`, partagé avec les adversaires V1 — hors du périmètre de cette
+   tranche, et consignée comme limite connue plutôt que corrigée en
+   silence au passage.
 
 Jusqu'à ce jour-là, le contrat actuel RESTE en vigueur sur la candidate :
 cette branche ne le modifie pas.
@@ -176,7 +192,8 @@ r05, camp déjà construit :
    supposer).
 2. **`WorldV2EncountersBuilder`** (fichier NEUF — le gel V2.3-B énumère, il
    n'interdit pas d'ajouter) : lit une table de placement data-driven
-   (`resources/world_v2/world_v2_garrisons.json — chemin réel, l'ancien `resources/world_v2/encounters/` n'a pas été retenu : …`), instancie sous `$Encounters`,
+   (`resources/world_v2/world_v2_garrisons.json` — chemin réel ; l'ancien
+   `resources/world_v2/encounters/` n'a pas été retenu), instancie sous `$Encounters`,
    instancie UN `CombatCoordinator`, assigne territoire et patrouilles.
    AUCUNE position codée en dur dans le bâtisseur — la leçon de
    `_spawn_bestiary()`, dont la table littérale n'a jamais parlé aux

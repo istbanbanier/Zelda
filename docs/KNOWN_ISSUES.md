@@ -2998,6 +2998,40 @@ présent mais illisible n'est plus jamais réécrit par l'antichambre.
 
 ---
 
+## ISS-083 — L'acquisition de cible sur cri d'allié ou sur coup reçu ignore le territoire — S4, OUVERT, PRÉEXISTANT
+
+**Découvert le 2026-08-28** par la contre-revue ISS-074 (constat n° 5), en
+relisant une phrase du contrat qui promettait plus que le code.
+
+Dans `scripts/enemies/enemy_base.gd`, la garde de `max_pursuit_distance` —
+« une cible déjà hors du territoire ne m'intéresse pas » — ne protège que le
+chemin **vision** de `_tick_perception()`. Deux autres chemins appellent
+`_acquire_target()` sans la consulter :
+
+- `receive_alert()`, quand un allié crie ;
+- l'acquisition sur **coup reçu**, dans la réaction aux dégâts.
+
+Un joueur qui tire une flèche de loin, ou qui alerte un garde par un autre,
+fait donc prendre une cible située hors du territoire. Ce qui borne
+réellement la chasse est l'**abandon** en poursuite, pas l'acquisition.
+
+**Pourquoi S4, et pourquoi pas corrigé dans la tranche ISS-074** : le
+comportement est ancien, partagé avec tous les adversaires V1, et
+l'observable pour le joueur — un garde qu'on peut tirer hors de sa région en
+kitant — était déjà écrit dans le contrat comme une limite assumée. Le
+corriger demanderait de toucher `EnemyBase`, hors du périmètre d'une tranche
+qui s'interdit de modifier le code partagé. Ce qui était FAUX, et qui est
+corrigé, c'est la prose : le contrat affirmait ce verrou « garanti en toutes
+circonstances ».
+
+**Reproduction** : poser un garde en r05, se placer hors de
+`max_pursuit_distance` de son `_territory_origin`, lui tirer une flèche —
+il acquiert la cible.
+
+**Correctif éventuel** : porter la garde de distance dans `_acquire_target()`
+lui-même plutôt que dans le seul appelant vision. À faire dans une passe qui
+peut rejouer les suites d'adversaires V1 et V2.
+
 ## ISS-082 — Le trou de C10 subsiste hors de l'antichambre — S3, OUVERT, PRÉEXISTANT
 
 **Trouvé le 2026-08-28** par la revue de complétude d'ISS-074, en cherchant

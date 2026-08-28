@@ -142,6 +142,9 @@ Ce qui a bel et bien demandé une levée, c'est le gel V2.3-B sur
 `world_v2_root.gd` — une empreinte, documentée en D-056, comme D-055 l'avait
 fait pour ISS-073.
 
+*(Il n'y a pas de §6 : la numérotation saute, elle n'a pas été rompue par
+un déplacement. Signalé ici pour qu'on cesse de le chercher.)*
+
 ## 7. C7 — le contrat que la contre-revue a fait naître
 
 C1 à C6 ont été écrits avant l'implémentation. **C7 ne pouvait pas l'être** :
@@ -168,6 +171,14 @@ Verdict complet après implémentation : **7 réussis, 0 échoué, 115 assertion
 identique à l'octet près » survit à T1 sans levée, parce que World V2 n'écrit
 qu'au DÉPART d'une transition, et que monter puis démonter le monde n'en
 déclenche aucune.
+
+## 8. Interdits de la passe T1
+
+- Fusionner quoi que ce soit de T1 dans la candidate de lundi avant
+  contre-revue.
+- Modifier ou supprimer un champ existant du schéma 4.
+- Écrire `world_version = neris_v2` depuis autre chose que `scenes/world_v2/`.
+- Verdir un contrat en changeant sa mesure plutôt que le produit.
 
 ## 9. La contre-revue du diff final, et ce qu'elle a coûté
 
@@ -202,14 +213,6 @@ Les trois FAIL de la revue sont devenus trois contrats :
 Les détails non corrigés sont consignés : ISS-079 (autosave V1 sous signature
 V2, latent), ISS-080 (inventaire par défaut au « Continuer » antichambre,
 préexistant), ISS-081 (tag fantôme sur `go_to` échoué, préexistant).
-
-## 8. Interdits de la passe T1
-
-- Fusionner quoi que ce soit de T1 dans la candidate de lundi avant
-  contre-revue.
-- Modifier ou supprimer un champ existant du schéma 4.
-- Écrire `world_version = neris_v2` depuis autre chose que `scenes/world_v2/`.
-- Verdir un contrat en changeant sa mesure plutôt que le produit.
 
 ## 10. C11 — ISS-080 fermée, et pourquoi ce cas ne peut pas mentir
 

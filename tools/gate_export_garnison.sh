@@ -19,7 +19,9 @@
 #   G3  l'arrivée RÉELLE au camp — le héros marche, et la garnison le voit ;
 #   G4  aucune duplication d'une relance à l'autre ;
 #   G5  une mort persistée traverse un VRAI redémarrage de processus ;
-#   G6  l'inventaire de l'antichambre survit à la reprise (ISS-080).
+#   G6  l'inventaire de l'antichambre survit à la reprise (ISS-080) ;
+#   G7  le balayage de ressources porte sur TOUS les journaux du run, donjon
+#       compris — n'en balayer qu'un laissait l'antichambre hors du filet.
 #
 # Il sort en 3 (BLOQUÉ) sur toute étape impossible, jamais en 0.
 set -u -o pipefail
@@ -33,10 +35,18 @@ TITRE_FENETRE="Eclats d'Orage"
 DELAI_FENETRE=120
 DELAI_JALON=900
 DELAI_FERMETURE=180
+# L'horodatage SEMÉ dans chaque slot de départ. Il vit ici, en un seul
+# endroit : G6 prouve qu'une écriture a eu lieu en constatant que le slot
+# ne le porte PLUS. Deux littéraux qui divergeraient un jour rendraient
+# cette garde aveugle, en silence.
+HORODATAGE_SEME="2026-08-28T00:00:00"
 MARCHE_MUR_S="${GATE_MARCHE_S:-70}"
 
 PID_JEU=""
 PID_XVFB=""
+LANCEMENT=0
+JOURNAUX_JEU=""
+PREMIER_JOURNAL=""
 CODE=3
 ECHECS=0
 PROFIL=""
@@ -61,11 +71,11 @@ sauvegarde_du_profil() { echo "$1/godot/app_userdata/Eclats d'Orage/saves/slot0.
 fabriquer_slot() {  # $1 = profil, $2 = JSON du payload `data`
   local fichier; fichier="$(sauvegarde_du_profil "$1")"
   mkdir -p "$(dirname "$fichier")"
-  python3 - "$fichier" "$2" <<'PYEOF'
+  python3 - "$fichier" "$2" "$HORODATAGE_SEME" <<'PYEOF'
 import json, sys
-fichier, data = sys.argv[1], json.loads(sys.argv[2])
+fichier, data, SEME = sys.argv[1], json.loads(sys.argv[2]), sys.argv[3]
 enveloppe = {"schema_version": 4, "slot": "slot0",
-             "saved_at_utc": "2026-08-28T00:00:00", "data": data}
+             "saved_at_utc": SEME, "data": data}
 open(fichier, "w", encoding="utf-8").write(json.dumps(enveloppe, indent="  "))
 PYEOF
 }
@@ -83,7 +93,12 @@ PYEOF
 
 lancer_jeu() {  # $1 = profil
   PROFIL="$1"
-  JOURNAL_JEU="$JOURNAUX/garnison_$(basename "$PROFIL").log"
+  # UN JOURNAL PAR LANCEMENT. G4 relance sur le profil de G2/G3 : un nom de
+  # journal dérivé du seul profil faisait `rm -f` sur la preuve brute de
+  # l'étape précédente, et seul le stdout du portail en réchappait.
+  LANCEMENT=$((LANCEMENT + 1))
+  JOURNAL_JEU="$JOURNAUX/garnison_${LANCEMENT}_$(basename "$PROFIL").log"
+  JOURNAUX_JEU="$JOURNAUX_JEU $JOURNAL_JEU"
   rm -f "$JOURNAL_JEU"
   # stdbuf : une build release ne vide pas stdout, et l'arrêt détruirait les
   # jalons déjà imprimés (leçon du portail ISS-073).
@@ -169,6 +184,23 @@ fermer_fenetre() {
   return 0
 }
 
+balayer_ressources() {  # $1 = journal  $2 = ce que ce journal a chargé
+  # Zéro ressource manquante — la famille ISS-071, qui n'existe QUE dans un PCK.
+  # `grep -c` sur un fichier absent rend vide, et `${:-0}` le transformerait en
+  # « zéro manquant » : un journal disparu deviendrait une bonne nouvelle. Et
+  # la branche « journal absent » ne doit PAS retomber sur un PASS affiché —
+  # un verdict global rouge n'excuse pas une ligne verte fausse à l'écran.
+  if [ ! -s "$1" ]; then
+    ko "journal absent ou vide ($2) — impossible de conclure sur les ressources"
+    return
+  fi
+  local n
+  n="$(grep -cE "modèle inconnu|modèle végétal introuvable|Failed loading resource|No loader found|Resource file not found|Cannot open file" "$1" || true)"
+  [ "${n:-0}" -eq 0 ] \
+    && ok "aucun modèle ni ressource manquant dans le PCK — $2" \
+    || ko "$n ligne(s) de ressource manquante dans le PCK — $2"
+}
+
 continuer() {  # presse « Continuer » du menu (premier bouton, focus par défaut)
   DISPLAY="$DISPLAY_NUM" xdotool key --clearmodifiers Return 2>/dev/null || true
   sleep 2
@@ -185,7 +217,18 @@ if [ "$SHA_ENREG" != "$SHA" ]; then
   echo "        Relancer gate_export_parite.sh pour exporter l'arbre courant." >&2
   fini 3
 fi
-ok "build liée au commit courant ($SHA)"
+# Le SHA seul ne suffit pas : une build exportée d'un arbre SALE porte quand
+# même le SHA de HEAD, et « liée au commit courant » serait alors un titre
+# mensonger. `gate_export_parite.sh` enregistre le compte de fichiers sales ;
+# il faut le LIRE, pas seulement l'écrire.
+SALES="$(python3 -c "import json,sys;print(json.load(open(sys.argv[1])).get('fichiers_sales','?'))" \
+  "$SORTIE/contexte.json" 2>/dev/null || echo "?")"
+if [ "$SALES" != "0" ]; then
+  echo "BLOQUÉ: la build vient d'un arbre SALE ($SALES fichier(s)) — le SHA ne" >&2
+  echo "        décrit pas ce qui a été exporté. Relancer gate_export_parite.sh." >&2
+  fini 3
+fi
+ok "build liée au commit courant ($SHA), arbre propre à l'export"
 
 command -v Xvfb >/dev/null    || { echo "BLOQUÉ: Xvfb absent" >&2; fini 3; }
 command -v xdotool >/dev/null || { echo "BLOQUÉ: xdotool absent" >&2; fini 3; }
@@ -256,18 +299,8 @@ else
     || ko "déplacement de ${DEPLACEMENT} m seulement — la marche n'a pas eu lieu"
 fi
 
-# Zéro ressource manquante — la famille ISS-071, qui n'existe QUE dans un PCK.
-# `grep -c` sur un fichier absent rend vide, et `${:-0}` le transformerait en
-# « zéro manquant » : un journal disparu deviendrait une bonne nouvelle.
-if [ ! -s "$JOURNAL_JEU" ]; then
-  ko "journal du jeu absent ou vide — impossible de conclure sur les ressources"
-  MANQUANTS=0
-else
-  MANQUANTS="$(grep -cE "modèle inconnu|modèle végétal introuvable|Failed loading resource|No loader found|Resource file not found|Cannot open file" "$JOURNAL_JEU" || true)"
-fi
-[ "${MANQUANTS:-0}" -eq 0 ] \
-  && ok "aucun modèle ni ressource manquant dans le PCK" \
-  || ko "$MANQUANTS ligne(s) de ressource manquante dans le PCK"
+balayer_ressources "$JOURNAL_JEU" "la vallée (G2/G3)"
+PREMIER_JOURNAL="$JOURNAL_JEU"
 
 # --- G4 : aucune duplication d'une relance à l'autre -----------------------
 etape "G4. aucune duplication au redémarrage"
@@ -306,6 +339,22 @@ case "$LIGNE3" in
   *) ko "les morts persistées ne sont pas honorées : $LIGNE3" ;;
 esac
 fermer_fenetre || ko "le jeu n'a pas quitté (G5)"
+# LA MOITIÉ QUI MANQUAIT. Ci-dessus, on a prouvé que le jeu SAIT LIRE les
+# morts du slot. On n'avait rien prouvé sur l'ÉCRITURE : la fermeture réécrit
+# la sauvegarde (G2/G3 s'en sert pour relire la position), et une régression
+# d'export qui perdrait `enemies_slain` à ce moment-là passait vert — pour
+# ressusciter les quatre gardes au lancement suivant, chez le joueur.
+MORTS_APRES="$(lire_champ_slot "$P2" "sorted(d.get('enemies_slain',[]))")"
+echo "        enemies_slain après la croix : $MORTS_APRES"
+case "$MORTS_APRES" in
+  *"garrison.ember_camp.blue.01"*)
+    case "$MORTS_APRES" in
+      *"garrison.ember_camp.red.01"*)
+        ok "les deux morts SURVIVENT à la réécriture de fermeture" ;;
+      *) ko "red.01 a disparu du slot à la fermeture : $MORTS_APRES" ;;
+    esac ;;
+  *) ko "les morts n'ont pas survécu à la fermeture : $MORTS_APRES" ;;
+esac
 
 # --- G6 : l'inventaire de l'antichambre survit (ISS-080) -------------------
 etape "G6. l'inventaire de l'antichambre survit à la reprise"
@@ -340,7 +389,7 @@ except Exception:
     print("ERREUR_LECTURE")
 PYEOF
 )"
-if [ "$HORODATAGE" = "2026-08-28T00:00:00" ]; then
+if [ "$HORODATAGE" = "$HORODATAGE_SEME" ]; then
   ko "l'antichambre n'a RIEN écrit (horodatage inchangé) — la comparaison qui suit ne prouverait rien"
 elif [ "$HORODATAGE" = "ERREUR_LECTURE" ]; then
   ko "slot illisible après la reprise antichambre"
@@ -357,6 +406,23 @@ if [ "$NB_ARMES" = "3" ] && [ "$FLECHES" = "37" ] && [ "$BAIES" = "3" ] && [ "$P
 else
   ko "l'inventaire a été altéré : armes=$NB_ARMES (3) flèches=$FLECHES (37) baies=$BAIES (3) plats=$PLATS (1)"
 fi
+
+# --- G7 : le PCK, sur TOUS les journaux, pas seulement celui de la vallée ---
+# La famille ISS-071 est ce que le portail dit exister pour attraper. Ne
+# balayer que le journal de G2/G3 laissait le DONJON hors du filet : une
+# ressource d'antichambre absente du PCK serait passée verte. On balaie donc
+# chaque journal produit par ce run, et on publie combien il y en avait —
+# « aucune ressource manquante » sans « sur N journaux » ne prouve rien.
+etape "G7. aucune ressource manquante — sur TOUS les journaux de ce run"
+NB_JOURNAUX=0
+for j in $JOURNAUX_JEU; do
+  NB_JOURNAUX=$((NB_JOURNAUX + 1))
+  [ "$j" = "$PREMIER_JOURNAL" ] && continue   # déjà balayé, nommé, en G2/G3
+  balayer_ressources "$j" "$(basename "$j")"
+done
+echo "        $NB_JOURNAUX journal(aux) de jeu examiné(s) dans ce run"
+[ "$NB_JOURNAUX" -ge 4 ] \
+  || ko "seulement $NB_JOURNAUX journal(aux) — un lancement a manqué"
 
 # ------------------------------------------------------------------ verdict --
 echo
