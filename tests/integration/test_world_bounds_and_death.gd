@@ -10,6 +10,7 @@
 extends GateTestCase
 
 const VALLEY: String = "res://scenes/world/valley/ValleyWorld.tscn"
+const WORLD_V2: String = "res://scenes/world_v2/WorldV2.tscn"
 const VESTIBULE: String = "res://scenes/world/citadel/CitadelVestibule.tscn"
 
 
@@ -203,7 +204,15 @@ func test_the_vestibule_is_explorable_and_its_exit_returns_before_the_door() -> 
 		"éclairé — aucun couloir noir (§7.8)")
 	var exit_door: SceneDoor = vestibule.get_node("ExitDoor") as SceneDoor
 	check_equal(exit_door.prompt_verb(), "Sortir", "la sortie invite")
-	check_equal(exit_door.target_scene, VALLEY, "…vers la vallée")
+	# ISS-073 (2026-08-27) : la sortie du vestibule visait `ValleyWorld.tscn`.
+	# Elle vise désormais World V2, le monde que le menu ouvre. Ce test
+	# épinglait donc un contrat DEVENU FAUX — il ne mentait pas quand il a été
+	# écrit, il a survécu à sa raison, comme le contrat « acteur prématuré »
+	# d'ISS-074. Le maillon suivant (« la vallée honore le tag ») continue de
+	# monter la vallée V1 : il vérifie que le TAG est honoré, pas la
+	# destination, et cette vérification-là reste juste.
+	check_equal(exit_door.target_scene, WORLD_V2,
+		"…vers le monde de la campagne (World V2)")
 	check_equal(String(exit_door.spawn_tag), "citadel_door", "…devant la porte")
 	await _cleanup(vestibule)
 

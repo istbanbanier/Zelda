@@ -15,7 +15,11 @@
 extends Control
 
 const DEFAULT_SLOT: String = "slot0"
-const VALLEY_SCENE: String = "res://scenes/world/valley/ValleyWorld.tscn"
+## ISS-073 — « Continuer l'exploration » ramène dans le monde de la CAMPAGNE,
+## celui que le menu ouvre. Il visait `ValleyWorld.tscn` (V1), que le menu
+## n'ouvre plus depuis le passage à World V2 : le joueur victorieux était
+## déposé dans une vallée qu'il n'avait jamais parcourue.
+const VALLEY_SCENE: String = "res://scenes/world_v2/WorldV2.tscn"
 const MENU_SCENE: String = "res://scenes/ui/MainMenu.tscn"
 
 @onready var _explore_button: Button = %ExploreButton

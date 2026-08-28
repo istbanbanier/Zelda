@@ -50,6 +50,10 @@ const _SIDESTEP_ANGLE: float = 1.15
 
 var _world: Node3D = null
 var _teleports: float = 0.0
+var _diagnostic: String = "(non mesuré)"
+## Tag d'apparition relevé PENDANT l'interaction. Le vestibule le consomme dès
+## son `_ready()` : le relever après coup ne prouverait rien.
+var _tag_pose: StringName = &""
 
 
 func _tree() -> SceneTree:
@@ -113,9 +117,19 @@ func test_une_porte_de_scene_existe_au_seuil_du_donjon() -> void:
 		check(au_sol.distance_to(GATE_ANCHOR) < 25.0,
 			"la porte doit être au seuil §3.3 %s, mesurée en %s"
 			% [GATE_ANCHOR, au_sol])
-		check_equal_ctx(String(seuil.spawn_tag), String(RETURN_TAG),
-			"la porte doit poser le tag de retour, sinon le vestibule ne "
-			+ "saura pas d'où l'on vient")
+		check_equal_ctx(String(seuil.spawn_tag),
+			String(WorldV2DungeonDoor.ENTRY_TAG),
+			"la porte d'ALLER doit poser le tag que le vestibule consomme")
+	# LES DEUX BOUTS DOIVENT S'ACCORDER, et rien ne les relie dans le code :
+	# la porte de sortie du vestibule est écrite dans un autre fichier. Si l'un
+	# des deux tags est renommé sans l'autre, le retour tombe au spawn initial
+	# — précisément le défaut d'ISS-073. Épinglé sur la SOURCE du vestibule,
+	# car le monter ici chargerait une seconde scène jouable.
+	var vestibule: String = FileAccess.get_file_as_string(
+		"res://scripts/world/citadel_vestibule.gd")
+	check(vestibule.contains('exit_door.spawn_tag = &"%s"' % RETURN_TAG),
+		"la porte de SORTIE du vestibule doit poser « %s », le tag que "
+		% RETURN_TAG + "World V2 consomme pour replacer le héros")
 	await _demonter()
 
 
@@ -150,13 +164,17 @@ func test_le_joueur_marche_au_seuil_puis_franchit_par_interaction() -> void:
 	# `SceneDoor.interact()`, ni appel direct à `SceneFlow.go_to()`.
 	var demande: String = await _interagir_et_lire_la_destination(player, intent)
 	check_equal_ctx(demande, VESTIBULE_SCENE,
-		"l'interaction au seuil doit demander le vestibule ; demandé : « %s »"
-		% demande)
+		"l'interaction au seuil doit demander le vestibule — %s" % _diagnostic)
 
-	var gs: Node = _tree().root.get_node_or_null("GameState")
-	check(gs != null, "GameState absent")
-	check_equal_ctx(String(gs.call("consume_pending_spawn")), String(RETURN_TAG),
-		"la porte doit avoir posé le tag de retour AVANT la transition")
+	# LE TAG DE L'ALLER N'EST PAS CELUI DU RETOUR. En entrant, la porte pose
+	# `from_valley` — c'est le VESTIBULE qui le consomme, à son `_ready()`.
+	# `citadel_door` est le tag du RETOUR, posé par la porte de sortie du
+	# vestibule et consommé par World V2 (test nº 4). Les confondre ferait
+	# avaler l'arrivée par la mauvaise scène : c'était le défaut de ma
+	# première version de la porte, invisible tant que le passage lui-même
+	# ne partait pas.
+	check_equal_ctx(String(_tag_pose), String(WorldV2DungeonDoor.ENTRY_TAG),
+		"la porte doit poser le tag d'ALLER avant la transition")
 	await _demonter()
 
 
@@ -202,20 +220,43 @@ func test_le_retour_du_vestibule_replace_le_heros_devant_la_citadelle() -> void:
 # --------------------------------------------------------------------------
 # 5. AUCUN chemin de la campagne V2 ne doit ramener dans le monde V1.
 # --------------------------------------------------------------------------
+## LES QUATRE RÉFÉRENCES À `ValleyWorld.tscn` N'ONT PAS LE MÊME RÔLE, et une
+## substitution globale aveugle serait une faute. Auditées une par une :
+##
+##  1. `victory_screen.gd::VALLEY_SCENE` — « Continuer l'exploration » après
+##     la victoire. CHEMIN DE CAMPAGNE : doit viser World V2.
+##  2. `citadel_vestibule.gd::exit_door.target_scene` — la sortie du
+##     vestibule. CHEMIN DE CAMPAGNE : doit viser World V2.
+##  3. `gameplay_shell.gd::world_scene_path` — c'est un `@export` avec une
+##     valeur PAR DÉFAUT, et `WorldV2.tscn` la SURCHARGE déjà en
+##     `res://scenes/world_v2/WorldV2.tscn`. Aucun chemin V2 n'atteint donc
+##     le défaut ; le changer casserait le « Réessayer » du monde V1, qui lui
+##     n'en pose pas. **Laissé intact — le signaler serait accuser du code
+##     qui fonctionne.** Ma première version de ce test le comptait comme
+##     coupable : c'était un faux positif, corrigé ici.
+##  4. `reward_anchor_shot.gd::VALLEY` — OUTIL de capture des ancrages du
+##     monde V1, jamais atteint en jeu. Hors sujet, laissé intact.
 func test_aucune_destination_runtime_ne_ramene_au_monde_v1() -> void:
 	var coupables: Array[String] = []
 	for chemin: String in [
 			"res://scripts/ui/victory_screen.gd",
-			"res://scripts/ui/gameplay_shell.gd",
 			"res://scripts/world/citadel_vestibule.gd"]:
 		var src: String = FileAccess.get_file_as_string(chemin)
 		if src.contains(VALLEY_V1_SCENE):
 			coupables.append(chemin.get_file())
 	check(coupables.is_empty(),
-		"%d chemin(s) de retour visent encore le monde V1 : %s — un joueur "
+		"%d chemin(s) de CAMPAGNE visent encore le monde V1 : %s — un joueur "
 		% [coupables.size(), ", ".join(coupables)]
 		+ "de la campagne V2 y serait déposé dans une vallée que le menu "
 		+ "n'ouvre plus")
+
+	# Le défaut du shell doit rester V1 ET la scène V2 doit le surcharger :
+	# les deux ensemble, sinon l'un des deux mondes perd son « Réessayer ».
+	var scene_v2: String = FileAccess.get_file_as_string(
+		"res://scenes/world_v2/WorldV2.tscn")
+	check(scene_v2.contains("world_scene_path = \"%s\"" % WORLD_V2_SCENE),
+		"WorldV2.tscn doit surcharger `world_scene_path` — sans quoi "
+		+ "« Réessayer » renverrait le joueur V2 dans le monde V1")
 
 
 # ==========================================================================
@@ -295,29 +336,72 @@ func _interagir_et_lire_la_destination(player: PlayerController,
 	intent.move = Vector2.ZERO
 	await _tree().physics_frame
 
-	var demande: String = ""
+	# DIAGNOSTIC : si l'interaction ne part pas, dire POURQUOI plutôt que de
+	# laisser un « demandé : "" » sans cause. Les trois conditions de
+	# `_select_interactable` sont mesurées ici, dans le même ordre qu'elle.
+	var d3: Vector3 = seuil.global_position - player.global_position
+	var dist: float = Vector2(d3.x, d3.z).length()
+	# Le cône se juge sur le VISUEL, et sur `+basis.z` : le modèle fait face à
+	# +Z local (voir `_orient_visual`, `target_yaw = atan2(x, z)`). Ma première
+	# version mesurait `-basis.z` du CORPS — lequel garde une rotation nulle :
+	# le diagnostic annonçait donc « dot=1.00 » sans rien mesurer du tout.
+	var visuel: Node3D = player.get_node("VisualRoot") as Node3D
+	var avant_visuel: Vector3 = visuel.global_transform.basis.z
+	var vers_porte: Vector3 = d3
+	vers_porte.y = 0.0
+	var produit: float = 0.0
+	if vers_porte.length_squared() > 0.0001:
+		produit = vers_porte.normalized().dot(
+			Vector3(avant_visuel.x, 0.0, avant_visuel.z).normalized())
+	var dans_le_groupe: bool = seuil.is_in_group("interactable")
+	# Ligne de vue, reproduite À L'IDENTIQUE de `_has_interact_los` : même
+	# origine, même cible, même masque, mêmes exclusions.
+	var exclude: Array[RID] = [player.get_rid(), seuil.get_rid()]
+	var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(
+		player.global_position + Vector3.UP * 1.2,
+		seuil.global_position + Vector3.UP * 0.5, 1, exclude)
+	var obstacle: Dictionary = player.get_world_3d().direct_space_state \
+		.intersect_ray(q)
+	var los: String = "libre"
+	if not obstacle.is_empty():
+		var qui: Variant = obstacle.get("collider")
+		los = "BLOQUÉE par %s" % (qui.name if qui is Node else str(qui))
+	var choisi: Variant = player.call("_select_interactable")
+	_diagnostic = ("distance=%.2f m (portée 2.2) · dot=%.2f (min 0.25) · "
+		+ "groupe interactable=%s · au sol=%s · ligne de vue %s · "
+		+ "mode=%s · sélection=%s") % [dist,
+		produit, dans_le_groupe, player.is_on_floor(), los,
+		str(player.get("_mode")),
+		"aucune" if choisi == null else String((choisi as Node).name)]
+
+	# UN LAMBDA GDSCRIPT CAPTURE PAR VALEUR. Écrire `demande = p` dans le
+	# lambda modifiait SA copie, pas la variable locale : le test rapportait
+	# « demandé : "" » alors que la transition partait bel et bien — la sonde
+	# `probe_iss073_interaction.gd` a montré le signal émis au premier appui.
+	# Un tableau est une référence ; sa mutation, elle, se voit du dehors.
+	var recu: Array[String] = []
 	var flow: Node = _tree().root.get_node_or_null("SceneFlow")
 	if flow != null and flow.has_signal("transition_started"):
-		flow.connect("transition_started",
-			func(p: String) -> void: demande = p)
-	var avant: StringName = &""
-	var gs: Node = _tree().root.get_node_or_null("GameState")
+		var gs_signal: Node = _tree().root.get_node_or_null("GameState")
+		flow.connect("transition_started", func(p: String) -> void:
+			recu.append(p)
+			# RELEVER LE TAG ICI, ET NULLE PART AILLEURS. `interact()` le pose
+			# JUSTE AVANT d'appeler `go_to()`, qui émet ce signal ; le
+			# vestibule le consomme à son `_ready()`, dans la même frame. Le
+			# lire depuis la boucle était une course — mesurée perdue à tous
+			# les coups. Lecture NON destructive : consommer le tag ici
+			# priverait le vestibule de son point d'arrivée.
+			if gs_signal != null:
+				_tag_pose = StringName(String(gs_signal.get("_pending_spawn"))))
 
 	for _i: int in range(12):
 		intent.interact_pressed = true
 		await _tree().physics_frame
 		intent.interact_pressed = false
 		await _tree().physics_frame
-		if gs != null:
-			avant = gs.call("consume_pending_spawn")
-			if avant != &"":
-				gs.call("set_pending_spawn", avant)
-				break
-	if demande == "" and avant != &"":
-		# Le tag posé prouve que la porte a bien été actionnée par
-		# l'interaction ; la destination est celle qu'elle porte.
-		demande = seuil.target_scene
-	return demande
+		if not recu.is_empty():
+			break
+	return "" if recu.is_empty() else recu[0]
 
 
 func _camera_relative(player: PlayerController, monde: Vector3) -> Vector2:

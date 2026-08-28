@@ -30,6 +30,10 @@ const WORLD_STATIC_LAYER_MASK: int = 1
 const NAV_RESOURCE_PATTERN: String = "res://resources/world_v2/nav/world_v2_navmesh_q%d.tres"
 const NAV_QUADRANTS: int = 4
 
+## D'où le héros a été placé à ce montage : `spawn` ou `retour_donjon`.
+## Un test doit pouvoir le lire sans deviner d'après une distance.
+var _spawn_source: StringName = &"spawn"
+
 @onready var _spawn: Node3D = $SpawnPoint
 @onready var _player: Node3D = $Player
 @onready var _shell: CanvasLayer = $GameplayShell
@@ -65,6 +69,12 @@ func _ready() -> void:
 		$Routes as Node3D)
 	var places: WorldV2PlacesBuilder = WorldV2PlacesBuilder.new(_heightmap, _layout)
 	var places_count: int = places.build($Places as Node3D)
+	# ISS-073 — la porte du donjon. Posée APRÈS les lieux et AVANT les
+	# frontières : le seuil est à l'intérieur du monde jouable, et l'anneau de
+	# gardes ne doit pas s'y superposer.
+	var door_builder: WorldV2DungeonDoor = WorldV2DungeonDoor.new(
+		_heightmap, _layout)
+	var door_ok: bool = door_builder.build($Landmarks as Node3D)
 	var borders: WorldV2BordersBuilder = WorldV2BordersBuilder.new(_heightmap)
 	borders.build($TerrainChunks as Node3D)
 	var vegetation: WorldV2VegetationBuilder = WorldV2VegetationBuilder.new(
@@ -76,9 +86,39 @@ func _ready() -> void:
 	cameras.build($CaptureCameras as Node3D)
 	var nav_regions: int = _load_navigation()
 
-	# Le joueur apparaît TOUJOURS au point d'apparition — aucune position de
-	# sauvegarde n'est lue ici (contrat de migration).
-	_player.global_position = _spawn.global_position
+	# ISS-073 — LE FLUX, ET D'OÙ L'ON ARRIVE.
+	#
+	# Trois provenances possibles, et leur PRIORITÉ compte :
+	#   1. un RETOUR de transition (le vestibule) — l'emporte sur tout ;
+	#   2. une position sauvegardée — hors périmètre de cette corrective ;
+	#   3. le point d'apparition — le cas d'une partie neuve.
+	#
+	# Avant ce correctif, World V2 ne consommait AUCUN `pending_spawn` : un
+	# retour du vestibule replaçait le héros au spawn, à 380 m du seuil qu'il
+	# venait de franchir. Pire, le tag restait posé et aurait resservi à la
+	# transition suivante.
+	var game_state: Node = get_node_or_null("/root/GameState")
+	var arrival: StringName = &""
+	if game_state != null:
+		game_state.call("set_flow", 2)  # GameState.Flow.VALLEY
+		arrival = game_state.call("consume_pending_spawn")
+
+	var return_anchor: Node3D = $Landmarks.get_node_or_null(
+		WorldV2DungeonDoor.RETURN_ANCHOR_NAME) as Node3D
+	if arrival == WorldV2DungeonDoor.RETURN_TAG and return_anchor != null:
+		# Ressortir replace DEVANT la porte, jamais au spawn (PT-D1-10).
+		_player.global_position = return_anchor.global_position
+		_spawn_source = &"retour_donjon"
+	else:
+		_player.global_position = _spawn.global_position
+		_spawn_source = &"spawn"
+		if arrival != &"" and arrival != WorldV2DungeonDoor.RETURN_TAG:
+			push_warning("[world_v2] tag d'apparition inconnu « %s » — "
+				% arrival + "reprise au point d'apparition")
+	# §20.9 : reset d'interpolation après tout repositionnement instantané.
+	if _player is CharacterBody3D:
+		(_player as CharacterBody3D).velocity = Vector3.ZERO
+	_player.reset_physics_interpolation()
 	# `DiagnosticCamera` précède le joueur dans WorldV2.tscn : Godot la rend
 	# automatiquement courante lorsqu'elle entre seule dans le Viewport. Les
 	# caméras de preuve ne doivent jamais décider de la vue d'une partie normale.
@@ -101,6 +141,9 @@ func _ready() -> void:
 	print("[world_v2] navigation   : %d région(s) chargée(s)" % nav_regions)
 	print("[world_v2] lieux        : %d scène(s) posée(s) par le layout" % places_count)
 	print("[world_v2] spawn        : %s" % _spawn.global_position)
+	print("[world_v2] porte donjon : %s" % ("posée au seuil §3.3"
+		if door_ok else "ABSENTE — le donjon est inatteignable"))
+	print("[world_v2] arrivée      : %s" % _spawn_source)
 
 	await get_tree().physics_frame
 	if not is_instance_valid(self) or not is_inside_tree():
@@ -242,6 +285,16 @@ func containers_missing() -> Array[String]:
 		if get_node_or_null(wanted) == null:
 			missing.append(wanted)
 	return missing
+
+
+## Provenance du placement : `spawn` ou `retour_donjon` (ISS-073).
+func spawn_source() -> StringName:
+	return _spawn_source
+
+
+func dungeon_door() -> SceneDoor:
+	return $Landmarks.get_node_or_null(
+		WorldV2DungeonDoor.DOOR_NAME) as SceneDoor
 
 
 func spawn_position() -> Vector3:

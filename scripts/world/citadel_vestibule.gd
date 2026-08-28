@@ -167,7 +167,11 @@ func _build_room() -> void:
 	var exit_door: SceneDoor = SceneDoor.new()
 	exit_door.name = "ExitDoor"
 	exit_door.verb = "Sortir"
-	exit_door.target_scene = "res://scenes/world/valley/ValleyWorld.tscn"
+	# ISS-073 — la sortie rend au monde de la CAMPAGNE. Le vestibule est
+	# désormais atteint depuis World V2 (le menu n'ouvre plus V1) : le renvoyer
+	# vers `ValleyWorld.tscn` déposerait le joueur dans un monde qu'il n'a
+	# jamais traversé, sans moyen d'en revenir.
+	exit_door.target_scene = "res://scenes/world_v2/WorldV2.tscn"
 	exit_door.spawn_tag = &"citadel_door"
 	exit_door.collision_layer = 1
 	exit_door.collision_mask = 0
