@@ -13,7 +13,8 @@ la première région**, pas un jeu complet.
 | Tranche exécutable région 1 lot 2 | **Prête, NON AUTORISÉE** | `docs/V2_REGION1_VERTICAL_SLICE.md` ; `GO_V2_3_B_LOT2 = FALSE` |
 | Audit des 18 domaines | **COMPLET** — 9 BLOQUANT, 9 MAJEUR, aucun mineur | `docs/V2_LONG_GAME_GAP_AUDIT.md` ; rapports bruts dans `evidence/world_v2/audit_jeu_long/rapports_bruts/` |
 | **Boucle jouable, en ÉDITEUR** | **`PASS`** : porte au seuil §3.3, retour devant la citadelle, chemins de campagne redressés — franchie à pied et par la touche | `--filter=iss073` (9 cas), 5 sabotages ; `evidence/world_v2/iss073/` |
-| **Boucle jouable, dans la BUILD EXPORTÉE** | **`NON VÉRIFIÉ`** — c'est l'angle mort exact d'ISS-071 : un défaut qui n'existe que hors éditeur | attend la candidate et l'essai d'Istvan |
+| **Boucle jouable, dans la BUILD EXPORTÉE** | **`PASS` pour l'EMPAQUETAGE** : porte posée, arrivée au spawn, 15 lieux, montage complet, zéro erreur — lus dans le journal du binaire autonome | `tools/gate_export_iss073.sh` RC=0 ; `evidence/world_v2/iss073/build_exportee/` |
+| **Boucle jouable, MARCHÉE dans la build** | **`NON VÉRIFIÉ`** — l'horloge de jeu y est découplée du réel d'un facteur 17 à 76 (ISS-072) ; 380 m de marche n'y sont pas mesurables honnêtement | attend l'essai d'Istvan (`docs/PLAYTEST_ISS073.md`) |
 | Adversaires dans le monde livré | **`FAIL`** — zéro ennemi, et le vide est verrouillé par le contrat « acteur prématuré » | ISS-074 |
 | Localisation | **`ABSENT`** — zéro `tr()`, aucun fichier de traduction | ISS-075 |
 | Socle chiffré indépendant | **Mesuré** | `tools/mesures_socle.py` → `evidence/world_v2/audit_jeu_long/mesures_independantes.md` |

@@ -1,0 +1,38 @@
+=== 0. Version du moteur ===
+  [OK]   Godot 4.7.1-stable confirmé
+=== 0b. Gel V2.3-B ===
+  [OK]   aucun élément gelé n'a bougé
+=== 1. Import des ressources (parse/import smoke) ===
+  [OK]   import sans parse error (code retour 0)
+=== 1b. Parse de TOUS les scripts GDScript ===
+  [OK]   453 script(s) GDScript parsés sans erreur
+=== 2. Tests unitaires ===
+  [OK]   suite unitaire verte
+  [OK]   aucune erreur signalée dans le journal des tests (le résidu de sortie est jugé en 2b)
+=== 2b. Résidu de fin de processus — DEUX verdicts séparés ===
+  [OK]   01_temoin_moteur.log -> code 0, motif attendu présent
+  [OK]   02_materiau_projet.log -> code 1, motif attendu présent
+  [OK]   03_rid_nouveau.log -> code 1, motif attendu présent
+  [OK]   04_mesure_vs_explique.log -> code 1, motif attendu présent
+  [OK]   05_shader_orphelin.log -> code 1, motif attendu présent
+  [OK]   06_non_verbose.log -> code 3, motif attendu présent
+  [OK]   07_flux_audio.log -> code 1, motif attendu présent
+  [OK]   08_agregat_temoin.log (agrégat) -> code 0, motif attendu présent
+  [OK]   09_agregat_materiau.log (agrégat) -> code 1, motif attendu présent
+  [OK]   10_agregat_objets.log (agrégat) -> code 2, motif attendu présent
+  [OK]   11_agregat_ressources.log (agrégat) -> code 2, motif attendu présent
+  [OK]   12_agregat_rid_disparu.log (agrégat) -> code 2, motif attendu présent
+  [OK]   PROJECT_RESOURCE_LEAK_GATE vert ; télémétrie du cache moteur dans son enveloppe
+=== 2c. Croissance cumulative du résidu (deux cycles dans UN processus) ===
+  [OK]   2 montages, 2 mesures, UNE empreinte — résidu STABLE
+=== 3. Scène d'intégration (lancement réel : Boot -> MainMenu) ===
+  [OK]   scène principale chargée et quittée proprement
+  [OK]   Boot atteint le menu principal
+=== 3b. Continuité des personnages livrés (ISS-019) ===
+  [OK]   6 personnage(s) : un seul corps solidaire, aucune pièce détachée
+=== 4. Plancher de couverture ===
+  [OK]   977 test(s) exécuté(s), plancher 586 respecté
+  [OK]   verdict.py — autotest vert
+  [OK]   analyse_journal_devmode.py — autotest vert
+  [OK]   fumee_build_exportee.py — autotest vert (dont : gravité omise -> code 3)
+=== VALIDATE_FAST : VERT ===

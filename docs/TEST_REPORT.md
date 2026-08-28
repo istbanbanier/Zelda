@@ -5,6 +5,51 @@ Un résultat sans commande reproductible ne vaut pas comme preuve (§0.7).
 
 ---
 
+## Campagne du 2026-08-28 — ISS-073, la boucle de campagne
+
+Branche `claude/world-v2-reconstruction-khgmlu`. Arbre de production mesuré :
+**`c3f1819`** (arbre propre, 0 fichier sale). Les commits postérieurs ne
+touchent que `docs/` et `evidence/` — vérifiable par
+`git diff --name-only c3f1819..HEAD`.
+
+### Commandes exactes et codes retour
+
+| Commande | Code | Résultat |
+|---|---:|---|
+| `tools/lancer_godot.sh --path . --script tools/godot/test_runner.gd -- --filter=iss073` | 0 | 10 cas, 60 assertions, 0 erreur de script |
+| `tools/validate_fast.sh` | **0** | **977 tests, 0 échec** ; gel intact, 453 scripts parsés, résidu stable sur 2 cycles, Boot→menu, 6 personnages solidaires |
+| `GATE_SORTIE=… tools/gate_export_parite.sh` | **0** | 32 contrôles de parité, 0 rouge, 0 bloqué, 0 NON VÉRIFIÉ |
+| `GATE_SORTIE=… tools/gate_export_iss073.sh` | **0** | 5 constats PASS lus dans le journal du jeu exporté |
+
+### Ce que la campagne a trouvé, et que je n'avais pas prévu
+
+Le premier passage complet a rendu **979 tests, 4 échecs — les quatre causés
+par ma propre correction**, aucun autre test du projet n'ayant bougé :
+
+1. la sonde d'ancre butait sur la porte posée sur l'ancre (37,20 m au lieu de
+   34,00 m) ; scénario corrigé, critère intact, sabotage rejoué ;
+2. le balayage d'isolation V1→V2 interdisait aux chemins de retour de viser
+   V2 — contrat qui avait survécu à sa raison, élargi par ÉNUMÉRATION et rendu
+   bidirectionnel ;
+3. le même balayage V2→V1 rougissait sur un COMMENTAIRE du fichier de porte —
+   faux positif du mien, commentaire reformulé, contrat intact ;
+4. puis le gel a rougi parce que j'avais figé ce fichier au milieu de la passe
+   qui l'écrit.
+
+### La build exportée
+
+Binaire autonome de 398 840 568 octets, sha256
+`6ba985ef76228747b349308f4e6b0bd7b0ec9fe0b464d57a7dc71801a3605ac4`, lancé sous
+Xvfb en installation vierge. Le template d'export a dû être recompilé depuis
+`/opt/src/godot` : le conteneur avait été recréé et l'avait perdu.
+
+### Ce que cette campagne NE dit pas
+
+Rien de la fluidité — le rendu est logiciel. Rien du plaisir, du son, de la
+manette, ni de la lisibilité : ce conteneur n'a ni écran ni périphérique. Rien
+de la marche réelle DANS la build : l'horloge de jeu y est découplée du temps
+réel d'un facteur 17 à 76 (ISS-072). La marche est prouvée en éditeur.
+
 ## Campagne du 2026-08-06 — Passe art « wahou », Lots 1-8 (branche dédiée)
 
 Branche `claude/eclats-art-visual-pass-tyfhgc`, arbres `85972bf`→
