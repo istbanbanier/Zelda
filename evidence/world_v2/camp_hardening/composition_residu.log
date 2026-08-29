@@ -1,0 +1,30 @@
+=== import préalable (régénère le cache de classes globales) ===
+  import : code 0
+=== suite complète en --verbose (comptez ~20 min) ===
+  suite : code 0 en 4135s, vidage 153726567 octets
+  === RÉSULTAT: 1039 réussi(s), 0 échoué(s) ===
+  221 ligne(s) de rapport de fuite conservées : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/compo/fuite_brute.log
+=== RÉSIDU DE FIN DE PROCESSUS — DÉCOMPOSITION BRUTE ===
+  objets annoncés     : 142
+  objets énumérés     : 142
+      GDScript                 76
+      GDScriptNativeClass      61
+      Shader                   3
+      AudioStreamWAV           1
+      AudioStreamPlaybackWAV   1
+  ressources annoncées: 77
+  ressources énumérées: 77  (73 .gd + 3 .gdshader + 1 autres)
+  RID DummyShader          3
+  shader justifié     : res://shaders/characters/SH_CharacterPainterlyCutout.gdshader  <- preload de res://scripts/lookdev/hero_shot_lab.gd
+  shader justifié     : res://shaders/characters/SH_CharacterPainterly.gdshader  <- preload de res://scripts/lookdev/hero_shot_lab.gd
+  shader justifié     : res://shaders/foliage/SH_FoliageWindPainterly.gdshader  <- preload de res://scripts/lookdev/hero_shot_lab.gd
+
+PROJECT_RESOURCE_LEAK_GATE : ROUGE
+    * 1 ressource(s) du PROJET survivent : res://assets/audio/sfx/amb_valley.wav
+    * classe(s) d'objet non attribuée(s) au moteur : AudioStreamPlaybackWAV=1, AudioStreamWAV=1
+ENGINE_SCRIPT_CACHE_TELEMETRY : DÉRIVE — redevient BLOQUANTE
+    * croissance : AudioStreamPlaybackWAV = 1, contrat = 0
+    * croissance : AudioStreamWAV = 1, contrat = 0
+    * croissance : GDScript = 76, contrat = 75
+    * croissance : .gd = 73, contrat = 72
+    * provenance(s) nouvelle(s) : scripts/localisation

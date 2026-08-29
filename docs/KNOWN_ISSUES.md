@@ -3266,3 +3266,56 @@ la famille qu'ISS-073 a coûtée.
 **Correction candidate** : poser le tag dans un handler de
 `transition_finished`, ou l'effacer sur échec de `go_to`. Une passe flux,
 pas T1.
+
+---
+
+## ISS-086 — L'ambiance de la vallée V1 survit au processus — S3, OUVERT
+
+**Découvert le 2026-08-29**, par la course de composition exigée avant toute
+entérination d'enveloppe de résidu (passe de durcissement du camp).
+
+`PROJECT_RESOURCE_LEAK_GATE` — le portail qui distingue une fuite du PROJET du
+résidu du cache moteur — passe au ROUGE avec un nom précis :
+
+```
+* 1 ressource(s) du PROJET survivent : res://assets/audio/sfx/amb_valley.wav
+* classe(s) d'objet non attribuée(s) au moteur :
+      AudioStreamPlaybackWAV=1, AudioStreamWAV=1
+```
+
+`valley_world.gd` démarre l'ambiance (`audio.call("play_ambience",
+&"amb_valley")`) et **rien ne l'arrête**. Le lecteur garde son flux, et le flux
+garde sa lecture, jusqu'à la mort du processus.
+
+**PRÉEXISTANT, et prouvé tel — pas déduit.** Un seul fichier de test suffit à
+le reproduire, et il ne fait partie d'aucun travail de cette passe :
+
+```
+tools/lancer_godot.sh --headless --path . --verbose \
+  --script tools/godot/test_runner.gd -- --filter=phase_e_chain
+→ 2 réussi(s), 0 échoué(s) ; 2 ObjectDB fuités à la sortie ;
+  « Resource still in use: res://assets/audio/sfx/amb_valley.wav »
+```
+
+`ValleyWorld.tscn` est monté par **50 fichiers de test**. La fuite n'appartient
+donc à aucun d'eux : elle appartient au couple lecteur/ambiance.
+
+**Pourquoi elle n'apparaissait pas avant.** L'agrégat de `validate_fast`
+(sans `--verbose`) ne voit que des CLASSES de RID, pas des noms de ressource :
+il rendait `PROJECT_RESOURCE_LEAK_GATE : VERT` sur ce même arbre. Seule la
+composition nomme le fichier. C'est exactement la raison d'être de la course
+coûteuse — et la raison pour laquelle elle a été payée ici avant d'entériner
+quoi que ce soit.
+
+**Ce qu'il faudrait** : que l'ambiance s'arrête quand la vallée quitte l'arbre
+— un `AudioManager.stop_ambience()` appelé depuis `_exit_tree()`, sur le motif
+de fin de vie déjà écrit pour les caches statiques (`StaticResourceCaches`,
+ISS-059). Précédé d'un test qui échoue, sinon elle se reperdra.
+
+- **Sévérité** : S3 — aucune conséquence en jeu (le processus se termine), mais
+  le portail A ne peut plus rien attraper d'autre tant qu'il rougit pour ça.
+- **Hors périmètre de cette passe** : la directive autorisait quatre sujets
+  nommés ; toucher l'audio partagé de V1 en fin de passe, sans rouge préalable,
+  serait exactement la dérive que ce dépôt paie d'habitude.
+- **Preuve** : `evidence/world_v2/camp_hardening/composition_residu.log` et
+  `fuite_audio_preexistante.log`.

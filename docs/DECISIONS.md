@@ -1799,3 +1799,43 @@ dur subsistent (comptés dans `docs/LOCALISATION.md`). Les basculer d'un seul
 tenant serait un changement que personne ne saurait relire. La distinction
 clé/texte par la FORME rend la migration progressive ; sans elle, il fallait
 choisir entre tout et rien.
+
+## D-061
+
+**L'enveloppe du résidu N'EST PAS entérinée — ISS-075 / ISS-086.**
+
+La validation complète rougit sur `ENGINE_SCRIPT_CACHE_TELEMETRY` : 142 objets
+et 77 ressources contre un contrat de 139/75. Le geste attendu est
+`tools/gate_fuite_composition.sh --entériner`. **Il n'a pas été fait**, et
+c'est une décision, pas un oubli.
+
+**LA COURSE DE COMPOSITION A ÉTÉ PAYÉE D'ABORD** (4 135 s, 154 Mo de vidage,
+suite 1039/0), parce que D-059 a établi qu'y aller au jugé donne une réponse
+FAUSSE. Elle décompose la dérive en DEUX causes de natures opposées :
+
+| Cause | Quantité | Nature |
+|---|---|---|
+| `GDScript` +1, `.gd` +1, provenance `scripts/localisation` | 1 objet, 1 ressource | **légitime** — `Textes` est appelé par NOM DE CLASSE depuis quatre fichiers, donc épinglé par le moteur, exactement le mécanisme de D-059 |
+| `AudioStreamWAV` +1, `AudioStreamPlaybackWAV` +1, `amb_valley.wav` | 2 objets, 1 ressource | **fuite réelle du PROJET**, préexistante — ISS-086 |
+
+Et ma prédiction aurait encore été fausse : j'attendais deux scripts épinglés
+(`Textes` ET `CampCuisineGuard`). Un seul l'est — le second est attaché par la
+scène, jamais appelé par son nom de classe. La mesure a tranché, pas moi.
+
+**Entériner aujourd'hui inscrirait la fuite audio DANS le contrat**, et le
+portail cesserait de la voir. Or son propre en-tête dit : « c'est le geste qui
+accepte une nouvelle enveloppe, pas celui qui fait taire un rouge ». Une
+enveloppe qui absorbe une fuite nommée n'est plus une enveloppe.
+
+**Conséquence assumée : `validate_fast` reste ROUGE sur cette branche**, pour
+une cause entièrement attribuée et sans effet en jeu. Le portail A ne peut
+plus rien attraper d'autre tant qu'ISS-086 vit — c'est le vrai coût, et il
+justifie de la corriger avant d'entériner, dans cet ordre :
+
+1. corriger ISS-086 (test rouge d'abord, arrêt de l'ambiance en `_exit_tree()`) ;
+2. relancer la composition ;
+3. n'entériner alors que le `+1 GDScript` de `scripts/localisation`, qui est le
+   seul terme légitime.
+
+Faire l'inverse — entériner puis corriger — laisserait un contrat trop large
+que plus rien n'obligerait à resserrer.

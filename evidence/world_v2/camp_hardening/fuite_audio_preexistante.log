@@ -1,0 +1,14 @@
+Loading resource: res://assets/audio/sfx/amb_valley.wav remapped: res://assets/audio/sfx/amb_valley.wav
+Loading resource: res://.godot/imported/amb_valley.wav-e3ea65bd7adcea4099e220b8c146b2c3.sample remapped: res://.godot/imported/amb_valley.wav-e3ea65bd7adcea4099e220b8c146b2c3.sample
+Completed load for: 'res://assets/audio/sfx/amb_valley.wav' remapped 'res://assets/audio/sfx/amb_valley.wav' at thread -1
+Leaked instance: AudioStreamPlaybackWAV:9223374297181995250 - Reference count: 1
+Leaked instance: AudioStreamWAV:9223373251122577988 - Reference count: 1
+Resource still in use: res://assets/audio/sfx/amb_valley.wav (AudioStreamWAV)
+
+--- PROVENANCE ---
+Commande : tools/lancer_godot.sh --headless --path . --verbose \
+             --script tools/godot/test_runner.gd -- --filter=phase_e_chain
+Résultat : 2 réussi(s), 0 échoué(s) ; 2 ObjectDB fuités à la sortie.
+`test_phase_e_chain.gd` ne fait PARTIE D'AUCUN travail de cette passe : il
+monte ValleyWorld comme 50 autres fichiers de test. Il suffit à lui seul à
+retenir l'ambiance. La fuite est donc PRÉEXISTANTE, pas introduite ici.
