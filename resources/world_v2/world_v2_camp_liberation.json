@@ -27,9 +27,9 @@
       },
 
       "textes": {
-        "doc": "TOUT ce que le joueur lit vit ici. Il n'existe aucune table de traduction dans ce dépôt ; le motif établi, déjà verrouillé par des tests, est « le texte affiché vit dans la donnée, pas dans le code » — display_name d'une arme, d'un ingrédient, d'un PointOfInterest. Le jour où une localisation arrive, c'est cette entrée qu'elle remplace, pas une ligne de .gd.",
-        "victoire": "Le camp est libéré. Le feu se rallume.",
-        "recompense_posee": "Les pillards ont laissé une caisse près du foyer."
+        "doc": "DES CLÉS, plus du texte — ISS-075. Ce champ portait le français en clair, avec la note « le jour où une localisation arrive, c'est cette entrée qu'elle remplace ». Ce jour est arrivé : la table vit dans resources/localisation/, et c'est le HUD (`gameplay_shell._on_notification`) qui résout la clé. Pourquoi le HUD et pas ici : `world_v2_camp_liberation.gd` est GELÉ, donc son `_annoncer()` ne peut pas appeler `Textes.t()` — il publie la clé sur EventBus, et la traduction se fait au dernier moment, devant l'écran. Une clé absente de la table source fait échouer bruyamment ; voir test_localisation_iss075.gd.",
+        "victoire": "camp.braise.libere",
+        "recompense_posee": "camp.braise.recompense"
       }
     }
   ]

@@ -1402,6 +1402,14 @@ func _try_interact() -> void:
 	var accepted: Variant = best.call("interact", self)
 	if accepted is bool and bool(accepted):
 		interacted.emit(best)
+	elif best.has_method("refus_cle"):
+		# ISS-084 : une cible peut REFUSER. Sans cette branche, `E` devant le
+		# foyer d'un camp encore tenu rendait `false` EN SILENCE — le défaut
+		# nº1 du playtest, revenu par une autre porte. Contrat OPTIONNEL :
+		# `refus_cle() -> String`, vide quand la cible n'a rien à dire.
+		var cle: String = String(best.call("refus_cle"))
+		if cle != "":
+			_refuse_interaction(cle, &"cible_refuse")
 	_refresh_interact_focus()   # l'objet a pu disparaître ou changer d'état
 
 
@@ -1419,15 +1427,20 @@ func _try_interact() -> void:
 ## manquait ici, précisément là où un débutant apprend ce que fait une touche.
 ##
 ## Cadencé : marteler la touche ne doit pas remplir l'écran de notifications.
-func _refuse_interaction() -> void:
-	_mark_refused(&"interact", &"rien_a_portee")
+##
+## ISS-075 : le message est une CLÉ, résolue par le HUD. Le refus « rien à
+## portée » n'est plus le seul : une cible qui existe mais se refuse dit
+## pourquoi, sans dupliquer la cadence anti-spam qui vit ici.
+func _refuse_interaction(cle: String = "interaction.rien_a_portee",
+		raison: StringName = &"rien_a_portee") -> void:
+	_mark_refused(&"interact", raison)
 	if _interact_refusal_cooldown > 0.0:
 		return
 	_interact_refusal_cooldown = INTERACT_REFUSAL_COOLDOWN
 	_sfx(&"refuse")
 	var bus: Node = get_node_or_null("/root/EventBus")
 	if bus != null:
-		bus.call("notify", "Rien à portée — approchez-vous et faites face.")
+		bus.call("notify", cle)
 
 
 func _select_interactable() -> Node3D:

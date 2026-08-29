@@ -1,0 +1,17 @@
+{
+  "_doc": "ISS-075 — LANGUE SOURCE. Une clé absente d'ici est une FAUTE, pas une traduction manquante : `Textes.t()` la signale par `push_error` et rend un texte visiblement cassé, ⟦clé⟧, pour qu'un playtest la remonte au lieu de l'ignorer.",
+  "_doc_forme": "Clé = minuscules, chiffres, soulignés, points ; au moins un point. Aucun texte joueur français ne peut prendre cette forme — il porte espaces, majuscules ou accents — et c'est CE fait qui permet au HUD de traduire une clé sans toucher aux 200 textes bruts encore en place. `test_localisation_iss075.gd` le vérifie sur les littéraux réels du dépôt.",
+  "_doc_portee": "Cette table ne couvre PAS encore le jeu. Elle couvre le camp braise et les premiers textes d'une partie neuve — ce que la directive demandait au minimum. Le reste est inventorié dans docs/LOCALISATION.md, avec son compte exact.",
+
+  "camp.braise.libere": "Le camp est libéré. Le feu se rallume.",
+  "camp.braise.recompense": "Les pillards ont laissé une caisse près du foyer.",
+  "camp.braise.foyer_tenu": "Le camp est encore tenu — ce feu n'est pas le vôtre.",
+
+  "vallee.premiere.fumee": "De la fumée s'élève au loin — un campement ?",
+  "interaction.rien_a_portee": "Rien à portée — approchez-vous et faites face.",
+
+  "menu.options.sous_titre": "Sensibilité, regard, volumes, commandes",
+  "menu.sauvegarde.ecraser": "Écraser la sauvegarde ?",
+  "menu.sauvegarde.confirmer": "Appuyer à nouveau pour confirmer.",
+  "menu.sauvegarde.echec": "Échec de création de la sauvegarde — voir le journal."
+}

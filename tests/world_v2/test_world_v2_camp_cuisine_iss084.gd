@@ -165,6 +165,22 @@ func test_camp_tenu_le_foyer_ne_propose_rien_et_refuse_de_cuisiner() -> void:
 		+ "chercher l'atelier. Un verbe vide seul ne suffirait pas — "
 		+ "`_select_interactable()` ne le lit pas, donc `E` passerait encore")
 
+	# A2bis — LE REFUS N'EST PAS MUET, et c'est ce qui manquait au premier
+	# passage d'ISS-084. `interact()` rendait faux EN SILENCE : le joueur
+	# appuyait sur `E` devant le feu et n'obtenait rien — exactement le défaut
+	# nº1 du playtest du 2026-08-07, revenu par une autre porte. Le foyer dit
+	# maintenant POURQUOI, par une clé de localisation (ISS-075), et c'est le
+	# joueur qui porte la cadence anti-spam.
+	var refus: String = String(foyer.call("refus_cle"))
+	check(refus != "",
+		"A2bis — le foyer tenu a une raison à donner, pas seulement un refus")
+	check(Textes.ressemble_a_une_cle(refus),
+		"A2bis — et cette raison est une CLÉ (« %s »), pas du texte écrit en "
+		% refus + "dur : c'est la règle posée par ISS-075")
+	check(Textes.brut(refus, Textes.LOCALE_SOURCE) != "",
+		"A2bis — clé résoluble en français, sinon le joueur lirait ⟦%s⟧"
+		% refus)
+
 	await _demonter()
 	restore_saves()
 

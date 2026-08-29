@@ -1,0 +1,15 @@
+{
+  "_doc": "ISS-075 — LOCALE TÉMOIN. Elle n'est pas là pour livrer le jeu en anglais : elle est là pour PROUVER que la clé traverse une vraie indirection. Sans une seconde table, « localisé » ne voudrait rien dire de vérifiable — le français pourrait tout aussi bien être écrit en dur.",
+  "_doc_trou": "`menu.options.sous_titre` est ABSENTE À DESSEIN, et c'est un montage, pas un oubli. Elle fait courir le second chemin : une clé connue de la source mais pas de la cible retombe sur le français, se compte, et ne casse rien. `test_localisation_iss075.gd` épingle cette absence — la combler sans toucher au test rendrait ce chemin non testé.",
+
+  "camp.braise.libere": "The camp is free. The fire is lit again.",
+  "camp.braise.recompense": "The raiders left a crate by the hearth.",
+  "camp.braise.foyer_tenu": "The camp is still theirs — this fire is not yours.",
+
+  "vallee.premiere.fumee": "Smoke rises in the distance — a camp?",
+  "interaction.rien_a_portee": "Nothing in reach — step closer and face it.",
+
+  "menu.sauvegarde.ecraser": "Overwrite the save?",
+  "menu.sauvegarde.confirmer": "Press again to confirm.",
+  "menu.sauvegarde.echec": "Could not create the save — see the log."
+}

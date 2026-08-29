@@ -122,18 +122,41 @@ func test_focus_cycle_has_no_dead_end() -> void:
 	_close_menu()
 
 
+## Un bouton désactivé mais focalisable piège la navigation manette.
+##
+## RENDU DÉTERMINISTE le 2026-08-29. Sa seule assertion vivait sous
+## `if button != null and button.disabled:` — l'« assertion sautée » nommée
+## dans `tests/CLAUDE.md`. Or le SEUL bouton jamais grisé est « Continuer »,
+## et il ne l'est que sans sauvegarde : dès qu'une suite antérieure en laissait
+## une, ce test n'exécutait plus RIEN. Le garde-fou du runner l'a attrapé
+## comme « couverture illusoire » dans un filet de 208 tests — pas en
+## isolation, ni dans trois ordres plus courts, ce qui est exactement la forme
+## d'ISS-038.
+##
+## Deux corrections, toutes deux RENFORÇANTES : on efface la sauvegarde pour
+## que « Continuer » soit grisé à coup sûr, et on exige que les quatre boutons
+## EXISTENT — sans quoi un simple renommage laissait le test vert et muet.
 func test_disabled_buttons_are_not_focusable() -> void:
-	## Un bouton désactivé mais focalisable piège la navigation manette.
+	_clear_save()
 	var menu: Node = _open_menu()
 	if menu == null:
 		check(false, "menu non instancié")
 		return
 	await _tree().process_frame
+	var grises: int = 0
 	for button_name: String in ["ContinueButton", "NewGameButton", "OptionsButton", "QuitButton"]:
 		var button: Button = menu.find_child(button_name, true, false) as Button
+		check_not_null(button,
+			"le bouton « %s » existe — un renommage laissait ce test muet"
+			% button_name)
 		if button != null and button.disabled:
+			grises += 1
 			check_equal(button.focus_mode, Control.FOCUS_NONE,
 				"bouton désactivé « %s » ne doit pas être focalisable" % button_name)
+	check(grises >= 1,
+		"NON VACUITÉ : au moins un bouton est grisé (%d) — sans sauvegarde, "
+		% grises + "« Continuer » doit l'être, sinon la vérification "
+		+ "ci-dessus n'a rien examiné")
 	_close_menu()
 
 

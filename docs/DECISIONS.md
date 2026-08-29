@@ -1746,3 +1746,56 @@ lieu d'en ajouter une, ce que ni la directive ni la procédure R2B.3.1 §4
 n'autorisent sans régression démontrée. Le conteneur frère observe sans rien
 éditer, et c'est la seule forme qui laisse les trois fichiers gelés — le
 bâtisseur, la racine, le lieu du camp — strictement intacts.
+
+## D-060
+
+**Une table de textes en `Dictionary`, pas `TranslationServer` — ISS-075.**
+
+Le mécanisme demandé était « clés stables, table française, seconde locale
+témoin, échec explicite sur clé manquante ». La solution idiomatique de Godot
+— `TranslationServer` + `tr()` — a été écartée pour trois raisons mesurées,
+et non par préférence.
+
+1. **`tr()` ne peut pas échouer explicitement.** Clé absente : il rend la clé
+   elle-même, en silence. Sur un écran, `camp.braise.libere` ressemble à un
+   choix de mise en page ; personne ne le remonte. Retrouver l'échec exige
+   `Translation.get_message()`, qui rend `""` — donc une couche par-dessus.
+   Cette couche EST le mécanisme ; le serveur n'aurait ajouté qu'une
+   indirection.
+
+2. **Un `Translation` est une `Resource` retenue jusqu'à la fin du processus.**
+   Le résidu de fin de processus de ce dépôt est ÉPINGLÉ par
+   `docs/contrats/residu_cache_moteur.json`, lui-même GELÉ (voir D-059, où
+   entériner ce contrat a cassé le gel). Deux locales auraient déplacé
+   l'enveloppe 139/75, rouvert le contrat, et forcé une régénération du
+   manifeste de gel — trois ripples pour une fonctionnalité qui n'en demandait
+   aucun. Un `Dictionary` n'est ni objet ni ressource : invisible à ce
+   comptage.
+
+3. **Aucun septième autoload.** La racine en porte six et `restore_root()`
+   compte dessus ; un double `restore_root()` supprime déjà les six (piège
+   mesuré). Un `class_name` statique n'y touche pas.
+
+**Ce qui est perdu, explicitement :** la traduction automatique du `text` des
+`Control` posés en scène. La passe ne migre que du texte ÉMIS PAR CODE, donc
+la perte est nulle aujourd'hui. Tous les appels passent par `Textes.t()` : le
+jour où un `.tscn` devra être traduit, le changement tiendra dans
+`scripts/localisation/textes.gd`.
+
+**Alternative rejetée : une CSV importée par Godot.** Elle produit des
+`.translation` que `.gitignore` exclut déjà — donc absents d'un clone frais
+jusqu'à l'import, et une dépendance d'étape de plus pour un gain nul ici.
+
+**Le camp, cas particulier qui a dicté la forme.**
+`world_v2_camp_liberation.gd` est GELÉ : son `_annoncer()` ne peut pas appeler
+`Textes.t()`. Il publie donc la CLÉ sur `EventBus`, et la traduction se fait
+au dernier moment dans `gameplay_shell._on_notification`, qui ne l'est pas.
+C'est ce qui a fixé le point d'interception : le HUD, pas les émetteurs. Le
+script gelé portait déjà la note « le jour où une localisation arrive, c'est
+le JSON qu'elle remplace, pas cette ligne » — la décision suit ce handoff.
+
+**`traduire_si_cle()` plutôt que `t()` au HUD.** 200 textes joueur écrits en
+dur subsistent (comptés dans `docs/LOCALISATION.md`). Les basculer d'un seul
+tenant serait un changement que personne ne saurait relire. La distinction
+clé/texte par la FORME rend la migration progressive ; sans elle, il fallait
+choisir entre tout et rien.

@@ -143,7 +143,7 @@ func _ready() -> void:
 				return
 			var bus: Node = get_node_or_null("/root/EventBus")
 			if bus != null:
-				bus.call("notify", "De la fumée s'élève au loin — un campement ?"))
+				bus.call("notify", "vallee.premiere.fumee"))
 	# La vallée a un fond sonore. Sans lui, le jeu est littéralement muet
 	# entre deux actions — le défaut le plus cité du playtest en aveugle.
 	var audio: Node = get_node_or_null("/root/AudioManager")

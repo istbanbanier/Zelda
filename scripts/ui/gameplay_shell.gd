@@ -797,9 +797,19 @@ func _on_interact_focus_changed(target: Node3D) -> void:
 	_prompt_panel.visible = _prompt_label.text != ""
 
 
+## ISS-075 — LE SEUL ENDROIT OÙ UNE CLÉ DEVIENT DU FRANÇAIS.
+##
+## Placé ici et pas chez les émetteurs pour une raison concrète :
+## `world_v2_camp_liberation.gd` est GELÉ, donc son `_annoncer()` ne peut pas
+## appeler `Textes.t()`. Il publie la CLÉ sur EventBus, et la traduction se
+## fait au dernier moment, devant l'écran.
+##
+## `traduire_si_cle()` et non `t()` : les ~200 textes joueur encore écrits en
+## dur passent inchangés. C'est ce qui rend la migration progressive au lieu
+## d'un basculement d'un seul tenant que personne ne saurait relire.
 func _on_notification(text: String) -> void:
 	var label: Label = Label.new()
-	label.text = text
+	label.text = Textes.traduire_si_cle(text)
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.add_theme_color_override(&"font_color", HudStyle.IVORY)
 	label.add_theme_stylebox_override(&"normal", HudStyle.plaque(0.35))

@@ -111,7 +111,7 @@ func _refresh() -> void:
 	# un playtest en boîte noire avait relevé qu'on partait jouer sans savoir
 	# quelles touches existaient.
 	_options_button.disabled = false
-	_options_button.tooltip_text = "Sensibilité, regard, volumes, commandes"
+	_options_button.tooltip_text = Textes.t("menu.options.sous_titre")
 
 	# §6.1 : l'outillage de debug est absent du build final. `OS.is_debug_build()`
 	# est faux dans un export release ; l'entrée disparaît alors entièrement de
@@ -200,15 +200,15 @@ func _on_new_game() -> void:
 	var has_save: bool = bool(_save_system.call("has_save", DEFAULT_SLOT))
 	if has_save and not _confirming_overwrite:
 		_confirming_overwrite = true
-		_new_game_button.text = "Écraser la sauvegarde ?"
-		_status_label.text = "Appuyer à nouveau pour confirmer."
+		_new_game_button.text = Textes.t("menu.sauvegarde.ecraser")
+		_status_label.text = Textes.t("menu.sauvegarde.confirmer")
 		return
 
 	_confirming_overwrite = false
 	_new_game_button.text = "Nouvelle partie"
 	var created: bool = bool(_save_system.call("save_slot", DEFAULT_SLOT, _new_game_payload()))
 	if not created:
-		_show_error("Échec de création de la sauvegarde — voir le journal.")
+		_show_error(Textes.t("menu.sauvegarde.echec"))
 		return
 	if _game_state != null:
 		_game_state.call("set_difficulty", 1)  # Difficulty.STANDARD

@@ -49,6 +49,14 @@ func prompt_verb() -> String:
 	return "" if _revendique else "Cuisiner"
 
 
+## Contrat OPTIONNEL des interactables (ISS-084 + ISS-075) : une cible qui
+## refuse peut dire POURQUOI. Vide en dehors du refus — `interact()` peut
+## aussi rendre faux parce qu'aucune coquille de jeu n'écoute, et annoncer
+## alors « le camp est tenu » serait un mensonge.
+func refus_cle() -> String:
+	return "camp.braise.foyer_tenu" if _revendique else ""
+
+
 ## Contrat des interactables : `interact(player) -> bool`. Vrai si
 ## l'atelier s'ouvre — le geste du joueur (lot 14) part sur ce vrai.
 func interact(_player: Node) -> bool:
