@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=11 format=3]
 
 ; World V2 — VALLÉE WHITEBOX (phase V2.1). Le sol temporaire de V2.0 a été
 ; remplacé par le monde réel : 64 chunks de relief continu, hydrologie,
@@ -14,6 +14,7 @@
 [ext_resource type="Script" path="res://scripts/world_v2/world_v2_encounters_builder.gd" id="5_encounters"]
 [ext_resource type="Script" path="res://scripts/world_v2/world_v2_camp_liberation.gd" id="6_camp_lib"]
 [ext_resource type="Script" path="res://scripts/camp/camp_cuisine_guard.gd" id="7_cuisine"]
+[ext_resource type="Script" path="res://scripts/camp/camp_variante_visuelle.gd" id="8_variante"]
 [ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="2_player"]
 [ext_resource type="PackedScene" path="res://scenes/ui/GameplayShell.tscn" id="3_shell"]
 [ext_resource type="Shader" path="res://shaders/world_v2/SH_WorldV2Sky.gdshader" id="4_sky"]
@@ -65,6 +66,13 @@ script = ExtResource("6_camp_lib")
 ; GELÉ, cette scène ne l'est pas.
 [node name="CampCuisineGuard" type="Node" parent="."]
 script = ExtResource("7_cuisine")
+
+; VARIANTE VISUELLE — branche `claude/world-v2-camp-variante-visuelle`
+; UNIQUEMENT. Ce nœud n'a pas vocation à rejoindre la branche de durcissement
+; avant qu'Istvan ait vu les captures et tranché. Il n'ajoute aucune règle de
+; jeu : un feu qui se voit, un coffre qui cesse d'écraser le cadre.
+[node name="CampVarianteVisuelle" type="Node" parent="."]
+script = ExtResource("8_variante")
 
 [node name="Navigation" type="Node3D" parent="."]
 
