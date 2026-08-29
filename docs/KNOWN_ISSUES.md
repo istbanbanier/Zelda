@@ -2830,7 +2830,7 @@ Conséquence de second ordre relevée par l'audit : aucun respawn, aucun
 `LootComponent`, aucune `LootTableDefinition`. Tuer ne rapporte rien, et le
 contenu de combat d'une partie est fini et consommable une fois.
 
-## ISS-075 — Zéro localisation, et la dette croît à chaque phrase écrite — S3, OUVERT
+## ISS-075 — Zéro localisation, et la dette croît à chaque phrase écrite — S3, PARTIEL le 2026-08-29
 
 Mesuré : **zéro appel `tr(` réel** dans `scripts/` (le motif `tr(` seul matche
 `str(` — vérifié avec une limite de mot), **aucun** fichier de traduction,
@@ -2844,6 +2844,44 @@ parce qu'il est minuscule. Externaliser quatre fragments coûte une heure ;
 externaliser les 30 000 à 80 000 mots qu'exigerait une campagne de 30-50 h
 coûte plusieurs fois le prix de leur écriture. **La localisation ne se rattrape
 pas** : elle se pose avant d'écrire, ou elle se paie deux fois.
+
+---
+
+### PARTIEL le 2026-08-29 (`48b079b6`) — la fondation existe, la dette reste
+
+Ce qui est fait, et c'est le mécanisme entier : `Textes` (statique,
+`scripts/localisation/`), `fr.json` source, `en.json` locale témoin, **9 clés
+migrées** — le camp braise et les premiers textes d'une partie neuve. Détail,
+raisons et compte exact : `docs/LOCALISATION.md`, décision `D-060`.
+
+Les deux règles diffèrent à dessein : une clé absente de la **source** est une
+FAUTE bruyante (`push_error` + `⟦clé⟧` visible à l'écran) ; une clé absente
+d'une **autre locale** retombe sur le français et se compte. `en.json` porte
+un trou VOLONTAIRE et épinglé, sans quoi ce second chemin ne serait jamais
+parcouru.
+
+Pas `TranslationServer` : `tr()` ne peut pas échouer bruyamment, un
+`Translation` est une `Resource` retenue jusqu'à la fin du processus (or le
+résidu est épinglé par un contrat lui-même GELÉ, D-059), et aucun septième
+autoload. `D-060` détaille.
+
+**CE QUI RESTE, mesuré et non deviné** : **200 littéraux de texte joueur**
+écrits en dur, sur 54 fichiers. Les cinq plus gros : `gameplay_shell.gd` (39),
+`training_grounds.gd` (26), `discovery_rewards.gd` (11), `options_panel.gd`
+(9), `reward_anchor_audit.gd` (7). Le texte DIAGNOSTIC (138 littéraux) et ce
+qui ne part pas dans un build joué (68) sont hors périmètre : un journal
+moteur s'adresse à qui lit le code.
+
+**La dette ne peut plus croître par une porte** : un nouveau texte joueur en
+dur dans `call("notify", "…")` rend
+`test_localisation_iss075.gd` ROUGE (plafond par fichier, contrôle négatif
+joué). Les autres portes — `prompt_verb`, `text` posé en `.tscn`,
+`display_name` des `.tres` — sont COMPTÉES, pas gardées : un garde-fou qui
+devine produit des faux rouges, et un garde-fou à faux rouges finit désarmé
+(PROMPT4 §1.2).
+
+**Prochaine tranche la plus rentable** : `gameplay_shell.gd`, dont quatre
+tables `StringName -> String` de 35 entrées sont déjà de la donnée.
 
 ## ISS-076 — World V2 fait apparaître le héros DOS À LA VALLÉE — S3, OUVERT
 
@@ -2998,7 +3036,7 @@ présent mais illisible n'est plus jamais réécrit par l'antichambre.
 
 ---
 
-## ISS-084 — On cuisine au feu du camp pendant qu'il est tenu, et le foyer est invisible — S4, OUVERT
+## ISS-084 — On cuisine au feu du camp pendant qu'il est tenu — S4, FERMÉ le 2026-08-29
 
 **Découvert le 2026-08-29** par la contre-revue du POI pilote (constat n° 11).
 
@@ -3017,17 +3055,38 @@ L'invite s'affiche, l'action fonctionne.
 foyer du groupe casserait ce contrat ; le déplacer ou le démonter aussi. Le
 choix pris est le moins destructeur : ne toucher qu'une visibilité.
 
-**Ce qu'il faudrait**, le jour où le lieu se dégèle : que le `Campfire` refuse
-l'interaction tant que son camp est tenu, sans quitter le groupe. Un état, pas
-une désinscription.
+**FERMÉ** (`708f9241` + `48b079b6`) — et exactement par ce qui était écrit
+ici : « un état, pas une désinscription ». Il n'a pas fallu dégeler le lieu.
+`Campfire` porte un drapeau `_revendique`, FAUX par défaut ; un conteneur
+frère (`scripts/camp/camp_cuisine_guard.gd`, hors du glob gelé) le lève tant
+qu'un garde de la garnison est debout. Le foyer reste dans `interactable`,
+reste un `Campfire`, et le contrat de checkpoint tient.
 
-- **Sévérité** : S4 — aucun blocage, aucune perte ; une affordance qui ment.
-- **Reproduction** : arriver au camp braise sans tuer la garnison, viser
-  l'emplacement du foyer masqué, appuyer sur `E`.
+Deux raccourcis rejetés, et le code dit pourquoi :
+
+1. **Masquer le foyer ne l'aurait pas désactivé.** Mesuré :
+   `_select_interactable()` ne teste NI `visible` NI `prompt_verb()`. Un feu
+   caché serait resté sélectionnable.
+2. **Lire `FeuVisuel.visible`** pour déduire l'état aurait laissé le visuel
+   décider de l'état du jeu — interdit par `scripts/CLAUDE.md`.
+
+Le verbe vide seul ne suffisait pas non plus : `_try_interact()` appelle
+`interact()` sans consulter le verbe. D'où un refus explicite EN PLUS du
+verbe vide.
+
+Et le refus n'est pas muet — c'était le trou restant après la première passe.
+`refus_cle()`, contrat optionnel des interactables, rend une clé de
+localisation (ISS-075) ; `_refuse_interaction()` la publie avec sa cadence
+anti-spam. Sans quoi `E` devant le foyer tenu rendait faux EN SILENCE :
+le défaut nº1 du playtest du 2026-08-07, revenu par une autre porte.
+
+- **Preuve** : `tests/world_v2/test_world_v2_camp_cuisine_iss084.gd` — rouge
+  d'abord (1 réussi / 10 échoués, pour la bonne raison : le champ de données
+  `foyer_cuisine` n'existait pas), puis 4/0. Filet ciblé 35/0.
 
 ---
 
-## ISS-085 — Hors territoire, un garde frappé ne réagit plus du tout — S4, OUVERT
+## ISS-085 — Hors territoire, un garde frappé ne réagit plus du tout — S4, FERMÉ le 2026-08-29
 
 **Découvert le 2026-08-29** par la contre-revue du POI pilote, en examinant la
 correction d'ISS-083 elle-même.
@@ -3047,15 +3106,37 @@ hors de son territoire, ce qui était pire. Mais « ne pas poursuivre » et « n
 pas réagir » ne sont pas la même décision, et seule la première a été prise
 consciemment.
 
-**Ce qu'il faudrait** : qu'un coup reçu hors territoire déclenche tout de même
-une alerte locale — se tourner, passer en `SUSPICIOUS`, revenir à son poste —
-sans jamais acquérir la cible. La garde reste sur l'acquisition ; la réaction
-en sort.
+**FERMÉ** (`b07a3cd4`) — et la fiche ci-dessus était inexacte SUR DEUX POINTS,
+que seul le passage rouge a révélés.
 
-- **Sévérité** : S4 — le joueur y gagne, il ne s'y bloque pas. Mais c'est un
-  exploit d'archer, et le genre de chose qu'un essai humain remonte vite.
-- **Reproduction** : depuis 21 m du camp braise, tirer sur un garde. Il ne
-  réagit pas.
+1. « **Aucune** réaction » est faux. `_on_hit_received` émet un bruit d'impact
+   À SA PROPRE POSITION, et `NoiseEvents.emit` **n'exclut pas l'émetteur** : le
+   garde s'entend lui-même à distance zéro et entre bien en `SUSPICIOUS`.
+2. « Le bruit d'impact ne porte pas jusque-là » est faux pour la même raison :
+   la distance qui compte n'est pas celle du joueur, c'est zéro.
+
+La réaction existait donc, et elle était **dégénérée** : `_last_known` valant
+sa propre position, `_process_suspicious` orientait vers le vecteur NUL,
+`_face` sortait immédiatement, INVESTIGATE était déjà arrivé, RETURN était
+déjà chez lui. Mesuré au premier rouge : **180,0° avant le coup, 180,0° après,
+0,00 m parcouru**. Trois changements d'état, zéro rotation, zéro pas.
+
+`_riposte_bornee()` remplace ce silence par ce que la fiche demandait — se
+tourner, avancer, ne jamais poursuivre — en posant une dernière position
+honnête : un point sur le rayon poste→agresseur, **ramené à l'intérieur** du
+territoire (`AVANCE_TERRITOIRE = 0.6`). Posée APRÈS `NoiseEvents.emit`, dont
+l'auto-écoute écraserait `_last_known` : **l'ordre est le correctif**.
+
+**Ce qui n'est PAS fermé, et le test le dit dans son en-tête** : la borne de
+territoire gagne, donc un archer patient reste hors d'atteinte. Ce qui change
+est que le garde n'est plus immobile, qu'il fait face, et que ses voisins
+convergent sur l'impact. Fermer complètement l'exploit d'archer demanderait
+d'autoriser une sortie de territoire — c'est exactement ce qu'ISS-083 a
+fermé, et ce n'est pas rouvert ici.
+
+- **Preuve** : `tests/integration/test_enemy_riposte_iss085.gd` — 5 cas,
+  29 assertions, rouge d'abord. Contrôle négatif : en silençant le bruit
+  d'impact, le cas B7 SEUL rougit. Filet IA large 194/0.
 
 ---
 

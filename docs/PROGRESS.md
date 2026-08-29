@@ -2523,3 +2523,72 @@ prochain front est le lot 2 de V2.3-B (interdit jusqu'à levée explicite de
 GO_V2_3_B_LOT2=FALSE par le propriétaire). Hors périmètre consigné : 31
 modèles hors des huit répertoires indexés (22 par chemin explicite, 9
 outils/périmés) — décision d'indexation à prendre un jour, aucune urgence.
+
+---
+
+## 2026-08-29 — Durcissement du camp avant le playtest d'Istvan
+
+Branche `claude/world-v2-camp-hardening-preplay`, partie de **`2cb48dd6`**
+(le commit mesuré, gelé par la directive). **Elle ne contient donc pas
+`257d5b63`**, le handoff documentaire du POI pilote : celui-ci vit sur
+`claude/world-v2-poi-pilote-camp` et y reste. Les trois artefacts gelés —
+`world-v2-candidate-iss073-98cbaf0`, `world-v2-camp-exp-2cb48dd` et le commit
+`2cb48dd60f7255e4f8502e201346f1466c5f4792` — n'ont pas été touchés. Aucune
+release, aucune fusion, aucun lot 2.
+
+**ISS-084 fermé** (`708f9241`, complété par `48b079b6`). Rouge d'abord : 1
+réussi / 10 échoués, et pour la bonne raison — le champ de données
+`foyer_cuisine` n'existait pas. Le foyer du camp refuse tant qu'un garde de sa
+garnison est debout, par un ÉTAT et non une désinscription : le lieu gelé
+continue de poser son `Campfire` dans `interactable`, contrat de checkpoint
+intact. Deux raccourcis rejetés et documentés dans le code — masquer le foyer
+ne l'aurait PAS désactivé (`_select_interactable()` ne lit ni `visible` ni le
+verbe), et lire `FeuVisuel.visible` aurait laissé le visuel décider d'un état
+de jeu. Le refus n'est pas muet : `refus_cle()` rend une clé, le joueur porte
+la cadence anti-spam.
+
+**ISS-085 fermé** (`b07a3cd4`), et le rouge a corrigé la fiche. Elle disait
+« aucune réaction » ; la mesure dit pire — le garde s'entend LUI-MÊME
+(`NoiseEvents.emit` n'exclut pas l'émetteur), entre en `SUSPICIOUS` avec
+`_last_known` = sa propre position, et s'oriente donc vers le vecteur nul.
+Mesuré : 180,0° avant, 180,0° après, 0,00 m. `_riposte_bornee()` pose une
+dernière position honnête ramenée dans le territoire ; posée APRÈS le bruit
+d'impact, dont l'auto-écoute l'écraserait — **l'ordre est le correctif**.
+Contrôle négatif : en silençant l'impact, le cas B7 SEUL rougit. Filet IA
+194/0.
+
+**ISS-075 en PARTIEL** (`48b079b6`). Fondation complète : `Textes`, `fr.json`,
+locale témoin `en.json` avec un trou volontaire épinglé, 9 clés migrées, HUD
+qui résout, et une LOI qui empêche la dette de croître par la porte `notify`
+(contrôle négatif joué). Le rouge a trouvé deux défauts dans ma propre
+conception : `"0.5"` était une clé valide, et le contrat réclamait une
+traduction pour les champs `doc` du JSON. Reste **200 littéraux** de texte
+joueur, comptés par fichier dans `docs/LOCALISATION.md`. Décision `D-060`.
+
+**Réparation au passage** : `test_disabled_buttons_are_not_focusable`
+n'exécutait AUCUNE assertion dès qu'une suite antérieure laissait une
+sauvegarde — l'« assertion sautée » de `tests/CLAUDE.md`. Attrapé par le
+garde-fou du runner dans un filet de 208 tests, non reproductible en isolation
+ni dans trois ordres plus courts : la forme d'ISS-038. Rendu déterministe
+(sauvegarde effacée, existence des quatre boutons exigée), aucun seuil touché.
+
+**Variante visuelle** : branche SÉPARÉE `claude/world-v2-camp-variante-visuelle`,
+**jamais fusionnée**. Feu crédible posé en enfants du `CampfireProp`
+(exemption nommée du contrôle de peau + visibilité héritée), coffre habillé par
+surface sur matériaux dupliqués. A/B depuis la VRAIE caméra du joueur, HUD
+compris, FOV lu à 44° vertical : `coffre_sur_cadre` 0,846 → 0,623 et 0,811 →
+0,604, **médiane de l'image inchangée** — c'est ce contrôle qui rend la mesure
+lisible. Preuves : `evidence/world_v2/camp_variante/`.
+
+**Trouvé en produisant ces preuves, et non corrigé ici** : `_initialize()`
+court avant que Godot ajoute les autoloads, donc `_semer()` sortait en silence
+sur le PREMIER plan. La même faiblesse dort dans `capture_camp_libere.gd`,
+masquée par l'ordre de ses plans — le troisième arrive quand la racine est
+peuplée. Réordonner ses plans la réveillerait.
+
+**Prochaine action exacte** : rien n'est en vol sur cette branche. Deux
+décisions appartiennent au propriétaire — (1) fusionner ou non la variante
+visuelle après l'avoir vue sur un écran, en jugeant en particulier les braises,
+qui sortent en carrés émissifs en rendu logiciel et ne préjugent de rien ;
+(2) la tranche ISS-075 suivante, `gameplay_shell.gd` (39 littéraux, dont
+quatre tables déjà en donnée).
