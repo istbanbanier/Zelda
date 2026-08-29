@@ -55,6 +55,13 @@ const SEPARATION_RADIUS: float = 1.7
 const SEPARATION_WEIGHT: float = 0.9
 ## Pause orientée avant d'aller voir (état SUSPICIOUS).
 const SUSPICION_PAUSE: float = 0.6
+## ISS-085 — part du territoire qu'une riposte bornée s'autorise à parcourir.
+## Ce n'est pas un ornement : `_process_investigate` n'a AUCUNE garde de
+## distance, contrairement à `_process_chase` qui abandonne au-delà de
+## `max_pursuit_distance`. Le seul rempart qui empêche la riposte de sortir
+## du territoire est ce clamp — il doit garder de la marge, pas viser la
+## frontière au millimètre.
+const AVANCE_TERRITOIRE: float = 0.6
 ## Désaxement maximal pour DÉCLENCHER une attaque (D-EN.2).
 const ATTACK_FACING_DEG: float = 30.0
 
@@ -771,7 +778,44 @@ func _on_hit_received(event: DamageEvent) -> void:
 		var attacker: Node3D = event.instigator as Node3D
 		if attacker != null and _state in [State.IDLE, State.PATROL,
 				State.SUSPICIOUS, State.INVESTIGATE, State.RETURN]:
-			_acquire_target(attacker)
+			# ISS-085 — deux issues, jamais une seule. Dans le territoire,
+			# le coup acquiert comme avant. HORS du territoire,
+			# `_acquire_target` refuse (garde ISS-083) et sortait SANS RIEN
+			# FAIRE : il ne restait que le bruit d'impact que le garde
+			# s'entend à lui-même, donc `_last_known` = sa propre position,
+			# donc un `_face` sur le vecteur nul. Immobile, de dos, sous les
+			# flèches. La riposte bornée remplace ce silence.
+			if attacker.global_position.distance_to(_territory_origin) \
+					<= tuning.max_pursuit_distance:
+				_acquire_target(attacker)
+			else:
+				_riposte_bornee(attacker)
+
+
+## ISS-085 — LA RIPOSTE D'UN GARDE QU'ON HARCÈLE DE TROP LOIN.
+##
+## Elle ne poursuit pas et ne prétend pas le faire : la borne de territoire
+## (§12.9, ISS-083) gagne, et un archer patient reste hors d'atteinte. Ce qui
+## change est ce que le joueur VOIT — le garde se tourne vers la menace,
+## avance jusqu'au bord de son sol, et son voisinage a entendu l'impact.
+##
+## Le mécanisme est celui de la suspicion ordinaire, avec une DERNIÈRE
+## POSITION honnête au lieu de la sienne propre : un point sur le rayon qui
+## va de son poste vers l'agresseur, RAMENÉ à l'intérieur du territoire.
+func _riposte_bornee(attacker: Node3D) -> void:
+	var vers: Vector3 = attacker.global_position - _territory_origin
+	vers.y = 0.0
+	if vers.length() < 0.001:
+		return
+	# Jamais au-delà de l'agresseur lui-même, jamais au-delà de la marge.
+	var portee: float = minf(vers.length(),
+		tuning.max_pursuit_distance * AVANCE_TERRITOIRE)
+	_last_known = _territory_origin + vers.normalized() * portee
+	_last_known.y = global_position.y
+	# Posé APRÈS `NoiseEvents.emit` : ce bruit d'impact revient au garde
+	# lui-même — `NoiseEvents.emit` n'exclut pas l'émetteur — et `hear_noise`
+	# écrase `_last_known` avec sa propre position. L'ordre est le correctif.
+	_enter(State.SUSPICIOUS)
 
 
 func _on_poise_broken() -> void:
