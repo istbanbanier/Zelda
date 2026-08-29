@@ -2,11 +2,11 @@
 PORTAIL D'EXPORT ISS-071 — parité de résolution éditeur / build exportée
 arbre   : /home/user/Zelda
 sortie  : /home/user/wt-a-out   (HORS de l'arbre : un export dans l'arbre le salirait)
-date    : 2026-08-29T17:11:43+00:00
+date    : 2026-08-29T21:37:57+00:00
 ==============================================================================
 
 ### 0. état du dépôt — une preuve vient d'un arbre COMMITTÉ
-    SHA testé      : 398a0f302cf28107da29ab4622fef9f6e4eb28fd
+    SHA testé      : 783217bfcbe7c8b2f562dc59c5a07987d54aaf29
     fichiers sales : 0
 
 ### 1. verrou canonique et cloison user://
@@ -15,7 +15,7 @@ date    : 2026-08-29T17:11:43+00:00
     godot : 4.7.1.stable.custom_build.a13da4feb
 
 ### 2. import — obligatoire, et pas une formalité
-    code retour import : 0 (16 lignes)
+    code retour import : 0 (24 lignes)
 
 ### 3. manifeste ÉDITEUR
     code retour : 0
@@ -25,13 +25,13 @@ date    : 2026-08-29T17:11:43+00:00
     templates : linux_release.x86_64 
     code retour export : 0 (1578 lignes)
     binaire : /home/user/wt-a-out/build/EclatsDOrage.x86_64
-    octets  : 411506928
-    sha256  : ca71320c1b01ff93d45aa0db4b841eafd6a7888fe8efb9b1d2383d124e7aec9a
+    octets  : 411507936
+    sha256  : 810a3b44fa322ec8d9b144b1dded4a42b9a9ce7c16752afd776b8a55b58be6c1
 
 ### 5. lancement de la build AUTONOME, user:// VIERGE
     profil vierge : /home/user/wt-a-out/profil_vierge (0 entrée(s) — 0 attendu)
-    Xvfb PID 29137 sur :91
-    jeu PID 29142 ; journal /home/user/wt-a-out/journaux/jeu_exporte_stdout.log
+    Xvfb PID 13247 sur :91
+    jeu PID 13253 ; journal /home/user/wt-a-out/journaux/jeu_exporte_stdout.log
     drapeaux après « -- » : --iss071-dump=/home/user/wt-a-out/manifeste_export.json --iss071-chargeabilite=1
 
 ### 6. pilotage par le FOCUS X
@@ -40,7 +40,7 @@ date    : 2026-08-29T17:11:43+00:00
 
 ### 7. attente du jalon de montage, PUIS de l'effacement du chargement
     jalon atteint : [world_v2] fondation V2 vérifiée — vallée whitebox prête.
-    luminance moyenne mesurée : 0.514495 (seuil 0.02 ; chargement 0.0027)
+    luminance moyenne mesurée : 0.29955 (seuil 0.02 ; chargement 0.0027)
     monde affiché — capture /home/user/wt-a-out/02_monde.png
 
 ### 8. manifeste EXPORT écrit par le jeu lui-même
@@ -168,3 +168,54 @@ rapport JSON : /home/user/wt-a-out/rapport_parite.json
 
 === VERDICT PORTAIL EXPORT ISS-071 : code 0
 RC=0
+RC_PARITE=0
+
+== G1. l'artefact mesuré est-il CELUI du commit courant ? ==
+  PASS  build liée au commit courant (783217bfcbe7c8b2f562dc59c5a07987d54aaf29), arbre propre à l'export
+
+== G2/G3. arrivée réelle au camp, et zéro ressource manquante ==
+        [peuplement] garnison : 4 posé(s), 0 déjà tombé(s)
+  PASS  quatre gardes posés, aucun déjà tombé
+  PASS  un garde a VU le héros arriver : garrison.ember_camp.blue.01
+WM_DELETE_WINDOW envoyé à 2097155
+        (fermeture honorée en 1 s)
+        position sauvegardée : {'x': 36.2253303527832, 'y': 0.410450309514999, 'z': 0.233676105737686}
+  PASS  le héros a RÉELLEMENT marché : 99.77 m depuis son point de reprise
+  PASS  aucun modèle ni ressource manquant dans le PCK — la vallée (G2/G3)
+
+== G4. aucune duplication au redémarrage ==
+        [peuplement] garnison : 4 posé(s), 0 déjà tombé(s)  (lignes de peuplement : 1)
+  PASS  quatre gardes, pas huit — aucune duplication
+  PASS  le bâtisseur n'a construit QU'UNE fois dans ce processus
+WM_DELETE_WINDOW envoyé à 2097155
+        (fermeture honorée en 2 s)
+
+== G5. une garnison tombée reste tombée après fermeture et « Continuer » ==
+        [peuplement] garnison : 2 posé(s), 2 déjà tombé(s)
+  PASS  deux gardes seulement : les deux morts du slot ne reviennent pas
+WM_DELETE_WINDOW envoyé à 2097155
+        (fermeture honorée en 21 s)
+        enemies_slain après la croix : ['garrison.ember_camp.blue.01', 'garrison.ember_camp.red.01']
+  PASS  les deux morts SURVIVENT à la réécriture de fermeture
+
+== G6. l'inventaire de l'antichambre survit à la reprise ==
+  PASS  « Continuer » route vers l'antichambre
+WM_DELETE_WINDOW envoyé à 2097155
+        (fermeture honorée en 1 s)
+  PASS  une écriture a RÉELLEMENT eu lieu (horodatage : 2026-08-29 21:41:48)
+        armes=3 flèches=37 storm_berry=3 plats=1
+  PASS  l'inventaire est INTACT après la reprise dans l'antichambre (ISS-080)
+
+== G7. aucune ressource manquante — sur TOUS les journaux de ce run ==
+  PASS  aucun modèle ni ressource manquant dans le PCK — garnison_2_profil_garnison_g3.log
+  PASS  aucun modèle ni ressource manquant dans le PCK — garnison_3_profil_garnison_g5.log
+  PASS  aucun modèle ni ressource manquant dans le PCK — garnison_4_profil_garnison_g6.log
+        4 journal(aux) de jeu examiné(s) dans ce run
+
+NON VÉRIFIÉ ICI, ET PROUVÉ EN MOTEUR PAR test_world_v2_garrison_combat.gd :
+  dégâts dans les deux sens · victoire de la garnison · mort du héros et
+  « Réessayer ». Un clavier synthétique sous Xvfb en rendu logiciel ne
+  peut pas en faire une mesure déterministe.
+
+GATE_EXPORT_GARNISON : VERT (0 échec)
+RC_GARNISON=0
