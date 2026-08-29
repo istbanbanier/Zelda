@@ -1,0 +1,62 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "avertissement": "Rendu LOGICIEL (llvmpipe, conteneur sans GPU) : utilisable pour comparer deux cadres produits dans les MÊMES conditions, jamais pour juger une lumière finale ni une performance. Les particules d'un rendu logiciel ne préjugent pas de leur rendu sur une vraie carte.",
+  "commit": "cb33bef65fb7cf5da2c3a97c9cc3831f82cc0ac1",
+  "engine": "4.7.1-stable (custom_build)",
+  "interface": "VISIBLE — c'est le point de cet outil ; le HUD fait partie de ce que le joueur regarde et donc de ce qu'on juge",
+  "plans": [
+    {
+      "cadre_luminance_mediane": 0.419,
+      "camera_fov_vertical": 44.0,
+      "camera_position": [
+        49.2396240234375,
+        8.09260749816895,
+        77.4626007080078
+      ],
+      "coffre_dans_le_cadre": true,
+      "coffre_ecran": [
+        154,
+        388
+      ],
+      "coffre_luminance_mediane": 0.261,
+      "coffre_present": true,
+      "coffre_sur_cadre": 0.623,
+      "foyer_lumiere": true,
+      "foyer_visible": true,
+      "gardes_vivants": 0,
+      "hud_visible": true,
+      "image": "evidence/world_v2/camp_variante/apres/joueur_01_au_foyer.png",
+      "name": "joueur_01_au_foyer",
+      "note": "debout près du feu, coffre et foyer dans le cadre — la vue qu'on a en revenant cuisiner"
+    },
+    {
+      "cadre_luminance_mediane": 0.467,
+      "camera_fov_vertical": 44.0,
+      "camera_position": [
+        41.3199996948242,
+        8.0811767578125,
+        83.251708984375
+      ],
+      "coffre_dans_le_cadre": true,
+      "coffre_ecran": [
+        795,
+        327
+      ],
+      "coffre_luminance_mediane": 0.282,
+      "coffre_present": true,
+      "coffre_sur_cadre": 0.604,
+      "foyer_lumiere": true,
+      "foyer_visible": true,
+      "gardes_vivants": 0,
+      "hud_visible": true,
+      "image": "evidence/world_v2/camp_variante/apres/joueur_02_entree_nord.png",
+      "name": "joueur_02_entree_nord",
+      "note": "en arrivant par le nord, le camp entier dans le cadre"
+    }
+  ],
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "size": "1280x720",
+  "variante": "on"
+}
