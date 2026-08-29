@@ -1,0 +1,49 @@
+
+== G1. l'artefact mesuré est-il CELUI du commit courant ? ==
+  PASS  build liée au commit courant (398a0f302cf28107da29ab4622fef9f6e4eb28fd), arbre propre à l'export
+
+== G2/G3. arrivée réelle au camp, et zéro ressource manquante ==
+        [peuplement] garnison : 4 posé(s), 0 déjà tombé(s)
+  PASS  quatre gardes posés, aucun déjà tombé
+  PASS  un garde a VU le héros arriver : garrison.ember_camp.blue.01
+WM_DELETE_WINDOW envoyé à 2097155
+        (fermeture honorée en 1 s)
+        position sauvegardée : {'x': 36.2253303527832, 'y': 0.410450309514999, 'z': 0.233676105737686}
+  PASS  le héros a RÉELLEMENT marché : 99.77 m depuis son point de reprise
+  PASS  aucun modèle ni ressource manquant dans le PCK — la vallée (G2/G3)
+
+== G4. aucune duplication au redémarrage ==
+        [peuplement] garnison : 4 posé(s), 0 déjà tombé(s)  (lignes de peuplement : 1)
+  PASS  quatre gardes, pas huit — aucune duplication
+  PASS  le bâtisseur n'a construit QU'UNE fois dans ce processus
+WM_DELETE_WINDOW envoyé à 2097155
+        (fermeture honorée en 4 s)
+
+== G5. une garnison tombée reste tombée après fermeture et « Continuer » ==
+        [peuplement] garnison : 2 posé(s), 2 déjà tombé(s)
+  PASS  deux gardes seulement : les deux morts du slot ne reviennent pas
+WM_DELETE_WINDOW envoyé à 2097155
+        (fermeture honorée en 24 s)
+        enemies_slain après la croix : ['garrison.ember_camp.blue.01', 'garrison.ember_camp.red.01']
+  PASS  les deux morts SURVIVENT à la réécriture de fermeture
+
+== G6. l'inventaire de l'antichambre survit à la reprise ==
+  PASS  « Continuer » route vers l'antichambre
+WM_DELETE_WINDOW envoyé à 2097155
+        (fermeture honorée en 1 s)
+  PASS  une écriture a RÉELLEMENT eu lieu (horodatage : 2026-08-29 17:16:13)
+        armes=3 flèches=37 storm_berry=3 plats=1
+  PASS  l'inventaire est INTACT après la reprise dans l'antichambre (ISS-080)
+
+== G7. aucune ressource manquante — sur TOUS les journaux de ce run ==
+  PASS  aucun modèle ni ressource manquant dans le PCK — garnison_2_profil_garnison_g3.log
+  PASS  aucun modèle ni ressource manquant dans le PCK — garnison_3_profil_garnison_g5.log
+  PASS  aucun modèle ni ressource manquant dans le PCK — garnison_4_profil_garnison_g6.log
+        4 journal(aux) de jeu examiné(s) dans ce run
+
+NON VÉRIFIÉ ICI, ET PROUVÉ EN MOTEUR PAR test_world_v2_garrison_combat.gd :
+  dégâts dans les deux sens · victoire de la garnison · mort du héros et
+  « Réessayer ». Un clavier synthétique sous Xvfb en rendu logiciel ne
+  peut pas en faire une mesure déterministe.
+
+GATE_EXPORT_GARNISON : VERT (0 échec)
