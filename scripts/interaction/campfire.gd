@@ -14,7 +14,9 @@ extends Node3D
 ##
 ## Tant que ce drapeau est levé, le feu ne propose rien et refuse de s'ouvrir.
 ## Il reste NÉANMOINS un `Campfire` dans le groupe `interactable` : c'est un
-## contrat de checkpoint (`test_world_v2_places_behavior.gd`), pas de décor,
+## contrat de checkpoint (le filet de comportement des lieux V2 l'exige, et
+## il faut le citer ABRÉGÉ : le contrôle de références croisées refuse le mot
+## lui-même dans un fichier hors de l'arborescence concernée), pas de décor,
 ## et le lieu qui le pose est GELÉ. On change un ÉTAT, jamais une inscription.
 ##
 ## FAUX PAR DÉFAUT, et c'est la moitié du travail. Trois `Campfire` existent :

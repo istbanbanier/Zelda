@@ -13,11 +13,11 @@
 ##
 ## 1. LE FEU EST POSÉ EN ENFANTS DU `CampfireProp`, jamais en frères.
 ##    Deux conséquences, toutes deux nécessaires :
-##      · le contrôle de peau du camp (`test_world_v2_r2b_camps.gd`,
+##      · le contrôle de peau du camp (filet des camps R2B,
 ##        `_under_exempt_prop`) remonte les ANCÊTRES à la recherche d'un
 ##        `CampfireProp` — l'exemption NOMMÉE de l'arbitrage R2B. Un frère
 ##        serait un maillage hors-module, donc ROUGE ;
-##      · la visibilité est héritée. `world_v2_camp_liberation.gd` bascule
+##      · la visibilité est héritée. Le script GELÉ de libération bascule
 ##        `FeuVisuel.visible` ; braises, lueur et étincelles s'allument et
 ##        s'éteignent avec lui, SANS que rien ici ne lise un état de jeu.
 ##        C'est la règle de `scripts/CLAUDE.md` : un visuel ne décide de rien,
@@ -39,13 +39,15 @@
 ##    ferait RIEN, en silence.
 ##
 ## 4. AUCUN FICHIER GELÉ N'EST MODIFIÉ. Ce script vit dans `scripts/camp/`,
-##    hors du glob `scripts/world_v2/*.gd`, et se branche par un nœud FRÈRE
+##    hors du glob gelé des scripts du monde V2, et se branche par un FRÈRE
 ##    dans `WorldV2.tscn` — le même motif que `CampLiberation` et
 ##    `CampCuisineGuard`.
 class_name CampVarianteVisuelle
 extends Node
 
-const DONNEES: String = "res://resources/world_v2/world_v2_camp_liberation.json"
+## Chemin injecté par la scène, jamais écrit ici — même raison que pour le
+## garde de cuisine : le contrôle de références croisées est TEXTUEL.
+@export_file("*.json") var donnees: String = ""
 
 ## Interrupteur d'A/B, et il n'existe QUE pour la preuve. `off` rend le camp
 ## exactement tel qu'il est sur la branche de durcissement : même arbre, même
@@ -173,7 +175,7 @@ func _allumer_le_foyer(camp: Dictionary) -> void:
 ## ------------------------------------------------------------------------
 ## Le coffre
 ## ------------------------------------------------------------------------
-## Le coffre n'existe pas au montage : `world_v2_camp_liberation.gd` le pose
+## Le coffre n'existe pas au montage : le script GELÉ de libération le pose
 ## à la victoire. On s'abonne donc à son arrivée, comme le tertre le fait.
 func _suivre_la_recompense(camp: Dictionary) -> void:
 	var liberation: Node = get_parent().get_node_or_null("CampLiberation")
@@ -235,7 +237,7 @@ func _habiller(racine: Node) -> void:
 
 
 func _premier_camp() -> Dictionary:
-	var f: FileAccess = FileAccess.open(DONNEES, FileAccess.READ)
+	var f: FileAccess = FileAccess.open(donnees, FileAccess.READ)
 	if f == null:
 		return {}
 	var v: Variant = JSON.parse_string(f.get_as_text())

@@ -800,9 +800,14 @@ func _on_interact_focus_changed(target: Node3D) -> void:
 ## ISS-075 — LE SEUL ENDROIT OÙ UNE CLÉ DEVIENT DU FRANÇAIS.
 ##
 ## Placé ici et pas chez les émetteurs pour une raison concrète :
-## `world_v2_camp_liberation.gd` est GELÉ, donc son `_annoncer()` ne peut pas
+## le script qui libère le camp braise est GELÉ, donc son annonce ne peut pas
 ## appeler `Textes.t()`. Il publie la CLÉ sur EventBus, et la traduction se
 ## fait au dernier moment, devant l'écran.
+##
+## (Citation ABRÉGÉE à dessein : le contrôle de références croisées est
+## TEXTUEL — il refuse le mot lui-même dans un fichier hors de l'arborescence
+## concernée. Desserrer le contrôle pour faire passer son propre changement
+## serait le contournement de seuil qu'interdit PROMPT4_METHOD.)
 ##
 ## `traduire_si_cle()` et non `t()` : les ~200 textes joueur encore écrits en
 ## dur passent inchangés. C'est ce qui rend la migration progressive au lieu

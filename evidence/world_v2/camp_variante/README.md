@@ -40,6 +40,25 @@ lisible** : la médiane de l'image ne bouge pas. La baisse vient donc du coffre,
 pas d'un assombrissement général qu'on aurait pu obtenir en baissant
 l'exposition et en appelant ça un progrès.
 
+### Ce que ce nombre NE dit PAS — correction après contre-revue
+
+L'AVANT vaut déjà **0,846**, donc **inférieur à 1** : le coffre n'était pas
+plus clair que la médiane de l'image. Ce rapport ne mesure donc pas
+« dominant » au sens du reproche du playtest, qui était vraisemblablement
+CHROMATIQUE — un objet gris-bleu froid et métallique dans un cadre chaud. Or
+le mécanisme correctif (`COFFRE_VERS_GRIS = 0,42`) désature d'abord, et la
+désaturation **n'est mesurée nulle part ici**.
+
+Ce que les deux paires établissent honnêtement : le coffre s'assombrit
+(0,352 → 0,261 en absolu) pendant que son cadre ne bouge pas, donc le
+changement lui est attribuable. Ce qu'elles n'établissent pas : que ce soit la
+bonne réponse au reproche. **C'est l'œil d'Istvan qui tranche ça**, et c'est la
+raison d'être de cette branche.
+
+Et « toujours visible » n'a pour toute preuve que `coffre_dans_le_cadre` — une
+projection à l'écran, pas un plancher de lisibilité. Un habillage beaucoup plus
+poussé passerait ce contrôle en faisant disparaître le coffre.
+
 `foyer_lumiere` passe de **false** à **true** : le foyer World V2 n'avait
 aucune lumière locale, alors que la vallée V1 en pose une depuis V4.3.
 
@@ -83,3 +102,11 @@ cette instance seulement.
 
 Filet rejoué sur cette branche : **39 réussis, 0 échoué** (peau des camps,
 braise, contrats de lieux, camp libéré, cuisine, récompense, localisation).
+
+> **Et ce filet-là ne suffisait pas.** La contre-revue à contexte frais a
+> montré que deux fichiers de cette branche violaient
+> `test_aucune_reference_croisee_interdite` — un contrôle TEXTUEL qui refuse le
+> nom d'un sous-système dans un fichier hors de son arborescence, commentaires
+> compris. Le filet cité ne l'incluait pas : **la preuve contournait le
+> contrôle qui échouait.** Corrigé (chemins injectés par la scène, citations
+> abrégées) et le contrôle est désormais dans le filet.
