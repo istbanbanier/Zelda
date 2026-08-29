@@ -235,19 +235,30 @@ func test_an_alerting_enemy_shares_its_target_with_nearby_allies() -> void:
 	# Le joueur surgit DEVANT le guetteur (dans son cône +Z, hors de celui
 	# de l'allié qui regarde aussi +Z depuis plus loin à l'ouest).
 	_player.global_position = Vector3(0, 0.1, 6)
-	await _settle(20)
 
+	# LE MOMENT COMPTE AUTANT QUE L'AXE, et c'est le second défaut que la
+	# correction du premier a révélé. Mesuré APRÈS `_settle(20)`, l'écart au
+	# cône valait 8,6° : l'allié était déjà en chasse et s'était TOURNÉ vers le
+	# joueur — `_face()` travaille dans tous les états actifs. On mesurait donc
+	# l'orientation qu'il a PARCE QU'il a été alerté, pour prouver qu'il ne
+	# pouvait pas voir avant de l'être. La mesure se prend maintenant à
+	# l'instant où le joueur apparaît, pivot encore à son lacet d'origine.
 	var vers: Vector3 = _player.global_position - sleeper.global_position
 	var angle: float = _cone_ecart_deg(sleeper, _player.global_position)
 	check(angle >= 0.0, "préalable : le Pivot du garde est lisible")
 	check(angle > sleeper.tuning.vision_half_angle_deg,
-		"préalable : l'allié est AVEUGLE par son cône (%.1f° > %.1f°) — c'est "
-		% [angle, sleeper.tuning.vision_half_angle_deg]
-		+ "ce que « hors de vue » doit vouloir dire")
+		"préalable : l'allié est AVEUGLE par son cône à l'instant où le joueur "
+		+ "paraît (%.1f° > %.1f°) — c'est ce que « hors de vue » doit vouloir "
+		% [angle, sleeper.tuning.vision_half_angle_deg] + "dire")
 	check(vers.length() < sleeper.tuning.max_pursuit_distance,
 		"préalable : la cible criée est DANS son territoire (%.2f m < %.1f) — "
 		% [vers.length(), sleeper.tuning.max_pursuit_distance]
 		+ "un allié ne peut plus en imposer une qui n'y est pas (ISS-083)")
+	check_equal(sleeper.state(), RaiderRed.State.IDLE,
+		"préalable : et il n'a rien vu de lui-même — sans cela, la chasse "
+		+ "ci-dessous ne prouverait rien du cri")
+
+	await _settle(20)
 
 	check_equal(seer.state(), RaiderRed.State.CHASE, "le guetteur a vu")
 	check_equal(sleeper.state(), RaiderRed.State.CHASE,
