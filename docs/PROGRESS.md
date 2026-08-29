@@ -50,16 +50,40 @@ Atteignabilité de la récompense, mesurée au sens du joueur lui-même (2,2 m,
 dot 0,25, rayon torse→objet) : sur 16 stations de l'anneau, **les 16**
 qualifient.
 
+### La validation, et ce qu'il a fallu pour l'obtenir
+
+`tools/validate_fast.sh` **VERT, RC=0** sur l'arbre propre `2cb48dd6` :
+1022 tests / 0 échec, 466 scripts parsés, gel 46/46, boot → menu, continuité
+des 6 personnages, plancher de couverture 1022 ≥ 586.
+
+Il a fallu QUATRE passages, et les trois premiers sont instructifs :
+
+1. arrêté à 17 min — je modifiais sous lui des scripts qu'il charge à la
+   demande, donc son verdict aurait porté sur un état mixte (consigné dans
+   `tools/CLAUDE.md`) ;
+2. `1ad628ff` : 1022/0 mais ROUGE sur la télémétrie du cache moteur, +1 objet
+   +1 ressource. Composition complète en `--verbose` (4 050 s) pour ATTRIBUER
+   avant d'entériner : la croissance est `save_merge_guard.gd`, et lui seul —
+   `world_v2_camp_liberation.gd` n'est pas épinglé. D-059 ;
+3. `3e54cf10` : 1021/1, l'unique échec étant D8 — le contrat de résidu est
+   LUI-MÊME gelé, et je l'avais vérifié avant l'entérinement, pas après. Les
+   deux implémentations du gel, shell et GDScript, l'ont dit séparément.
+
+**Build expérimentale** : `publish-playtest.yml` déclenché avec
+`camp_experimental=true` sur `2cb48dd6` → tag `world-v2-camp-exp-2cb48dd6`,
+PRÉ-PUBLICATION, `GUIDE_CAMP_EXP.md` joint avec ses `@@SHA@@` résolus.
+
 ### Prochaine action, exactement
 
-1. `tools/validate_fast.sh` sur l'arbre committé courant — la suite complète
-   n'a PAS encore tourné sur cette tranche ; le passage précédent a été ARRÊTÉ
-   parce que j'avais modifié sous lui des scripts qu'il charge à la demande,
-   ce qui rendait son verdict incitable.
-2. Si VERT : déclencher `publish-playtest.yml` avec `camp_experimental=true`
-   sur cette branche → tag `world-v2-camp-exp-<sha>`, PRÉ-PUBLICATION,
-   `GUIDE_CAMP_EXP.md` joint, @@SHA@@ résolus par le runner.
-3. Ne toucher à aucune release officielle ; la candidate reste `98cbaf0`.
+1. Vérifier la Release publiée et relire le guide joint tel que le runner l'a
+   produit (les `@@SHA@@` doivent être remplis).
+2. Attendre le retour d'essai humain — c'est la seule chose que ce conteneur
+   ne peut pas produire. Priorités de signalement dans `GUIDE_CAMP_EXP.md`.
+3. Deux limites CONNUES et volontairement non corrigées, à ne pas
+   redécouvrir : ISS-084 (on cuisine au foyer masqué d'un camp tenu) et
+   ISS-085 (hors territoire, un garde frappé ne réagit plus du tout).
+4. Ne toucher à aucune release officielle ; la candidate reste `98cbaf0`, et
+   `GO_V2_3_B_LOT2` reste FALSE.
 
 ---
 ## 2026-08-28 — ISS-074 : la garnison du camp braise existe, et ISS-080 est fermée
