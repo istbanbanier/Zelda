@@ -1,6 +1,6 @@
 
 === 0a. Provenance de cette exécution ===
-  commit          : 334b20329553ab2c8efe4fb393ec0feb2662a6fa
+  commit          : a92542598c54adbde2d77fe78e620b8f0f4de57d
   fichiers sales  : 0
   branche         : claude/world-v2-camp-hardening-preplay
 
@@ -235,6 +235,7 @@
     ok   test_enemy_riposte_iss085.gd::test_un_garde_frappe_de_loin_se_tourne_avance_et_reste_chez_lui (9 assertions)
     ok   test_enemy_riposte_iss085.gd::test_sous_le_feu_repete_le_garde_ne_franchit_jamais_sa_frontiere (10 assertions)
     ok   test_enemy_riposte_iss085.gd::test_l_impact_reveille_le_voisinage_sans_le_faire_sortir (5 assertions)
+    ok   test_enemy_riposte_iss085.gd::test_un_bruit_hors_territoire_ne_fait_pas_sortir_le_garde (7 assertions)
     ok   test_enemy_riposte_iss085.gd::test_dans_le_territoire_un_coup_acquiert_toujours_la_cible (2 assertions)
     ok   test_enemy_riposte_iss085.gd::test_la_vallee_v1_garde_ses_adversaires_au_repos (3 assertions)
     ok   test_enemy_territory_iss083.gd::test_la_vision_n_acquiert_pas_au_dela_du_territoire (3 assertions)
@@ -908,8 +909,10 @@
     ok   test_world_v2_borders.gd::test_les_gardes_sont_visibles_et_hors_de_la_zone_jouable (3 assertions)
     ok   test_world_v2_cameras.gd::test_les_six_fenetres_sont_posees_et_degagees (3 assertions)
     ok   test_world_v2_camp_cuisine_iss084.gd::test_camp_tenu_le_foyer_ne_propose_rien_et_refuse_de_cuisiner (11 assertions)
+    ok   test_world_v2_camp_cuisine_iss084.gd::test_le_foyer_bascule_quand_la_garnison_tombe_en_session (8 assertions)
     ok   test_world_v2_camp_cuisine_iss084.gd::test_camp_libere_le_foyer_redevient_utilisable (5 assertions)
     ok   test_world_v2_camp_cuisine_iss084.gd::test_l_etat_du_foyer_se_deduit_a_chaque_reprise (7 assertions)
+    ok   test_world_v2_camp_cuisine_iss084.gd::test_le_foyer_de_l_antichambre_n_est_jamais_revendique (2 assertions)
     ok   test_world_v2_camp_cuisine_iss084.gd::test_le_foyer_de_la_vallee_v1_reste_utilisable (3 assertions)
     ok   test_world_v2_camp_libere.gd::test_tant_que_la_garnison_tient_le_foyer_est_eteint_et_sans_coffre (6 assertions)
     ok   test_world_v2_camp_libere.gd::test_un_camp_libere_rallume_son_foyer_et_pose_sa_recompense (10 assertions)
@@ -1058,7 +1061,7 @@
     ok   test_world_v2_waterways_contract.gd::test_aucun_lieu_dans_l_eau (2 assertions)
     ok   test_world_v2_waterways_contract.gd::test_les_checkpoints_et_ancres_sont_hors_d_eau (2 assertions)
     ok   test_world_v2_waterways_contract.gd::test_le_cours_n_a_pas_de_longue_ligne_droite (2 assertions)
-  === RÉSULTAT: 1039 réussi(s), 0 échoué(s) ===
+  === RÉSULTAT: 1042 réussi(s), 0 échoué(s) ===
   [OK]   suite unitaire verte
   [OK]   aucune erreur signalée dans le journal des tests (le résidu de sortie est jugé en 2b)
 
@@ -1128,7 +1131,7 @@
   [OK]   6 personnage(s) : un seul corps solidaire, aucune pièce détachée
 
 === 4. Plancher de couverture ===
-  [OK]   1039 test(s) exécuté(s), plancher 586 respecté
+  [OK]   1042 test(s) exécuté(s), plancher 586 respecté
 
 APPAREIL DE MESURE — autotests des harnais
   [OK]   verdict.py — autotest vert
