@@ -1,7 +1,7 @@
 {
   "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
   "avertissement": "Rendu LOGICIEL (llvmpipe, conteneur sans GPU) : utilisable pour lire une composition et un état de jeu, jamais pour juger une performance ni une lumière finale.",
-  "commit": "35b170caed8b84595ca4ed3cdddb88f7982bc23f",
+  "commit": "a80ceca80b3112c8093983263da9421d0bf5e021",
   "engine": "4.7.1-stable (custom_build)",
   "plans": [
     {
