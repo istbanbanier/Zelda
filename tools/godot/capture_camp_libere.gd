@@ -61,8 +61,14 @@ func _plans() -> Array[Dictionary]:
 			"joueur": Vector3(44.0, 6.5, 72.0),
 			"morts": true,
 			"attendre_engagement": false,
-			"from": Vector3(50.0, 10.0, 78.0),
-			"look": Vector3(43.0, 6.2, 67.0),
+			# RECADRÉ après la contre-revue. L'ancien point de vue
+			# (50, 10, 78) plaçait la Halle du camp — locale (1,8 ; 7,6),
+			# soit monde (46,8 ; 72,6) — pile entre la caméra et le coffre :
+			# l'image ne montrait pas la récompense qu'elle prétendait
+			# prouver. On regarde depuis le sud-ouest, et `coffre_visible`
+			# du manifeste le VÉRIFIE au lieu de l'espérer.
+			"from": Vector3(38.0, 9.0, 60.0),
+			"look": Vector3(44.0, 6.3, 67.0),
 			"fov": 58.0,
 		},
 	]
@@ -165,6 +171,8 @@ func _un_plan(plan: Dictionary) -> Dictionary:
 		"gardes_vivants": _vivants(monde),
 		"foyer_visible": _foyer_visible(monde),
 		"coffre_present": _coffre_present(monde),
+		# PRÉSENT et VISIBLE sont deux faits différents — voir `_coffre_visible`.
+		"coffre_visible": _coffre_visible(monde, camera.position),
 	}
 	if bool(plan["attendre_engagement"]):
 		# On PUBLIE le fait, vrai ou faux. Une image de « combat » sans
@@ -256,6 +264,42 @@ func _coffre_present(monde: Node) -> bool:
 		for n: Node in monde.find_children("*", "Chest", true, false):
 			if String(n.get("chest_id")) == vise:
 				return true
+	return false
+
+
+## PRÉSENT N'EST PAS VISIBLE, et la contre-revue l'a démontré sur ma propre
+## preuve : `03_camp_libere` annonçait « coffre présent » alors que la Halle du
+## camp se tient exactement sur la ligne de vue, et qu'aucun coffre n'apparaît
+## dans l'image. `_coffre_present()` est un scan de NŒUD : il dit que l'objet
+## existe dans l'arbre, jamais que la caméra le voit. Un manifeste qui laisse
+## confondre les deux fabrique une preuve.
+##
+## Celui-ci tire un vrai rayon depuis la caméra vers le coffre, contre le décor
+## (couche 1), en excluant le coffre lui-même. S'il touche quoi que ce soit,
+## c'est occulté — et le manifeste le DIT.
+func _coffre_visible(monde: Node, depuis: Vector3) -> bool:
+	var brut: Variant = JSON.parse_string(
+		FileAccess.get_file_as_string(DONNEES))
+	if not (brut is Dictionary):
+		return false
+	for entree: Variant in ((brut as Dictionary).get("camps", []) as Array):
+		var vise: String = String(((entree as Dictionary)
+			.get("recompense", {}) as Dictionary).get("coffre_id", ""))
+		if vise == "":
+			continue
+		for n: Node in monde.find_children("*", "Chest", true, false):
+			if String(n.get("chest_id")) != vise:
+				continue
+			var corps: CollisionObject3D = n as CollisionObject3D
+			var exclure: Array[RID] = []
+			if corps != null:
+				exclure.append(corps.get_rid())
+			var cible: Vector3 = (n as Node3D).global_position + Vector3.UP * 0.35
+			var requete: PhysicsRayQueryParameters3D = \
+				PhysicsRayQueryParameters3D.create(depuis, cible, 1, exclure)
+			var espace: PhysicsDirectSpaceState3D = \
+				(monde as Node3D).get_world_3d().direct_space_state
+			return espace.intersect_ray(requete).is_empty()
 	return false
 
 
