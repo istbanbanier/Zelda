@@ -65,6 +65,7 @@ script = ExtResource("6_camp_lib")
 ; GELÉ, cette scène ne l'est pas.
 [node name="CampCuisineGuard" type="Node" parent="."]
 script = ExtResource("7_cuisine")
+donnees = "res://resources/world_v2/world_v2_camp_liberation.json"
 
 [node name="Navigation" type="Node3D" parent="."]
 

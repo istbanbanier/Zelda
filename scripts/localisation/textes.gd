@@ -200,6 +200,33 @@ static func recharger() -> void:
 ## `FileAccess` + `JSON.parse_string`, PAS `load()` : le résultat est un
 ## `Dictionary`, donc un Variant. Aucun `Resource` n'entre dans le cache du
 ## moteur, donc aucun objet ne survit au processus (voir en-tête, raison 2).
+## ISS-059 — FIN DE VIE DU CACHE STATIQUE, et ce n'était pas facultatif.
+##
+## `_tables` est un conteneur `static` : les variables `static` de GDScript ne
+## sont PAS libérées avant le rapport de sortie du moteur (mesuré par ablation
+## à variable unique, R2B.3.1). Un cache de durée de vie « processus » sans
+## propriétaire ne peut pas être relâché — d'où l'inscription au noyau, qui
+## appelle `liberer_caches()` UNE fois à l'extinction.
+##
+## Le sens de la dépendance est imposé : le porteur connaît le noyau, le noyau
+## n'a jamais entendu parler du porteur.
+##
+## Défaut RÉEL de ma première rédaction, attrapé par
+## `test_invariants.gd::test_tout_cache_statique_de_ressources_est_liberable` :
+## le cache était là, la fin de vie manquait.
+static func _static_init() -> void:
+	StaticResourceCaches.enregistrer("Textes", liberer_caches)
+
+
+static func liberer_caches() -> int:
+	var n: int = _tables.size()
+	_tables.clear()
+	_charge = false
+	_absentes_source.clear()
+	_repliees.clear()
+	return n
+
+
 static func _charger() -> void:
 	if _charge:
 		return

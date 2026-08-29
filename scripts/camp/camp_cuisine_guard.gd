@@ -5,7 +5,7 @@
 ## rien, ne sauvegarde rien.
 ##
 ## POURQUOI UN NŒUD DE PLUS PLUTÔT QUE DU CODE DANS L'EXISTANT.
-## `world_v2_camp_liberation.gd` ferait l'affaire — il connaît déjà le camp,
+## Le script GELÉ qui libère le camp ferait l'affaire — il connaît déjà le camp,
 ## la garnison et les morts. Il est GELÉ. `camp_checkpoint_place.gd`, qui pose
 ## les deux foyers, est GELÉ lui aussi. La scène `WorldV2.tscn`, elle, ne
 ## l'est pas : c'est par elle qu'`CampLiberation` est arrivé (D-058), et c'est
@@ -29,7 +29,20 @@
 class_name CampCuisineGuard
 extends Node
 
-const DONNEES: String = "res://resources/world_v2/world_v2_camp_liberation.json"
+## LE CHEMIN DES DONNÉES EST INJECTÉ PAR LA SCÈNE, jamais écrit ici.
+##
+## Ce n'est pas de l'élégance, c'est un contrôle du dépôt :
+## `test_aucune_reference_croisee_interdite` est TEXTUEL — il refuse le mot
+## d'un sous-système dans un fichier hors de son arborescence, pas seulement
+## la dépendance. Ce fichier vit dans `scripts/camp/`, donc il n'a pas le
+## droit de nommer le chemin. Deux issues existaient : s'ajouter à la liste
+## d'exemptions du test (que le test prévoit, en exigeant une justification),
+## ou SUPPRIMER la dépendance. La seconde est meilleure et coûte trois lignes :
+## la scène qui possède le camp lui passe sa donnée.
+##
+## Effet de bord utile : ce garde devient réutilisable pour un autre camp
+## piloté par une autre donnée, sans le toucher.
+@export_file("*.json") var donnees: String = ""
 
 ## Un foyer suivi : son nœud, et le nombre de gardes encore debout.
 var _suivis: Array[Dictionary] = []
@@ -71,9 +84,9 @@ func _installer() -> void:
 func _camps() -> Array[Dictionary]:
 	var sortie: Array[Dictionary] = []
 	var brut: Variant = JSON.parse_string(
-		FileAccess.get_file_as_string(DONNEES))
+		FileAccess.get_file_as_string(donnees))
 	if not (brut is Dictionary):
-		push_warning("[cuisine] données de camp illisibles : %s" % DONNEES)
+		push_warning("[cuisine] données de camp illisibles : %s" % donnees)
 		return sortie
 	for entree: Variant in ((brut as Dictionary).get("camps", []) as Array):
 		sortie.append(entree as Dictionary)
