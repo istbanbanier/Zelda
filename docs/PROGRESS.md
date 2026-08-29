@@ -4,6 +4,64 @@ Ordre **anti-chronologique** : l'entrée la plus récente est en haut. La derni�
 entrée fait office de handoff et doit indiquer **exactement** la prochaine action.
 
 ---
+## 2026-08-29 — POI pilote « camp libéré », ISS-082 et ISS-083 fermées
+
+Branche `claude/world-v2-poi-pilote-camp`, créée depuis `d4e54d8d` sur décision
+lead. La candidate `world-v2-candidate-iss073-98cbaf0` reste GELÉE ; aucune
+fusion canonique, aucun lot 2, `GO_V2_3_B_LOT2=FALSE`.
+
+**ISS-082 fermée**, et sa loi rendue exécutable. La garde de C10 est portée à
+`dungeon_room` et `boss_arena` par un mécanisme partagé, `SaveMergeGuard`. Un
+cas balaie ensuite les 184 scripts et exige que TOUT écrivain de sauvegarde
+fusionne sur une lecture gardée ou figure nommément parmi les exemptions
+(« Nouvelle partie » et « Recommencer », deux remises à zéro à confirmation).
+Inventaire : 9 appels, 7 gardés, 2 exemptés, 0 violation.
+
+**ISS-083 fermée.** La garde de territoire est centralisée dans
+`_acquire_target()` : ni la vision, ni le cri d'allié, ni le coup reçu ne
+peuvent plus imposer une cible hors du territoire.
+
+**Le camp braise devient le premier POI complet.** Contrat C1–C8 dans
+`docs/contrats/camp_libere_world_v2.md`, données dans
+`resources/world_v2/world_v2_camp_liberation.json`. Le script est un conteneur
+FRÈRE d'`Encounters` : il observe, il n'édite rien — aucun fichier gelé n'a
+bougé (D-058, manifeste purement additif puis mis à jour d'une seule ligne).
+
+**Ce que la contre-revue à contexte frais a trouvé, et qui compte plus que le
+reste** : un `restore_root()` sans `await` (coroutine qui survit au cas et
+recharge la racine pendant le suivant — famille ISS-038) ; un préambule
+d'angle mesuré contre **−Z** quand la perception lit **+Z**, donc incapable de
+rougir sur le seul cas qu'il excluait ; et C4 réfutable par un écrivain
+existant — l'autosave de la vallée V1 RECONSTRUISAIT `opened_chests` et
+chassait le coffre du camp, qui serait alors REPOSÉ PLEIN.
+
+Corriger l'axe en a révélé un troisième : le MOMENT. La mesure se prenait
+après que l'allié se soit tourné vers le joueur — on mesurait l'orientation
+qu'il a parce qu'il a été alerté, pour prouver qu'il ne voyait pas avant de
+l'être. Les deux erreurs se compensaient exactement.
+
+**Preuves.** `--filter=camp_libere` 6/0 · `camp_recompense` 3/0 (29
+assertions) · `iss082` 8/0 · `enemy_base,iss083` 11/0. Captures refaites à
+`656c6a66`, arbre propre : le manifeste distingue désormais `coffre_present`
+(scan de nœud) de `coffre_visible` (rayon caméra→coffre) — la première série
+annonçait « présent » sur une image où la Halle masquait tout.
+
+Atteignabilité de la récompense, mesurée au sens du joueur lui-même (2,2 m,
+dot 0,25, rayon torse→objet) : sur 16 stations de l'anneau, **les 16**
+qualifient.
+
+### Prochaine action, exactement
+
+1. `tools/validate_fast.sh` sur l'arbre committé courant — la suite complète
+   n'a PAS encore tourné sur cette tranche ; le passage précédent a été ARRÊTÉ
+   parce que j'avais modifié sous lui des scripts qu'il charge à la demande,
+   ce qui rendait son verdict incitable.
+2. Si VERT : déclencher `publish-playtest.yml` avec `camp_experimental=true`
+   sur cette branche → tag `world-v2-camp-exp-<sha>`, PRÉ-PUBLICATION,
+   `GUIDE_CAMP_EXP.md` joint, @@SHA@@ résolus par le runner.
+3. Ne toucher à aucune release officielle ; la candidate reste `98cbaf0`.
+
+---
 ## 2026-08-28 — ISS-074 : la garnison du camp braise existe, et ISS-080 est fermée
 
 Branche `claude/world-v2-iss074-garnison`, créée depuis le point T1 gelé
