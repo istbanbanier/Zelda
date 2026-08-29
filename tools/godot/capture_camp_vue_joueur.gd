@@ -46,19 +46,15 @@ func _plans() -> Array[Dictionary]:
 	return [
 		{
 			"name": "joueur_01_au_foyer",
-			"joueur": Vector3(47.5, 6.0, 72.0),
-			# Orienté VERS le coffre (44, 6, 68) par la convention du moteur,
-			# `atan2(dx, dz)` — la même que `_face` côté ennemis. Recopier la
-			# convention plutôt que l'inventer est ce qui garantit que le
-			# héros regarde là où le manifeste dit qu'il regarde.
-			"yaw": atan2(44.0 - 47.5, 68.0 - 72.0),
-			"note": "debout près du feu, coffre dans le cadre — la vue "
-				+ "qu'on a en revenant cuisiner",
+			"joueur": Vector3(48.0, 6.0, 72.5),
+			"vise": Vector3(44.0, 6.3, 68.0),   # le coffre
+			"note": "debout près du feu, coffre et foyer dans le cadre — la "
+				+ "vue qu'on a en revenant cuisiner",
 		},
 		{
 			"name": "joueur_02_entree_nord",
 			"joueur": Vector3(41.0, 6.6, 79.0),
-			"yaw": PI,
+			"vise": Vector3(45.0, 6.3, 67.0),   # le cœur du camp
 			"note": "en arrivant par le nord, le camp entier dans le cadre",
 		},
 	]
@@ -152,7 +148,7 @@ func _attendre_les_autoloads() -> bool:
 
 
 func _un_plan(plan: Dictionary) -> Dictionary:
-	_semer(plan["joueur"] as Vector3, float(plan["yaw"]))
+	_semer(plan["joueur"] as Vector3)
 
 	var monde: Node = (load(MONDE) as PackedScene).instantiate()
 	# AVANT l'entrée dans l'arbre : `_installer()` est différé, donc le poser
@@ -202,6 +198,10 @@ func _un_plan(plan: Dictionary) -> Dictionary:
 		monde.queue_free()
 		return {}
 	for _i: int in range(60):
+		await process_frame
+
+	_viser(monde, plan["vise"] as Vector3)
+	for _i: int in range(6):
 		await process_frame
 
 	var camera: Camera3D = _camera_du_joueur(monde)
@@ -311,6 +311,38 @@ func _mediane(valeurs: Array[float]) -> float:
 ## ------------------------------------------------------------------------
 ## Constats
 ## ------------------------------------------------------------------------
+## VISER, COMME UN JOUEUR VISE : en tournant le rig de caméra.
+##
+## Première rédaction FAUSSE, et mesurée. Elle écrivait `player_yaw` dans la
+## sauvegarde en recopiant la convention `atan2(dx, dz)` d'`enemy_base._face`.
+## Résultat : caméra à (48,9 · 70,9) pour un héros semé en (47,5 · 72,0) — le
+## coffre hors cadre, et le manifeste l'a dit (`coffre_dans_le_cadre: false`)
+## au lieu de le cacher. La leçon n'est pas « quelle est la bonne formule » :
+## c'est qu'une convention RECOPIÉE d'un autre système est une hypothèse, et
+## qu'ici elle ne se vérifiait qu'après cinq minutes de rendu.
+##
+## On ne devine donc plus : on pose le rig À LA MAIN vers un point du monde,
+## exactement ce que fait un joueur avec sa souris. La caméra reste CELLE du
+## héros — même nœud, même distance, même FOV, même collision de bras.
+func _viser(monde: Node, cible: Vector3) -> void:
+	for n: Node in monde.find_children("*", "CharacterBody3D", true, false):
+		var rig: Node3D = n.get_node_or_null("CameraRig") as Node3D
+		if rig == null:
+			continue
+		var lacet: Node3D = rig.get_node_or_null("YawPivot") as Node3D
+		var tangage: Node3D = lacet.get_node_or_null("PitchPivot") as Node3D \
+			if lacet != null else null
+		if lacet == null or tangage == null:
+			continue
+		var vers: Vector3 = cible - rig.global_position
+		# `basis.z` d'un pivot pointe DERRIÈRE la caméra (convention Godot) :
+		# le bras de ressort tire vers +Z. D'où le `-vers` sur le lacet.
+		lacet.rotation.y = atan2(-vers.x, -vers.z)
+		var plat: float = Vector2(vers.x, vers.z).length()
+		tangage.rotation.x = atan2(vers.y, plat)
+		return
+
+
 func _camera_du_joueur(monde: Node) -> Camera3D:
 	for n: Node in monde.find_children("*", "Camera3D", true, false):
 		if (n as Camera3D).current:
@@ -379,7 +411,7 @@ func _vivants(monde: Node) -> int:
 ## ------------------------------------------------------------------------
 ## Sauvegarde semée et provenance
 ## ------------------------------------------------------------------------
-func _semer(joueur: Vector3, yaw: float) -> void:
+func _semer(joueur: Vector3) -> void:
 	var systeme: Node = root.get_node_or_null("/root/SaveSystem")
 	if systeme == null:
 		# Plus jamais en silence : c'est ce silence-là qui a fabriqué une
@@ -401,7 +433,7 @@ func _semer(joueur: Vector3, yaw: float) -> void:
 		"world_version": "neris_v2",
 		"checkpoint": "world_v2.valley",
 		"player_position": {"x": joueur.x, "y": joueur.y, "z": joueur.z},
-		"player_yaw": yaw,
+		"player_yaw": 0.0,
 		"enemies_slain": ids,
 	})
 
