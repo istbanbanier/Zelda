@@ -276,8 +276,15 @@ func _commit() -> String:
 	return String(out[0]).strip_edges()
 
 
-## `evidence/` est la SORTIE de cet outil, jamais son entrée : les fichiers
-## non suivis ne comptent pas.
+## `evidence/` est la SORTIE de cet outil, jamais son entrée.
+##
+## PREMIÈRE RÉDACTION FAUSSE, MESURÉE. Elle se contentait de
+## `--untracked-files=no`, ce qui suffit TANT QUE les preuves ne sont pas
+## suivies. Une fois les PNG committés, une recapture les MODIFIE : l'outil
+## déclarait alors l'arbre sale à cause de sa propre sortie, et le manifeste
+## refusait sa propre provenance. On saute donc les entrées `evidence/`, comme
+## le fait `capture_poi_batch.gd` — et on ne saute QUE celles-là : un `.gd`
+## modifié doit toujours rendre `true`.
 func _arbre_sale() -> bool:
 	var out: Array = []
 	var rc: int = OS.execute("git", ["-C",
@@ -287,4 +294,11 @@ func _arbre_sale() -> bool:
 		return true
 	if out.is_empty():
 		return false
-	return String(out[0]).strip_edges() != ""
+	for ligne: String in String(out[0]).split("\n", false):
+		var entree: String = ligne.strip_edges()
+		if entree == "":
+			continue
+		if entree.substr(2).strip_edges().begins_with("evidence/"):
+			continue
+		return true
+	return false
