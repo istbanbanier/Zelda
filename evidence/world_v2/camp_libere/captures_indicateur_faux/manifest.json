@@ -1,0 +1,67 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "avertissement": "Rendu LOGICIEL (llvmpipe, conteneur sans GPU) : utilisable pour lire une composition et un état de jeu, jamais pour juger une performance ni une lumière finale.",
+  "commit": "35b170caed8b84595ca4ed3cdddb88f7982bc23f",
+  "engine": "4.7.1-stable (custom_build)",
+  "plans": [
+    {
+      "coffre_present": true,
+      "fov": 62.0,
+      "foyer_visible": false,
+      "from": [
+        36.0,
+        12.5,
+        104.0
+      ],
+      "gardes_vivants": 4,
+      "image": "evidence/world_v2/camp_libere/captures/01_approche.png",
+      "look": [
+        36.0,
+        6.0,
+        68.0
+      ],
+      "name": "01_approche"
+    },
+    {
+      "coffre_present": true,
+      "engagement_reel": true,
+      "fov": 58.0,
+      "foyer_visible": false,
+      "from": [
+        46.0,
+        10.0,
+        78.0
+      ],
+      "gardes_vivants": 4,
+      "image": "evidence/world_v2/camp_libere/captures/02_combat.png",
+      "look": [
+        36.0,
+        6.5,
+        68.0
+      ],
+      "name": "02_combat"
+    },
+    {
+      "coffre_present": true,
+      "fov": 58.0,
+      "foyer_visible": true,
+      "from": [
+        50.0,
+        10.0,
+        78.0
+      ],
+      "gardes_vivants": 0,
+      "image": "evidence/world_v2/camp_libere/captures/03_camp_libere.png",
+      "look": [
+        43.0,
+        6.19999980926514,
+        67.0
+      ],
+      "name": "03_camp_libere"
+    }
+  ],
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "size": "1280x720"
+}
