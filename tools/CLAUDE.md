@@ -745,3 +745,33 @@ motif — le tour se termine en 143 et la suite, elle, survit. C'est le piège d
 `pgrep -f` qui se voit lui-même, déjà consigné plus haut, sous sa forme
 destructrice. Viser `pgrep -x godot` et les PID lus AVANT, puis vérifier la
 mort réelle.
+
+## Entériner le contrat de résidu CASSE le gel : le contrat est lui-même gelé
+
+Mesuré le 2026-08-29, et trouvé par les portails, pas par moi.
+
+`docs/contrats/residu_cache_moteur.json` figure dans la liste de
+`tools/gel_verifier.sh` (ligne 88). L'entériner — geste légitime, documenté,
+et parfois nécessaire — change donc son sha256 et rend `[GEL ROMPU]`.
+
+Le piège n'est pas le fait, qui est évident une fois vu. C'est **l'ordre de
+vérification** : j'avais lancé `gel_verifier.sh` AVANT l'entérinement, obtenu
+« 46 intacts », et considéré la question réglée. Le contrôle était vrai à
+l'instant où je l'ai fait, et faux à l'instant où il comptait.
+
+```bash
+tools/gate_fuite_composition.sh --sortie=... # ou l'entérinement direct
+python3 tools/gate_fuite_ressources.py ... --ecrire-reference ...
+tools/gel_verifier.sh --ecrire        # <- OBLIGATOIRE ENSUITE
+tools/gel_verifier.sh                 # <- et RELIRE, sans tube
+```
+
+Les deux implémentations du gel ont rendu le même verdict, séparément :
+l'étape 0b de `validate_fast` et `test_d8_aucun_element_gele_n_a_bouge`. Une
+seconde implémentation en GDScript d'un contrôle déjà écrit en shell n'est pas
+une redondance décorative — c'est ce qui a rattrapé un enchaînement que j'avais
+jugé complet.
+
+Règle générale, qui dépasse ce cas : **un contrôle passé avant une opération ne
+dit rien de l'état après.** Rejouer les portails APRÈS le dernier geste, pas
+après l'avant-dernier.

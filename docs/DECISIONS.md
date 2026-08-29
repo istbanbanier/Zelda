@@ -1700,6 +1700,21 @@ projet vert, sans composition. Elle aurait donné la bonne conclusion pour une
 mauvaise raison — et la fois où la dérive ne viendra PAS d'un script neuf,
 c'est cette habitude-là qui la laissera passer.
 
+**CONSÉQUENCE DE SECOND ORDRE, TROUVÉE PAR LES PORTAILS ET NON PAR MOI.**
+`docs/contrats/residu_cache_moteur.json` est LUI-MÊME un élément gelé
+(`tools/gel_verifier.sh` le liste). Entériner l'enveloppe change donc son
+sha256 et casse le gel — ce que j'ai manqué parce que j'avais vérifié le gel
+AVANT l'entérinement, pas après.
+
+Les deux implémentations l'ont dit, séparément et d'accord entre elles :
+l'étape 0b de `validate_fast` (shell) et `test_d8_aucun_element_gele_n_a_bouge`
+(GDScript, seconde implémentation indépendante). C'est exactement ce que la
+barre en couches de `PROMPT4_METHOD` §1 existe pour produire — et la preuve
+qu'une seconde implémentation n'est pas une redondance décorative.
+
+Manifeste régénéré : UNE ligne change, celle du contrat. 46 éléments intacts
+au shell, D8 vert 11/0 en moteur.
+
 ---
 
 ## D-058 — le manifeste de gel accueille## D-058 — le manifeste de gel accueille `world_v2_camp_liberation.gd` (2026-08-29)
