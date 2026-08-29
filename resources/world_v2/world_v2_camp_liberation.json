@@ -8,6 +8,8 @@
       "doc": "La garnison de r05 — quatre gardes, la PREMIÈRE rencontre du jeu. Le layout dit de r05 : « première rencontre 3 approches, cuisine, checkpoint camp ». Les pillards occupent la terrasse qui doit devenir le camp du joueur ; la libérer, c'est rallumer son feu.",
 
       "foyer_visuel": "Places/place_camp/FeuVisuel",
+      "foyer_cuisine": "Places/place_camp/FeuDeCuisine",
+      "foyer_cuisine_doc": "Le Campfire INTERACTIF, frère du FeuVisuel et posé à la même position par le lieu GELÉ. Il n'est ni démonté ni sorti du groupe `interactable` — test_world_v2_places_behavior.gd exige un Campfire dans ce groupe, et c'est un contrat de checkpoint. Seul son ÉTAT change : tant que la garnison tient le camp, il ne propose rien et refuse. ISS-084.",
       "foyer_doc": "Chemin du CampfireProp du lieu GELÉ camp_checkpoint_place.gd. On ne fait que basculer sa visibilité : le démonter, le déplacer ou toucher `FeuDeCuisine` (le Campfire interactif) casserait test_world_v2_places_behavior.gd, qui exige un Campfire dans le groupe `interactable` — c'est un contrat de checkpoint, pas de décor.",
 
       "recompense": {
