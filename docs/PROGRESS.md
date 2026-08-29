@@ -2586,9 +2586,40 @@ sur le PREMIER plan. La même faiblesse dort dans `capture_camp_libere.gd`,
 masquée par l'ordre de ses plans — le troisième arrive quand la racine est
 peuplée. Réordonner ses plans la réveillerait.
 
-**Prochaine action exacte** : rien n'est en vol sur cette branche. Deux
-décisions appartiennent au propriétaire — (1) fusionner ou non la variante
-visuelle après l'avoir vue sur un écran, en jugeant en particulier les braises,
-qui sortent en carrés émissifs en rendu logiciel et ne préjugent de rien ;
-(2) la tranche ISS-075 suivante, `gameplay_shell.gd` (39 littéraux, dont
-quatre tables déjà en donnée).
+### La contre-revue à contexte frais a rendu FAIL sur trois des cinq sujets
+
+Et elle avait raison sur les trois. Vérifiées par exécution avant d'être crues.
+
+**ISS-085 n'était pas fermé.** Je n'avais bordé que le chemin du COUP, en
+écrivant quand même « jamais hors du territoire ». `hear_noise()` écrit
+`_last_known` SANS clamp et `_process_investigate` y marchait SANS garde de
+distance : mesuré, un bruit de rupture à 13,5 m emmenait le garde à **12,70 m**
+d'un territoire de 12,0, de façon répétable. Corrigé AU POINT D'USAGE — la
+destination d'une investigation est ramenée dans le territoire — ce qui couvre
+toutes les portes qui écrivent `_last_known`. Après : 11,20 m.
+
+**Et mon premier test de ce défaut était vert pour rien** : 240 frames ne
+suffisaient pas au garde pour atteindre le bruit. La « tolérance qui absout »
+de `tests/CLAUDE.md`, commise dans le test censé attraper le défaut.
+
+**Les portails d'export étaient périmés.** Leurs journaux portaient
+`398a0f30` alors que `f056f017` modifiait ensuite cinq fichiers exportés, dont
+l'injection sans laquelle le garde de cuisine est inerte. Rejoués sur l'arbre
+final : ISS-071 code 0, garnison 0 échec, SHA concordant.
+
+**La branche de variante violait le contrôle de références croisées**, et son
+README citait un filet qui ne contenait pas ce test — la preuve contournait le
+contrôle qui échouait. Corrigé sur cette branche-là, filet 31/0.
+
+Sept autres constats traités : bascule vivante du foyer non assertée, troisième
+`Campfire` non couvert, en-tête de test affirmant un faux, angle mort de la loi
+`notify` (un enrobage `_notify()` la contourne, déclaré maintenant), compteur
+« 200 littéraux » non reproductible (script committé), rouges et contrôles
+négatifs sans journal (archivés), affirmation trop large du README de variante.
+
+**Prochaine action exacte** : rien n'est en vol. Trois décisions appartiennent
+au propriétaire — (1) fusionner ou non la variante visuelle après l'avoir vue
+sur un écran, en jugeant surtout les braises, qui sortent en carrés émissifs en
+rendu logiciel ; (2) corriger ISS-086 puis entériner l'enveloppe de résidu,
+dans cet ordre et pas l'inverse (D-061) ; (3) la tranche ISS-075 suivante,
+`gameplay_shell.gd` (39 littéraux, dont quatre tables déjà en donnée).
