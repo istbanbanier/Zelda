@@ -1,8 +1,19 @@
 # Build expérimentale « camp libéré » — 15 à 25 minutes
 
-**VIVANT.** Ce guide accompagne la préversion `world-v2-camp-exp-<SHA>`.
-Il ne remplace pas `docs/GUIDE_JOUEUR.md` (installation, commandes) : il dit
-seulement **quoi essayer**, dans quel ordre, et **ce qu'il faut regarder**.
+**VIVANT.** Ce guide accompagne la préversion `world-v2-camp-exp-@@SHA_COURT@@`.
+
+Commit exact : `@@SHA_LONG@@`, branche `claude/world-v2-poi-pilote-camp`.
+Ce numéro est là pour une raison précise : deux archives peuvent peser le même
+poids et ne pas contenir le même jeu. Le commit, lui, ne ment pas — si un
+défaut apparaît, c'est ce numéro qu'il faut nous donner.
+
+**Ce n'est PAS la candidate.** La candidate reste
+`world-v2-candidate-iss073-98cbaf0`, et cette préversion ne la remplace ni ne
+la met à jour. Elle existe pour un essai SÉPARÉ : ne mélangez pas les deux
+verdicts.
+
+Ce guide ne remplace pas `docs/GUIDE_JOUEUR.md` (installation, commandes) : il
+dit seulement **quoi essayer**, dans quel ordre, et **ce qu'il faut regarder**.
 
 ---
 
