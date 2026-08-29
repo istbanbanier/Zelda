@@ -285,3 +285,50 @@ func test_le_script_de_liberation_ne_contient_aucun_texte_joueur() -> void:
 		check(not source.contains(valeur),
 			"C8 — « %s » ne doit exister QUE dans la donnée, jamais dans le "
 			% valeur + "script : un texte codé en dur se recopie et diverge")
+
+
+# --------------------------------------------------------------------------
+# L'HYPOTHÈSE CACHÉE DU MÉCANISME : deux clés qui doivent rester d'accord
+# --------------------------------------------------------------------------
+## `world_v2_camp_liberation.gd` interroge la garnison par DEUX chemins qui ne
+## se ressemblent pas :
+##
+##   `_effectif_attendu()`  lit les ids COMPLETS des fiches `enemies` et les
+##                          compare à `enemies_slain` ;
+##   `_gardes_vivants()`    retrouve les nœuds par `encounter_id` commençant
+##                          par l'id de la GARNISON.
+##
+## Les deux ne s'accordent que parce que, aujourd'hui, chaque id de fiche
+## commence par l'id de sa garnison. Le jour où ce n'est plus vrai, le camp ne
+## trouve plus un seul garde, `restants` vaut zéro, aucun `died` n'arrive —
+## et le camp reste ÉTEINT, sans récompense, POUR TOUJOURS. Aucun message,
+## aucune exception : le joueur voit un feu mort et rien d'autre.
+##
+## Ce cas ne teste pas un comportement : il épingle l'hypothèse qui le rend
+## possible, au seul endroit où elle est vérifiable sans jouer.
+func test_les_ids_de_la_garnison_commencent_par_l_id_de_la_garnison() -> void:
+	var brut: Variant = JSON.parse_string(FileAccess.get_file_as_string(
+		"res://resources/world_v2/world_v2_garrisons.json"))
+	check(brut is Dictionary, "les données de garnison se lisent")
+	if not (brut is Dictionary):
+		return
+
+	var fiches: Array = []
+	for entree: Variant in ((brut as Dictionary).get("garrisons", []) as Array):
+		var g: Dictionary = entree as Dictionary
+		if String(g.get("id", "")) == GARNISON:
+			fiches = g.get("enemies", []) as Array
+			break
+
+	# NON VACUITÉ : sans fiche, la boucle ci-dessous ne s'exécuterait pas et le
+	# cas serait vert en n'ayant rien examiné.
+	check(fiches.size() > 0,
+		"préalable : la garnison « %s » porte des fiches d'ennemis — %d "
+		% [GARNISON, fiches.size()] + "trouvée(s)")
+
+	for fiche: Variant in fiches:
+		var id: String = String((fiche as Dictionary).get("id", ""))
+		check(id.begins_with(GARNISON),
+			"« %s » commence par « %s » — sinon `_gardes_vivants()` ne "
+			% [id, GARNISON] + "trouverait aucun garde et le camp resterait "
+			+ "éteint sans que rien ne le signale")
