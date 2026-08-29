@@ -31,6 +31,8 @@ const SLOT: String = "slot0"
 const GARNISON: String = "garrison.ember_camp"
 ## Demi-côté de la fenêtre échantillonnée autour du coffre, en pixels.
 const FENETRE_COFFRE: int = 26
+## Attente maximale, EN TEMPS, de la libération du camp au montage.
+const BUDGET_LIBERATION_MS: int = 420000
 
 var _out_dir: String = "evidence/world_v2/camp_variante/captures"
 var _width: int = 1280
@@ -137,19 +139,35 @@ func _un_plan(plan: Dictionary) -> Dictionary:
 		await monde.ready
 	# Le camp se libère au montage (garnison déjà tombée dans le slot) et le
 	# coffre arrive avec. On attend le FAIT, pas un nombre de frames.
-	# BUDGET GÉNÉREUX ET ÉCHEC DUR. Premier passage mesuré : 300 frames n'ont
-	# pas suffi au PREMIER montage — 64 chunks de terrain, ~6 s, caches froids
-	# — et l'outil a publié une image d'un camp NON LIBÉRÉ en annonçant
-	# `foyer_visible: false`. Le manifeste était exact et l'image ne montrait
-	# pas ce que le plan promettait : exactement la forme de preuve fausse que
-	# `capture_camp_libere.gd` a déjà payée. On attend beaucoup plus long, et
-	# si le fait n'arrive pas, on ÉCHOUE au lieu de livrer.
+	# BUDGET EN TEMPS, PAS EN FRAMES, et c'est la deuxième correction.
+	#
+	# Premier passage : 300 frames n'ont pas suffi au PREMIER montage — caches
+	# froids — et l'outil a publié une image d'un camp NON LIBÉRÉ en annonçant
+	# honnêtement `foyer_visible: false`. Le manifeste était exact et l'image
+	# ne montrait pas ce que le plan promettait : la forme de preuve fausse
+	# que `capture_camp_libere.gd` a déjà payée.
+	#
+	# Deuxième passage : porter le budget à 2400 frames a été PIRE. En rendu
+	# logiciel une frame coûte plusieurs secondes au premier montage — mesuré,
+	# 28 minutes sans atteindre la fin de la boucle. Un budget en frames n'a
+	# aucune borne en temps réel ici. On compte donc des SECONDES, on
+	# JOURNALISE l'attente pour qu'un échec soit diagnosticable, et on ÉCHOUE
+	# au lieu de livrer.
 	var coffre: Node3D = null
-	for _i: int in range(2400):
+	var debut: int = Time.get_ticks_msec()
+	var prochain_point: int = debut + 15000
+	while Time.get_ticks_msec() - debut < BUDGET_LIBERATION_MS:
 		coffre = _coffre(monde)
 		if coffre != null:
 			break
+		if Time.get_ticks_msec() > prochain_point:
+			prochain_point += 15000
+			print("[vue] %s : %d s, foyer=%s, gardes=%d"
+				% [plan["name"], (Time.get_ticks_msec() - debut) / 1000,
+				_foyer_visible(monde), _vivants(monde)])
 		await process_frame
+	print("[vue] %s : libération constatée en %d s"
+		% [plan["name"], (Time.get_ticks_msec() - debut) / 1000])
 	if coffre == null or not _foyer_visible(monde):
 		printerr("[vue] %s : le camp n'est pas libéré au déclenchement "
 			% plan["name"] + "(coffre=%s, foyer=%s) — aucune image publiée"
