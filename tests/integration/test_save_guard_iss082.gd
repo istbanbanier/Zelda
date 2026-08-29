@@ -291,3 +291,151 @@ func test_un_slot_normal_reste_inscriptible_par_les_trois_ecrivains() -> void:
 
 	_nettoyer()
 	restore_saves()
+
+
+# --------------------------------------------------------------------------
+# LA LOI PLUTÔT QUE SES SIX APPLICATIONS
+# --------------------------------------------------------------------------
+## POURQUOI CE CAS EXISTE. Les cinq précédents éprouvent les trois écrivains
+## qu'ISS-082 a corrigés. Ils ne disent rien du DIXIÈME, celui qu'on écrira le
+## mois prochain. Or l'inventaire de ce jour donne NEUF appelants de
+## `save_slot` dans `scripts/`, répartis en trois familles :
+##
+##   - quatre passent par `SaveMergeGuard.base_de_fusion()` — dungeon_room,
+##     boss_arena, valley_world, world_v2_camp_liberation ;
+##   - trois portent une COPIE À LA MAIN de la même garde, dont deux dans des
+##     fichiers GELÉS qu'on ne peut pas migrer — world_v2_root,
+##     world_v2_encounters_builder, antechamber ;
+##   - deux ÉCRASENT VOLONTAIREMENT, et c'est correct : commencer une partie
+##     neuve n'est pas une fusion, c'est une remise à zéro, et les deux
+##     demandent confirmation au joueur (§17.3).
+##
+## Une loi appliquée en six exemplaires manuscrits se dégrade en silence, et
+## le jour où elle se dégrade, la panne est une sauvegarde détruite. Ce cas
+## l'exécute.
+##
+## CE QU'IL NE VOIT PAS, dit ici plutôt que découvert plus tard : le contrôle
+## porte sur la FONCTION qui contient l'appel, et cherche une trace de garde
+## dans son corps. Une fonction qui appellerait `save_slot` deux fois, une
+## fois gardée et une fois non, passerait. L'angle mort est réel ; il est plus
+## étroit qu'un contrôle par fichier, et beaucoup plus étroit que rien.
+const ECRIVAINS_EXEMPTES: Dictionary = {
+	"scripts/ui/main_menu.gd":
+		"« Nouvelle partie » ÉCRIT une partie neuve plutôt que de supprimer "
+		+ "le fichier — c'est une remise à zéro voulue, pas une fusion. La "
+		+ "confirmation d'écrasement de §17.3 est le garde-fou, et elle est "
+		+ "à sa place : devant le joueur.",
+	"scripts/ui/victory_screen.gd":
+		"« Recommencer » après la victoire, même geste et même raison ; "
+		+ "l'écran demande explicitement confirmation avant d'effacer.",
+}
+
+## Les deux formes reconnues de la garde. La première est le mécanisme
+## partagé ; la seconde est la phrase exacte des copies manuscrites, dont
+## deux vivent dans des fichiers gelés et ne peuvent pas être migrées.
+const MARQUES_DE_GARDE: Array[String] = [
+	"SaveMergeGuard.base_de_fusion",
+	"slot présent mais illisible",
+]
+
+
+func _fichiers_gd(racine: String, out: Array[String]) -> void:
+	var dir: DirAccess = DirAccess.open(racine)
+	if dir == null:
+		return
+	dir.list_dir_begin()
+	var entree: String = dir.get_next()
+	while entree != "":
+		var complet: String = "%s/%s" % [racine, entree]
+		if dir.current_is_dir():
+			if not entree.begins_with("."):
+				_fichiers_gd(complet, out)
+		elif entree.ends_with(".gd"):
+			out.append(complet)
+		entree = dir.get_next()
+	dir.list_dir_end()
+
+
+## Corps de la fonction de premier niveau qui contient la ligne `index`.
+## Les fonctions commencent en colonne 0 par `func ` : on remonte jusqu'à la
+## précédente, on descend jusqu'à la suivante.
+func _fonction_contenant(lignes: PackedStringArray, index: int) -> String:
+	var debut: int = 0
+	for i: int in range(index, -1, -1):
+		if lignes[i].begins_with("func "):
+			debut = i
+			break
+	var fin: int = lignes.size()
+	for i: int in range(index + 1, lignes.size()):
+		if lignes[i].begins_with("func "):
+			fin = i
+			break
+	# LES COMMENTAIRES SONT RETIRÉS, et c'est le point qui rend ce contrôle
+	# capable de rougir. Mesuré : `_autosave()` de `valley_world.gd` porte la
+	# phrase « slot présent mais illisible » DANS UN COMMENTAIRE, ligne 964,
+	# en plus de son vrai appel ligne 966. En gardant les commentaires, effacer
+	# l'appel aurait laissé le test vert — la marque aurait survécu à la garde
+	# qu'elle décrit. C'est exactement la famille de test qui ne peut pas
+	# échouer que `test-coverage-auditor` traque.
+	var corps: String = ""
+	for i: int in range(debut, fin):
+		var ligne: String = lignes[i]
+		var diese: int = ligne.find("#")
+		if diese >= 0:
+			ligne = ligne.substr(0, diese)
+		corps += ligne + "\n"
+	return corps
+
+
+func test_tout_ecrivain_de_sauvegarde_fusionne_ou_est_exempte_nommement() -> void:
+	var fichiers: Array[String] = []
+	_fichiers_gd("res://scripts", fichiers)
+
+	# NON VACUITÉ, et elle compte : si le balayage ne trouvait aucun fichier —
+	# répertoire renommé, DirAccess muet en export — la boucle ne tournerait
+	# pas et ce cas serait vert en n'ayant rien lu. C'est exactement la forme
+	# de test qui ne peut pas rougir.
+	check(fichiers.size() > 100,
+		"préalable : le balayage de res://scripts trouve les scripts du "
+		+ "projet — %d fichier(s) .gd" % fichiers.size())
+
+	var ecrivains: int = 0
+	var gardes: int = 0
+	var exemptes: int = 0
+	for chemin: String in fichiers:
+		var source: String = FileAccess.get_file_as_string(chemin)
+		if not source.contains("\"save_slot\""):
+			continue
+		var relatif: String = chemin.replace("res://", "")
+		var lignes: PackedStringArray = source.split("\n")
+		for i: int in range(lignes.size()):
+			# La DÉFINITION de `save_slot` dans SaveSystem n'est pas un appel.
+			if not lignes[i].contains("call(\"save_slot\""):
+				continue
+			ecrivains += 1
+			if ECRIVAINS_EXEMPTES.has(relatif):
+				exemptes += 1
+				continue
+			var corps: String = _fonction_contenant(lignes, i)
+			var garde: bool = false
+			for marque: String in MARQUES_DE_GARDE:
+				if corps.contains(marque):
+					garde = true
+					break
+			if garde:
+				gardes += 1
+			check(garde,
+				"%s ligne %d écrit la sauvegarde sans lire d'abord ce "
+				% [relatif, i + 1] + "qu'elle contient. Un slot PRÉSENT mais "
+				+ "illisible — corrompu, ou d'un schéma plus récent — rend "
+				+ "`{}` comme un slot absent : repartir de là détruit le "
+				+ "fichier ET sa copie de secours (ISS-082). Passer par "
+				+ "`SaveMergeGuard.base_de_fusion()`, ou inscrire ce fichier "
+				+ "dans ECRIVAINS_EXEMPTES avec sa raison.")
+
+	# Le verdict publie la TAILLE de ce qu'il a examiné : « aucune violation »
+	# sans dénominateur ne prouve rien.
+	check(ecrivains >= 8,
+		"préalable : l'inventaire trouve les écrivains connus — %d appel(s) "
+		% ecrivains + "à save_slot, dont %d gardé(s) et %d exempté(s) "
+		% [gardes, exemptes] + "nommément")
