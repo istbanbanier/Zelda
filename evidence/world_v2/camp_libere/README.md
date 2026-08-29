@@ -16,13 +16,27 @@ satisferait « pas de coffre » et « foyer éteint » sans rien prouver.
 
 ## Les trois captures, pour la revue Codex/Istvan
 
-`captures/` — commit `a80ceca8`, arbre propre, rendu **logiciel**.
+`captures/` — commit `656c6a66`, arbre propre, rendu **logiciel**.
 
-| Plan | gardes | foyer | coffre du camp | engagement |
-|---|---:|---|---|---|
-| `01_approche` | 4 | éteint | absent | — |
-| `02_combat` | 4 | éteint | absent | **réel** |
-| `03_camp_libere` | 0 | **allumé** | **présent** | — |
+| Plan | gardes | foyer | coffre : présent | coffre : VISIBLE | engagement |
+|---|---:|---|---|---|---|
+| `01_approche` | 4 | éteint | non | non | — |
+| `02_combat` | 4 | éteint | non | non | **réel** |
+| `03_camp_libere` | 0 | **allumé** | **oui** | **oui** | — |
+
+**Les deux dernières colonnes ne disent pas la même chose, et c'est la
+correction la plus utile de cette passe.** « Présent » est un scan de nœud :
+l'objet existe dans l'arbre. « Visible » est un rayon tiré depuis la caméra
+vers le coffre, contre le décor. Le premier jeu de captures affichait
+« présent » sur un plan où la Halle du camp masquait entièrement la
+récompense — l'image ne montrait pas ce que son manifeste annonçait, et rien
+dans la preuve ne le signalait. Trouvé par la contre-revue à contexte frais,
+pas par moi.
+
+Le plan 03 regarde désormais depuis le sud-ouest (38, 9, 60), hors de l'axe de
+la Halle. Le recadrage seul n'aurait été qu'un second espoir : c'est
+`coffre_visible` qui le prouve, et qui dirait non si le nouveau cadrage était
+occulté à son tour.
 
 `engagement: true` n'est pas un décor : le héros est posé au milieu de la
 garnison et le script ATTEND qu'un garde l'acquière par sa propre perception.

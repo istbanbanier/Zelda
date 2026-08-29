@@ -1,11 +1,12 @@
 {
   "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
   "avertissement": "Rendu LOGICIEL (llvmpipe, conteneur sans GPU) : utilisable pour lire une composition et un état de jeu, jamais pour juger une performance ni une lumière finale.",
-  "commit": "a80ceca80b3112c8093983263da9421d0bf5e021",
+  "commit": "656c6a662e168359657435f641c7ba6d87f2f451",
   "engine": "4.7.1-stable (custom_build)",
   "plans": [
     {
       "coffre_present": false,
+      "coffre_visible": false,
       "fov": 62.0,
       "foyer_visible": false,
       "from": [
@@ -24,6 +25,7 @@
     },
     {
       "coffre_present": false,
+      "coffre_visible": false,
       "engagement_reel": true,
       "fov": 58.0,
       "foyer_visible": false,
@@ -43,18 +45,19 @@
     },
     {
       "coffre_present": true,
+      "coffre_visible": true,
       "fov": 58.0,
       "foyer_visible": true,
       "from": [
-        50.0,
-        10.0,
-        78.0
+        38.0,
+        9.0,
+        60.0
       ],
       "gardes_vivants": 0,
       "image": "evidence/world_v2/camp_libere/captures/03_camp_libere.png",
       "look": [
-        43.0,
-        6.19999980926514,
+        44.0,
+        6.30000019073486,
         67.0
       ],
       "name": "03_camp_libere"
