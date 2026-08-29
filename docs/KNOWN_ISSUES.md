@@ -2998,7 +2998,7 @@ présent mais illisible n'est plus jamais réécrit par l'antichambre.
 
 ---
 
-## ISS-083 — L'acquisition de cible sur cri d'allié ou sur coup reçu ignore le territoire — S4, OUVERT, PRÉEXISTANT
+## ISS-083 — L'acquisition de cible sur cri d'allié ou sur coup reçu ignore le territoire — S4, **FERMÉ le 2026-08-29**
 
 **Découvert le 2026-08-28** par la contre-revue ISS-074 (constat n° 5), en
 relisant une phrase du contrat qui promettait plus que le code.
@@ -3028,9 +3028,39 @@ circonstances ».
 `max_pursuit_distance` de son `_territory_origin`, lui tirer une flèche —
 il acquiert la cible.
 
-**Correctif éventuel** : porter la garde de distance dans `_acquire_target()`
-lui-même plutôt que dans le seul appelant vision. À faire dans une passe qui
-peut rejouer les suites d'adversaires V1 et V2.
+**Correctif appliqué le 2026-08-29** : la garde vit désormais dans
+`_acquire_target()` lui-même. Une quatrième porte en héritera sans que
+personne ait à y penser — c'est l'intérêt du point de convergence.
+
+## RECTIFICATION de cette fiche, en la fermant
+
+Elle citait `hear_noise()` et `witness_ally_death()` parmi les chemins
+fautifs. **C'est faux** : ni l'un ni l'autre n'appelle `_acquire_target`.
+Les appelants sont exactement trois — `_tick_perception()` (gardé),
+`receive_alert()` et `_on_hit_received()`.
+
+## CE QUE LA REPRODUCTION A APPRIS, ET QUI VALAIT LE DÉTOUR
+
+**Le test d'alerte historique démontrait l'incohérence sans le savoir.**
+`test_an_alerting_enemy_shares_its_target_with_nearby_allies` plaçait son
+allié endormi à 12,806 m de la cible pour un `max_pursuit_distance` de 12,0.
+Sa cécité ne venait donc PAS de ses yeux — il voit à 22 m et la cible était à
+38,7° dans un demi-cône de 47,5° — mais de la garde de territoire, sur le seul
+chemin de la vision. La vision refusait ; l'alerte acceptait. L'allié a été
+déplacé en (-8 ; 0,1 ; 2) : hors du cône (63,4°) et DANS son territoire
+(8,94 m). L'intention déclarée du cas est intacte ; ce qui change est la
+RAISON de sa cécité, et deux préalables l'exigent désormais explicitement.
+
+**Le coup reçu n'arrive pas par où on croit.** `_on_hit_received` est branché
+sur `_hurtbox.hit_received` (`enemy_base.gd:129`), pas sur `health().damaged`.
+Une reproduction qui frappe par `health().take_damage()` retire des points de
+vie sans jamais révéler l'attaquant : le cas « hors territoire » passait sans
+rien prouver. La porte réelle est `HurtboxComponent.receive_hit()`.
+
+**Preuve** : `tests/integration/test_enemy_territory_iss083.gd`, rouge d'abord
+à **4 réussi / 2 échoué** — les deux portes non gardées, et elles seules. Puis
+**87 réussi / 0 échoué** sur les DIX-HUIT suites d'adversaires V1 et V2.
+Journaux : `evidence/world_v2/iss083/`.
 
 ## ISS-082 — Le trou de C10 subsiste hors de l'antichambre — S3, **FERMÉ le 2026-08-29**
 

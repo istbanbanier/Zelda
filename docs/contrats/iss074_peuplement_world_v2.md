@@ -128,11 +128,17 @@ contrat de BUDGET à quatre règles — chacune exécutable :
    - ce qui borne réellement la chasse est l'**abandon** en poursuite, pas
      l'acquisition.
 
-   Conséquence pratique inchangée : un joueur qui kite délibérément peut
-   tirer un garde hors de r05. La correction du comportement appartient à
-   `EnemyBase`, partagé avec les adversaires V1 — hors du périmètre de cette
-   tranche, et consignée comme limite connue plutôt que corrigée en
-   silence au passage.
+   **Corrigé le 2026-08-29 (ISS-083)**, dans la passe suivante et sur
+   décision lead. La garde vit désormais dans `_acquire_target()` lui-même,
+   donc sur les TROIS portes : la vision, le cri d'allié et le coup reçu.
+   Une flèche tirée de loin ne fait plus sortir un garde de r05, et une
+   quatrième porte héritera de la garde sans que personne ait à y penser.
+
+   Ce que le paragraphe ci-dessus disait du code était vrai le 2026-08-28 ;
+   il est conservé tel quel parce qu'il explique POURQUOI la promesse
+   initiale était fausse. Ce qui reste borné par l'abandon en poursuite et
+   non par l'acquisition : `INVESTIGATE` vers `_last_known` et `FLEE`, qui
+   n'acquièrent aucune cible.
 
 Jusqu'à ce jour-là, le contrat actuel RESTE en vigueur sur la candidate :
 cette branche ne le modifie pas.

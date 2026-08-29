@@ -214,7 +214,20 @@ func test_an_alerting_enemy_shares_its_target_with_nearby_allies() -> void:
 	# l'allié n'est pas en place — l'alerte doit avoir un receveur.
 	var seer: RaiderRed = await _setup(
 		Vector3(0, 0.1, -40), Vector3(0, 0.1, 0), alert_tuning)
-	var sleeper: RaiderRed = _spawn_raider(Vector3(-8, 0.1, -4),
+	# ISS-083, 2026-08-29 — L'ALLIÉ A CHANGÉ DE PLACE, ET IL FAUT DIRE
+	# POURQUOI. Il dormait en (-8, -4), soit 12,806 m du joueur pour un
+	# `max_pursuit_distance` de 12,0. Sa cécité ne venait donc PAS de ses yeux :
+	# il voit à 22 m et la cible était à 38,7° dans un demi-cône de 47,5°. Elle
+	# venait de la garde de territoire — sur le seul chemin de la vision. Ce
+	# test démontrait ainsi, sans le savoir, l'incohérence même d'ISS-083 : la
+	# vision refusait, l'alerte acceptait.
+	#
+	# L'intention DÉCLARÉE de ce cas — « un allié endormi HORS de vue passe en
+	# chasse » — est intacte. Ce qui change est la RAISON de sa cécité : le
+	# cône, un fait de perception, au lieu d'une garde de poursuite. Les deux
+	# préalables ci-dessous l'exigent désormais, pour que ce cas ne puisse plus
+	# jamais être vert par accident.
+	var sleeper: RaiderRed = _spawn_raider(Vector3(-8, 0.1, 2),
 		_short_tuning())
 	await _settle(6)
 	check_equal(sleeper.state(), RaiderRed.State.IDLE,
@@ -223,6 +236,19 @@ func test_an_alerting_enemy_shares_its_target_with_nearby_allies() -> void:
 	# de l'allié qui regarde aussi +Z depuis plus loin à l'ouest).
 	_player.global_position = Vector3(0, 0.1, 6)
 	await _settle(20)
+
+	var vers: Vector3 = _player.global_position - sleeper.global_position
+	var angle: float = rad_to_deg(Vector3.FORWARD.angle_to(
+		Vector3(vers.x, 0.0, vers.z).normalized()))
+	check(angle > sleeper.tuning.vision_half_angle_deg,
+		"préalable : l'allié est AVEUGLE par son cône (%.1f° > %.1f°) — c'est "
+		% [angle, sleeper.tuning.vision_half_angle_deg]
+		+ "ce que « hors de vue » doit vouloir dire")
+	check(vers.length() < sleeper.tuning.max_pursuit_distance,
+		"préalable : la cible criée est DANS son territoire (%.2f m < %.1f) — "
+		% [vers.length(), sleeper.tuning.max_pursuit_distance]
+		+ "un allié ne peut plus en imposer une qui n'y est pas (ISS-083)")
+
 	check_equal(seer.state(), RaiderRed.State.CHASE, "le guetteur a vu")
 	check_equal(sleeper.state(), RaiderRed.State.CHASE,
 		"l'allié ALERTÉ chasse aussi — sans avoir rien vu")

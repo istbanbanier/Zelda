@@ -594,7 +594,25 @@ func _tick_perception() -> void:
 
 
 ## L'instant « Alert » de §12.7 : acquisition + partage éventuel (§12.2).
+##
+## ISS-083 — LA GARDE DE TERRITOIRE VIT ICI, ET NULLE PART AILLEURS.
+## Elle ne gardait que le chemin de la VISION (`_tick_perception`), tandis que
+## `receive_alert()` et l'acquisition sur coup reçu l'ignoraient : la même
+## question — « cette cible est-elle dans mon territoire ? » — recevait deux
+## réponses opposées selon la porte empruntée. Un joueur tirait une flèche de
+## loin, ou se faisait crier dessus par un allié, et emmenait la garnison
+## entière hors de sa région. Ce qui bornait réellement la chasse était
+## l'ABANDON en poursuite, jamais l'acquisition — donc trop tard.
+##
+## Une porte de plus s'ajoutera un jour ; elle héritera de la garde sans que
+## personne ait à y penser. C'est tout l'intérêt de la placer au point de
+## convergence plutôt que chez chaque appelant.
 func _acquire_target(target: Node3D) -> void:
+	if not is_instance_valid(target):
+		return
+	if target.global_position.distance_to(_territory_origin) \
+			> tuning.max_pursuit_distance:
+		return
 	_target = target
 	_last_known = target.global_position
 	_memory_timer = 0.0
