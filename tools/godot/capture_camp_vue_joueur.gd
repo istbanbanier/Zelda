@@ -87,6 +87,10 @@ func _initialize() -> void:
 func _courir() -> void:
 	if not DirAccess.dir_exists_absolute(_out_dir):
 		DirAccess.make_dir_recursive_absolute(_out_dir)
+	if not await _attendre_les_autoloads():
+		printerr("[vue] SaveSystem absent — impossible de semer une partie")
+		quit(3)
+		return
 	var lignes: Array[Dictionary] = []
 	for plan: Dictionary in _plans():
 		var ligne: Dictionary = await _un_plan(plan)
@@ -123,6 +127,28 @@ func _courir() -> void:
 	print("[vue] OK : %d plan(s), variante=%s"
 		% [lignes.size(), "on" if _variante else "off"])
 	quit(0)
+
+
+## LE DÉFAUT QUI A COÛTÉ DEUX HEURES, ET IL EST STRUCTUREL.
+##
+## `_initialize()` court AVANT que Godot ait ajouté les autoloads à la racine.
+## `_semer()` cherchait `/root/SaveSystem`, ne le trouvait pas, et sortait EN
+## SILENCE : le premier plan montait donc un monde SANS sauvegarde semée —
+## garnison debout, camp jamais libéré — et la boucle d'attente tournait sept
+## minutes pour rien. Le journal l'a dit d'un mot : `gardes=4`.
+##
+## Les plans SUIVANTS marchaient, ce qui rendait le défaut presque invisible :
+## le temps du deuxième montage, les autoloads existent. C'est la même
+## faiblesse dans `capture_camp_libere.gd`, où elle est MASQUÉE par l'ordre
+## des plans — ses deux premiers n'ont pas besoin d'une garnison morte, et le
+## troisième arrive quand la racine est peuplée. Elle y dort ; réordonner ses
+## plans la réveillerait.
+func _attendre_les_autoloads() -> bool:
+	for _i: int in range(240):
+		if root.get_node_or_null("/root/SaveSystem") != null:
+			return true
+		await process_frame
+	return false
 
 
 func _un_plan(plan: Dictionary) -> Dictionary:
@@ -356,6 +382,9 @@ func _vivants(monde: Node) -> int:
 func _semer(joueur: Vector3, yaw: float) -> void:
 	var systeme: Node = root.get_node_or_null("/root/SaveSystem")
 	if systeme == null:
+		# Plus jamais en silence : c'est ce silence-là qui a fabriqué une
+		# attente de sept minutes sur un monde qu'on n'avait pas préparé.
+		printerr("[vue] SaveSystem introuvable au moment de semer")
 		return
 	var ids: Array = []
 	var brut: Variant = JSON.parse_string(
