@@ -249,7 +249,16 @@ func test_l_autosave_de_la_vallee_refuse_un_schema_futur() -> void:
 		+ "chemin le plus fréquent du jeu : coffres, flèches, buffs")
 	_nettoyer()
 	restore_saves()
-	restore_root()
+	# `await`, ET C'EST TOUT LE SUJET. `restore_root()` est une coroutine :
+	# appelée sans attendre, elle SURVIT à la fin du cas et recharge la racine
+	# pendant que le cas SUIVANT monte son monde. Le journal vert de cette
+	# passe le portait déjà, après le décompte donc non compté :
+	# « Resumed function '_sweep()' after await, but class instance is gone ».
+	# C'est le piège que `test_enemy_territory_iss083.gd` documente comme
+	# mesuré, et la famille d'intermittents ISS-038. Le 6/0 filtré était vrai ;
+	# sa tenue en suite complète ne l'était pas.
+	var propre: bool = await restore_root()
+	check(propre, "démontage propre — %s" % restore_root_reason())
 
 
 # --------------------------------------------------------------------------
@@ -291,6 +300,69 @@ func test_un_slot_normal_reste_inscriptible_par_les_trois_ecrivains() -> void:
 
 	_nettoyer()
 	restore_saves()
+
+
+# --------------------------------------------------------------------------
+# LE CHAMP PARTAGÉ : la fusion protège les CLÉS, pas le CONTENU d'une clé
+# --------------------------------------------------------------------------
+## TROUVÉ PAR LA CONTRE-REVUE, ET C'EST UN TROU RÉEL DANS C4.
+##
+## `valley_world.gd::_autosave()` fusionne bien son payload — c'est ce que les
+## cinq cas ci-dessus prouvent. Mais `opened_chests` y était RECONSTRUIT depuis
+## les coffres de la scène V1 puis écrit tel quel : la fusion préservait les
+## autres clés, et écrasait le contenu de celle-là.
+##
+## Sans conséquence tant que V1 était seule à écrire ce champ. Depuis que World
+## V2 a repris le NOM pour le coffre du camp braise — délibérément, pour parler
+## le vocabulaire du dépôt plutôt que d'en inventer un — un autosave de la
+## vallée sur le même slot chasse `camp.chest.ember_terrace.01` de la liste. Au
+## remontage, `_poser_la_recompense()` ne le trouve plus parmi les pillés et
+## repose le coffre PLEIN : une épée usée et dix flèches, une deuxième fois.
+##
+## C4 « la récompense n'est jamais duplicable » tomberait sans qu'un seul test
+## du camp ne bouge — ils regardent tous le camp, aucun ne regarde qui d'autre
+## écrit dans le même champ.
+##
+## Latent aujourd'hui : menu, victoire et vestibule routent vers World V2. Mais
+## `gameplay_shell.gd` garde ValleyWorld en défaut exporté ; le chemin existe.
+func test_l_autosave_de_la_vallee_preserve_les_coffres_d_une_autre_scene() -> void:
+	remember_saves()
+	remember_root()
+	_nettoyer()
+
+	# Un slot LISIBLE portant un coffre qui n'appartient pas à la vallée V1.
+	const ETRANGER: String = "camp.chest.ember_terrace.01"
+	_tree().root.get_node_or_null("/root/SaveSystem").call("save_slot", SLOT, {
+		"schema": 4,
+		"checkpoint": "valley.camp.start",
+		"opened_chests": [ETRANGER],
+	})
+
+	var vallee: Node = (load(VALLEY) as PackedScene).instantiate()
+	_tree().root.add_child(vallee)
+	await _settle(10)
+	vallee.call("_autosave")
+	await _settle(2)
+	await _demonter(vallee)
+
+	var apres: Dictionary = _tree().root.get_node_or_null("/root/SaveSystem") \
+		.call("load_slot", SLOT) as Dictionary
+	var coffres: Array = apres.get("opened_chests", []) as Array
+
+	# NON VACUITÉ : si le slot était devenu illisible, `coffres` serait vide et
+	# l'assertion rougirait pour une raison qui n'a rien à voir avec le sujet.
+	check(not apres.is_empty(),
+		"préalable : le slot reste lisible après l'autosave — sinon on "
+		+ "mesurerait un refus d'écriture, pas la préservation d'un champ")
+	check(coffres.has(ETRANGER),
+		"le coffre du camp survit à un autosave de la vallée V1 : sans quoi "
+		+ "la récompense du camp serait REPOSÉE PLEINE au remontage suivant "
+		+ "(C4). Contenu du champ après autosave : %s" % [coffres])
+
+	_nettoyer()
+	restore_saves()
+	var propre: bool = await restore_root()
+	check(propre, "démontage propre — %s" % restore_root_reason())
 
 
 # --------------------------------------------------------------------------

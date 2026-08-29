@@ -278,6 +278,13 @@ func test_le_script_de_liberation_ne_contient_aucun_texte_joueur() -> void:
 		"res://scripts/world_v2/world_v2_camp_liberation.gd")
 	check(source != "", "le script de libération existe")
 	var textes: Dictionary = _donnees().get("textes", {}) as Dictionary
+	# NON VACUITÉ. Sans ce préalable, renommer le JSON ou changer l'id du camp
+	# rendrait `_donnees()` vide : la boucle ne tournerait plus, et seul « le
+	# script existe » resterait — VERT, en n'ayant rien vérifié. Le garde
+	# contre le texte codé en dur aurait disparu sans un mot.
+	check(textes.size() >= 2,
+		"préalable : la donnée porte bien ses textes joueur — %d clé(s) "
+		% textes.size() + "trouvée(s), sinon la boucle ci-dessous est vide")
 	for cle: Variant in textes.keys():
 		if String(cle) == "doc":
 			continue

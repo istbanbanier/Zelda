@@ -106,6 +106,20 @@ func _installer(camp: Dictionary) -> void:
 	# Le camp est TENU : le foyer s'éteint, et l'on écoute chaque garde.
 	_eteindre_le_foyer(camp)
 	var vivants: Array[Node] = _gardes_vivants(garnison)
+	if vivants.is_empty():
+		# ÉTAT IMPOSSIBLE, ET C'EST BIEN POUR ÇA QU'IL CRIE. Zéro garde debout
+		# alors que le camp n'est pas libéré ne peut venir que d'une erreur de
+		# CONFIGURATION — un id de garnison qui a divergé, un bâtisseur qui
+		# n'a rien posé. La conséquence, elle, est une vraie panne de jeu :
+		# aucun signal n'est connecté, donc le foyer reste éteint et la
+		# récompense n'arrive JAMAIS. Sans ce message, elle est parfaitement
+		# silencieuse et définitive. `test_world_v2_camp_libere.gd` épingle
+		# par ailleurs l'hypothèse qui la rend possible.
+		push_warning("[camp] « %s » n'est pas libéré, et pourtant AUCUN "
+			% id + "garde de « %s » n'est debout — le camp resterait éteint "
+			% garnison + "à jamais. Vérifier que les ids d'ennemis commencent "
+			+ "bien par l'id de leur garnison.")
+		return
 	var suivi: Dictionary = {"camp": camp, "restants": vivants.size()}
 	_suivis.append(suivi)
 	for garde: Node in vivants:
@@ -118,8 +132,14 @@ func _gardes_vivants(garnison: String) -> Array[Node]:
 	if racine == null:
 		return sortie
 	# `owned = false` : les ennemis sont créés au runtime (piège 3).
+	# `garnison + "."` et non `garnison` nu : un préfixe nu capturerait une
+	# future « garrison.ember_camp_nord » dans le camp de « garrison.ember_camp ».
+	# Les ids réels sont « <garnison>.<famille>.<n> » — le point est leur
+	# séparateur, et `test_world_v2_camp_libere.gd` épingle cette forme.
+	var prefixe: String = garnison + "."
 	for e: Node in racine.find_children("*", "EnemyBase", true, false):
-		if not String(e.get_meta(&"encounter_id", "")).begins_with(garnison):
+		var meta: String = String(e.get_meta(&"encounter_id", ""))
+		if meta != garnison and not meta.begins_with(prefixe):
 			continue
 		var sante: Node = e.call("health") as Node
 		# `_on_died()` laisse le cadavre dans l'arbre (piège 2).
@@ -139,7 +159,7 @@ func _sur_mort(suivi: Dictionary) -> void:
 ## simple reprise d'un camp déjà libéré ne le félicite pas une seconde fois.
 func _liberer(camp: Dictionary, annoncer: bool) -> void:
 	_rallumer_le_foyer(camp)
-	_poser_la_recompense(camp)
+	_poser_la_recompense(camp, annoncer)
 	_persister_camp(camp)
 	if annoncer:
 		_annoncer(camp, "victoire")
@@ -170,7 +190,12 @@ func _rallumer_le_foyer(camp: Dictionary) -> void:
 
 
 # ----------------------------------------------------------- la récompense --
-func _poser_la_recompense(camp: Dictionary) -> void:
+## `annoncer` remonte jusqu'ici, et ce n'est pas cosmétique : sans lui, « les
+## pillards ont laissé une caisse » repartait à CHAQUE remontage d'un camp
+## libéré non pillé — au `_build` différé, HUD à peine monté, sans qu'aucun
+## événement de jeu ne l'ait mérité. Un message qui se répète tout seul cesse
+## d'être lu, et emporte les autres avec lui.
+func _poser_la_recompense(camp: Dictionary, annoncer: bool) -> void:
 	var recompense: Dictionary = camp.get("recompense", {}) as Dictionary
 	var coffre_id: String = String(recompense.get("coffre_id", ""))
 	if coffre_id == "" or _coffre_existant(coffre_id) != null:
@@ -201,7 +226,8 @@ func _poser_la_recompense(camp: Dictionary) -> void:
 		coffre.mark_opened_silently()
 	else:
 		coffre.opened.connect(_sur_coffre_ouvert.bind(camp))
-		_annoncer(camp, "recompense_posee")
+		if annoncer:
+			_annoncer(camp, "recompense_posee")
 
 
 func _coffre_existant(coffre_id: String) -> Node:

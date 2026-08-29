@@ -22,8 +22,10 @@ dit seulement **quoi essayer**, dans quel ordre, et **ce qu'il faut regarder**.
 Trois choses, et elles sont toutes au **camp**, sur la terrasse au sud du point
 de départ :
 
-1. **Le camp est tenu par quatre pillards.** Trois au gourdin, un à la lance
-   qui monte la garde plus au sud.
+1. **Le camp est tenu par quatre pillards.** Trois au gourdin dans le camp, et
+   un à la lance qui veille **au nord** — c'est-à-dire du côté par lequel vous
+   arrivez. Il y a de bonnes chances que ce soit lui que vous croisiez en
+   premier.
 2. **Son foyer est éteint** tant qu'ils le tiennent.
 3. **Le libérer rallume le feu et laisse une caisse** — une épée usée et dix
    flèches.

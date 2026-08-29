@@ -238,8 +238,8 @@ func test_an_alerting_enemy_shares_its_target_with_nearby_allies() -> void:
 	await _settle(20)
 
 	var vers: Vector3 = _player.global_position - sleeper.global_position
-	var angle: float = rad_to_deg(Vector3.FORWARD.angle_to(
-		Vector3(vers.x, 0.0, vers.z).normalized()))
+	var angle: float = _cone_ecart_deg(sleeper, _player.global_position)
+	check(angle >= 0.0, "préalable : le Pivot du garde est lisible")
 	check(angle > sleeper.tuning.vision_half_angle_deg,
 		"préalable : l'allié est AVEUGLE par son cône (%.1f° > %.1f°) — c'est "
 		% [angle, sleeper.tuning.vision_half_angle_deg]
@@ -253,3 +253,26 @@ func test_an_alerting_enemy_shares_its_target_with_nearby_allies() -> void:
 	check_equal(sleeper.state(), RaiderRed.State.CHASE,
 		"l'allié ALERTÉ chasse aussi — sans avoir rien vu")
 	await _teardown()
+
+
+## L'AXE QUE REGARDE VRAIMENT UN ENNEMI, LU OÙ LE CODE LE LIT.
+##
+## DÉFAUT MESURÉ, ET IL RENDAIT LE PRÉALABLE INCAPABLE DE ROUGIR. La première
+## rédaction comparait à `Vector3.FORWARD`, c'est-à-dire **−Z**. Or
+## `enemy_base.gd::_tick_perception` lit `_pivot.global_transform.basis.z`,
+## c'est-à-dire **+Z**. Les deux angles sont supplémentaires : une cible en
+## PLEIN CENTRE du cône (0° réel) mesurait 180° contre −Z et passait donc pour
+## « hors du cône ». Le préalable était vrai par accident sur la géométrie
+## choisie, et faux sur le seul cas qu'il existe pour exclure.
+##
+## On lit désormais `Pivot`, le nœud même que la perception interroge : le
+## préalable ne peut plus diverger de la règle qu'il vérifie.
+func _cone_ecart_deg(garde: Node3D, cible: Vector3) -> float:
+	var pivot: Node3D = garde.get_node_or_null("Pivot") as Node3D
+	if pivot == null:
+		return -1.0
+	var avant: Vector3 = pivot.global_transform.basis.z
+	avant = Vector3(avant.x, 0.0, avant.z).normalized()
+	var vers: Vector3 = cible - garde.global_position
+	vers = Vector3(vers.x, 0.0, vers.z).normalized()
+	return rad_to_deg(avant.angle_to(vers))

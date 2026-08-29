@@ -968,6 +968,26 @@ func _autosave() -> void:
 	if base == null:
 		return
 	var payload: Dictionary = base as Dictionary
+	# LA FUSION CI-DESSOUS PROTÈGE LES AUTRES CLÉS, PAS LE CONTENU DE
+	# CELLE-CI — et c'est la nuance qui coûte une récompense.
+	#
+	# `opened` est reconstruit à chaque autosave depuis les coffres de CETTE
+	# scène. Écrit tel quel, il chasse tout identifiant posé par une autre :
+	# depuis que World V2 a repris le nom `opened_chests` pour le coffre du
+	# camp braise, un autosave de la vallée V1 sur le même slot le ferait
+	# sortir de la liste — et le camp REPOSERAIT sa récompense pleine au
+	# remontage suivant. C4 (« jamais duplicable ») tomberait sans qu'un seul
+	# test du camp ne bouge.
+	#
+	# Latent aujourd'hui : menu, victoire et vestibule routent tous vers World
+	# V2. Mais `gameplay_shell.gd` garde ValleyWorld en défaut exporté, donc le
+	# chemin existe. On UNIT au lieu de remplacer — pour V1 c'est sans effet
+	# (ses coffres sont recalculés à chaque fois), pour les autres c'est la
+	# différence entre une récompense unique et une duplication.
+	for connu: Variant in (payload.get("opened_chests", []) as Array):
+		var id_connu: String = String(connu)
+		if not opened.has(id_connu):
+			opened.append(id_connu)
 	payload.merge({
 		"schema": SAVE_SCHEMA,
 		"checkpoint": "valley.camp.start",
