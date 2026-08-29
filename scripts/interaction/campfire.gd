@@ -43,8 +43,9 @@ func est_revendique() -> bool:
 ## VIDE quand le foyer est revendiqué — et c'est le SEUL levier qui efface
 ## l'invite sans quitter le groupe. Mesuré : `_select_interactable()` du
 ## contrôleur ne teste ni la visibilité ni ce verbe ; c'est
-## `_refresh_interact_focus()` (l.1476-1478) et le HUD
-## (`gameplay_shell.gd:790-797`) qui l'honorent. Masquer le feu ne l'aurait
+## `_refresh_interact_focus()` et le HUD qui l'honorent. (Sans numéros de
+## ligne : la règle d'ancrage du CLAUDE.md les proscrit, et ceux-ci avaient
+## DÉJÀ dérivé de onze lignes quand la contre-revue les a vérifiés.) Masquer le feu ne l'aurait
 ## donc PAS désactivé : il serait resté sélectionnable, et `E` aurait ouvert
 ## la cuisine dans un camp ennemi.
 func prompt_verb() -> String:

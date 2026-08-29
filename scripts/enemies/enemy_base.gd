@@ -369,12 +369,28 @@ func _process_investigate(delta: float) -> void:
 	_tick_perception()   # re-voir la cible pendant la recherche ré-aggro
 	if _state != State.INVESTIGATE:
 		return
-	var to_spot: Vector3 = _last_known - global_position
+	# ISS-085 (2e passe) — LA GARDE VIT AU POINT OÙ LA QUESTION EST POSÉE.
+	#
+	# Trouvé par la contre-revue à contexte frais, contre ma propre fermeture :
+	# j'avais bordé le chemin du COUP et écrit « jamais hors du territoire ».
+	# Faux. `hear_noise()` écrit `_last_known` SANS clamp, et cette boucle
+	# marchait vers ce point SANS garde de distance — contrairement à
+	# `_process_chase`, qui abandonne au-delà de `max_pursuit_distance`.
+	# Mesuré : un bruit de rupture à 13,5 m emmenait le garde à 12,70 m d'un
+	# territoire de 12. Répétable, donc un joueur promenait la garnison.
+	#
+	# La leçon est celle d'ISS-083, à la lettre : borner la DESTINATION ici,
+	# une fois, plutôt que recopier un clamp sur chaque chemin qui écrit
+	# `_last_known` — le bruit, la riposte, l'alerte, la mémoire. Une porte de
+	# plus s'ajoutera un jour ; elle héritera de la garde sans que personne y
+	# pense.
+	var but: Vector3 = _but_dans_le_territoire(_last_known)
+	var to_spot: Vector3 = but - global_position
 	to_spot.y = 0.0
 	if to_spot.length() > 0.8:
 		_face(to_spot, delta)
 		var direction: Vector3 = _pursuit_direction_toward(
-			_last_known, to_spot, to_spot.length())
+			but, to_spot, to_spot.length())
 		velocity.x = direction.x * tuning.patrol_speed
 		velocity.z = direction.z * tuning.patrol_speed
 		return
@@ -382,6 +398,28 @@ func _process_investigate(delta: float) -> void:
 	velocity.z = 0.0
 	if _state_timer >= tuning.search_duration:
 		_enter(State.RETURN)
+
+
+## Ramène un point d'investigation À L'INTÉRIEUR du territoire, sur le rayon
+## qui y mène. Le point INCHANGÉ s'il y est déjà : un bruit légitime à
+## l'intérieur doit rester atteignable, sans quoi on corrigerait une sortie en
+## fabriquant une inertie.
+##
+## Borne : `max_pursuit_distance`, la vraie frontière — et non la marge
+## `AVANCE_TERRITOIRE` de la riposte. Celle-ci est une intention de
+## COMPORTEMENT (« avancer sans camper sur la frontière ») ; celle-là est la
+## LOI (§12.9). Les confondre rétrécirait le territoire de 40 % pour tous les
+## bruits ordinaires.
+func _but_dans_le_territoire(point: Vector3) -> Vector3:
+	var vers: Vector3 = point - _territory_origin
+	vers.y = 0.0
+	var d: float = vers.length()
+	if d <= tuning.max_pursuit_distance or d < 0.001:
+		return point
+	var ramene: Vector3 = _territory_origin \
+		+ vers.normalized() * tuning.max_pursuit_distance
+	ramene.y = point.y
+	return ramene
 
 
 func _process_chase(delta: float) -> void:
@@ -807,9 +845,12 @@ func _riposte_bornee(attacker: Node3D) -> void:
 	vers.y = 0.0
 	if vers.length() < 0.001:
 		return
-	# Jamais au-delà de l'agresseur lui-même, jamais au-delà de la marge.
-	var portee: float = minf(vers.length(),
-		tuning.max_pursuit_distance * AVANCE_TERRITOIRE)
+	# CODE MORT RETIRÉ (contre-revue) : un `minf(vers.length(), …)` prétendait
+	# « jamais au-delà de l'agresseur ». Cette fonction n'est appelée QUE
+	# lorsque l'agresseur est au-delà de `max_pursuit_distance` ; le minimum
+	# choisissait donc toujours l'autre terme. Une garde qui ne peut pas
+	# mordre se lit comme une garde, et c'est pire que pas de garde.
+	var portee: float = tuning.max_pursuit_distance * AVANCE_TERRITOIRE
 	_last_known = _territory_origin + vers.normalized() * portee
 	_last_known.y = global_position.y
 	# Posé APRÈS `NoiseEvents.emit` : ce bruit d'impact revient au garde

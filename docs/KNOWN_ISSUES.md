@@ -3134,9 +3134,33 @@ convergent sur l'impact. Fermer complètement l'exploit d'archer demanderait
 d'autoriser une sortie de territoire — c'est exactement ce qu'ISS-083 a
 fermé, et ce n'est pas rouvert ici.
 
-- **Preuve** : `tests/integration/test_enemy_riposte_iss085.gd` — 5 cas,
-  29 assertions, rouge d'abord. Contrôle négatif : en silençant le bruit
-  d'impact, le cas B7 SEUL rougit. Filet IA large 194/0.
+### 2e passe le 2026-08-29 — la contre-revue avait raison contre moi
+
+La fermeture ci-dessus ne bordait que le chemin du COUP, et j'avais pourtant
+écrit « jamais hors du territoire ». Faux. La contre-revue à contexte frais a
+nommé la seconde porte : `hear_noise()` écrit `_last_known` SANS clamp, et
+`_process_investigate` y marchait SANS garde de distance — contrairement à
+`_process_chase`, qui abandonne au-delà de `max_pursuit_distance`.
+
+Vérifié par exécution, pas cru sur parole : un bruit de rupture à 13,5 m
+emmène le garde à **12,70 m** d'un territoire de 12,0. Répétable, donc un
+joueur qui court promène la garnison où il veut.
+
+Corrigé au POINT D'USAGE — `_process_investigate` ramène sa destination dans
+le territoire — ce qui couvre d'un coup toutes les portes qui écrivent
+`_last_known` : bruit, riposte, alerte, mémoire. C'est la leçon d'ISS-083 à la
+lettre, et elle vaut mieux qu'un clamp recopié sur chaque chemin. Mesure
+après : **11,20 m**.
+
+Le premier passage du cas B8 était VERT POUR RIEN : 240 frames ne suffisaient
+pas au garde pour atteindre le bruit, et la borne passait pour une raison qui
+n'était pas la sienne. C'est la « tolérance qui absout » de `tests/CLAUDE.md`,
+commise par moi, dans le test même qui devait attraper le défaut.
+
+- **Preuve** : `tests/integration/test_enemy_riposte_iss085.gd` — 6 cas,
+  38 assertions, deux rouges d'abord. Contrôle négatif : en silençant le bruit
+  d'impact, le cas B7 SEUL rougit. Filets IA : 194/0 puis 224/0.
+  Journaux : `evidence/world_v2/camp_hardening/rouges/`.
 
 ---
 

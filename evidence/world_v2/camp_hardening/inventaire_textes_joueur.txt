@@ -1,0 +1,61 @@
+TEXTE JOUEUR    :  200 littéraux, 54 fichiers
+TEXTE DIAGNOSTIC:  138 littéraux, 54 fichiers
+HORS BUILD JOUÉ :   68 littéraux, 13 fichiers
+
+=== TEXTE JOUEUR, par fichier ===
+  39  scripts/ui/gameplay_shell.gd
+  26  scripts/world/training_grounds.gd
+  11  scripts/world/discovery_rewards.gd
+   9  scripts/ui/options_panel.gd
+   7  scripts/world/reward_anchor_audit.gd
+   6  scenes/ui/GameplayShell.tscn
+   5  scripts/ui/victory_screen.gd
+   5  scripts/world_v2/world_v2_cameras_builder.gd
+   5  scripts/world_v2/poi/riverside_village_place.gd
+   5  scripts/world/reward_anchor.gd
+   5  scripts/cooking/recipe_rules.gd
+   4  scripts/save/save_system.gd
+   4  scripts/core/scene_flow.gd
+   4  scenes/ui/MainMenu.tscn
+   3  scripts/world_v2/world_v2_camp_liberation.gd
+   3  scripts/interaction/ingredient_pickup.gd
+   3  scripts/world/valley_relics.gd
+   3  scripts/world/valley_ruins.gd
+   3  scripts/dungeon/room3_relays.gd
+   3  scripts/dungeon/antechamber.gd
+   2  scripts/world_v2/poi/stone_bridge_place.gd
+   2  scripts/interaction/chest.gd
+   2  scripts/world/valley_undergrounds.gd
+   2  scripts/world/valley_wonders.gd
+   2  scripts/world/valley_landmarks.gd
+   2  scripts/world/valley_caves.gd
+   2  scripts/world/valley_world.gd
+   2  scripts/electricity/electric_debug_overlay.gd
+   2  scripts/boss/boss_arena.gd
+   2  scripts/dungeon/room1_initiation.gd
+   2  scripts/dungeon/room2_vertical.gd
+   2  scripts/player/player_controller.gd
+   2  scenes/ui/VictoryScreen.tscn
+   1  scripts/ui/main_menu.gd
+   1  scripts/world_v2/world_v2_dungeon_door.gd
+   1  scripts/world_v2/world_v2_encounters_builder.gd
+   1  scripts/world_v2/world_v2_root.gd
+   1  scripts/world_v2/poi/abandoned_farm_place.gd
+   1  scripts/world_v2/poi/barrow_cemetery_place.gd
+   1  scripts/world_v2/poi/overlook_summit_place.gd
+   1  scripts/world_v2/poi/thunderstruck_tree_place.gd
+   1  scripts/interaction/weapon_pickup.gd
+   1  scripts/world/valley_territories.gd
+   1  scripts/world/riverside_village.gd
+   1  scripts/world/hamlets.gd
+   1  scripts/enemies/raider_blue.gd
+   1  scripts/boss/grounding_pylon.gd
+   1  scripts/dungeon/reset_button.gd
+   1  scripts/dungeon/central_hall.gd
+   1  scripts/save/save_merge_guard.gd
+   1  resources/weapons/worn_sword.tres
+   1  resources/ingredients/defense_root.tres
+   1  resources/ingredients/storm_berry.tres
+   1  resources/ingredients/rare_spice.tres
+commit : b7bc3831b525ed21a8017b99cf452216633b4cd6
+date   : 2026-08-29T21:22:02Z

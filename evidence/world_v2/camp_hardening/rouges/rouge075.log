@@ -1,0 +1,46 @@
+LANCER_GODOT: --headless ajouté (pas de --rendu : aucun affichage disponible).
+LANCER_GODOT: VERROU=/home/user/Zelda/.git/heavy_tools.lock
+LANCER_GODOT: XDG_DATA_HOME=/tmp/lancer_godot_ud_ouQN53by
+LANCER_GODOT: CWD=/home/user/Zelda
+LANCER_GODOT: CMD=/usr/local/bin/godot --headless --path . --script tools/godot/test_runner.gd -- --filter=localisation_iss075
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+
+=== TEST RUNNER — Godot 4.7.1-stable (custom_build) ===
+filtre: localisation_iss075
+  ÉCHEC test_localisation_iss075.gd::test_la_forme_d_une_cle_ne_peut_pas_attraper_un_texte_joueur — A1 — « 0.5 » est du TEXTE, pas une clé : le confondre ferait chercher une traduction pour une phrase entière
+  ok   test_localisation_iss075.gd::test_chaque_cle_de_la_source_rend_un_texte (10 assertions)
+ERROR: [textes] clé absente de la langue source « fr » : cle.qui.n.existe.pas.du.tout
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:104)
+       [1] test_une_cle_absente_de_la_source_est_signalee_et_visible (res://tests/integration/test_localisation_iss075.gd:135)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _root_delta (res://tools/godot/test_runner.gd:390)
+  ok   test_localisation_iss075.gd::test_une_cle_absente_de_la_source_est_signalee_et_visible (4 assertions)
+  ok   test_localisation_iss075.gd::test_la_locale_temoin_change_le_texte_rendu (6 assertions)
+  ok   test_localisation_iss075.gd::test_une_traduction_manquante_retombe_sur_le_francais_sans_echouer (5 assertions)
+  ÉCHEC test_localisation_iss075.gd::test_les_textes_du_camp_sont_des_cles_qui_resolvent — A6 — `textes/doc` doit porter une CLÉ, pas du texte : « TOUT ce que le joueur lit vit ici. Il n'existe aucune table de traduction dans ce dépôt ; le motif établi, déjà verrouillé par des tests, est « le texte affiché vit dans la donnée, pas dans le code » — display_name d'une arme, d'un ingrédient, d'un PointOfInterest. Le jour où une localisation arrive, c'est cette entrée qu'elle remplace, pas une ligne de .gd. »
+  ÉCHEC test_localisation_iss075.gd::test_les_textes_du_camp_sont_des_cles_qui_resolvent — A6 — et la clé « TOUT ce que le joueur lit vit ici. Il n'existe aucune table de traduction dans ce dépôt ; le motif établi, déjà verrouillé par des tests, est « le texte affiché vit dans la donnée, pas dans le code » — display_name d'une arme, d'un ingrédient, d'un PointOfInterest. Le jour où une localisation arrive, c'est cette entrée qu'elle remplace, pas une ligne de .gd. » doit exister dans la table source
+  ÉCHEC test_localisation_iss075.gd::test_les_textes_du_camp_sont_des_cles_qui_resolvent — A6 — `textes/victoire` doit porter une CLÉ, pas du texte : « Le camp est libéré. Le feu se rallume. »
+  ÉCHEC test_localisation_iss075.gd::test_les_textes_du_camp_sont_des_cles_qui_resolvent — A6 — et la clé « Le camp est libéré. Le feu se rallume. » doit exister dans la table source
+  ÉCHEC test_localisation_iss075.gd::test_les_textes_du_camp_sont_des_cles_qui_resolvent — A6 — `textes/recompense_posee` doit porter une CLÉ, pas du texte : « Les pillards ont laissé une caisse près du foyer. »
+  ÉCHEC test_localisation_iss075.gd::test_les_textes_du_camp_sont_des_cles_qui_resolvent — A6 — et la clé « Les pillards ont laissé une caisse près du foyer. » doit exister dans la table source
+  ÉCHEC test_localisation_iss075.gd::test_le_hud_traduit_une_cle_et_laisse_passer_un_texte_brut — A7 — le HUD affiche le FRANÇAIS « Le camp est libéré. Le feu se rallume. », pas la clé : ["❖", "camp.braise.libere", "Un texte hérité, non migré — il doit passer tel quel.", "◆ verrouillé", "Mains nues", "Flèches : 0", "", "", "Vous êtes mort.", "Pause", "Sensibilité souris", "0.0008 rad/px", "INVENTAIRE", "", "", "Conductivité", "Tab / Échap — Fermer", "CUISINE", "", "", "", "GARDIEN DE L\'ORAGE", "", "", ""]
+  ÉCHEC test_localisation_iss075.gd::test_le_hud_traduit_une_cle_et_laisse_passer_un_texte_brut — A7 — et la clé nue n'apparaît nulle part à l'écran : ["❖", "camp.braise.libere", "Un texte hérité, non migré — il doit passer tel quel.", "◆ verrouillé", "Mains nues", "Flèches : 0", "", "", "Vous êtes mort.", "Pause", "Sensibilité souris", "0.0008 rad/px", "INVENTAIRE", "", "", "Conductivité", "Tab / Échap — Fermer", "CUISINE", "", "", "", "GARDIEN DE L\'ORAGE", "", "", ""]
+  ÉCHEC test_localisation_iss075.gd::test_aucune_nouvelle_porte_notify_ne_porte_de_texte_ecrit_en_dur — A8 — « scripts/player/player_controller.gd » porte 5 texte(s) joueur écrit(s) en dur pour un plafond de 4. Un texte joueur neuf passe par une CLÉ : ajoutez-la dans resources/localisation/fr.json et appelez Textes.t(). Si le plafond doit vraiment monter, c'est une décision de revue, pas une modification de test
+  ÉCHEC test_localisation_iss075.gd::test_aucune_nouvelle_porte_notify_ne_porte_de_texte_ecrit_en_dur — A8 — « scripts/world/valley_world.gd » porte 2 texte(s) joueur écrit(s) en dur pour un plafond de 1. Un texte joueur neuf passe par une CLÉ : ajoutez-la dans resources/localisation/fr.json et appelez Textes.t(). Si le plafond doit vraiment monter, c'est une décision de revue, pas une modification de test
+erreurs de script dans le journal : 0
+
+=== RÉSULTAT: 4 réussi(s), 11 échoué(s) ===
+  ÉCHEC: test_localisation_iss075.gd::test_la_forme_d_une_cle_ne_peut_pas_attraper_un_texte_joueur — A1 — « 0.5 » est du TEXTE, pas une clé : le confondre ferait chercher une traduction pour une phrase entière
+  ÉCHEC: test_localisation_iss075.gd::test_les_textes_du_camp_sont_des_cles_qui_resolvent — A6 — `textes/doc` doit porter une CLÉ, pas du texte : « TOUT ce que le joueur lit vit ici. Il n'existe aucune table de traduction dans ce dépôt ; le motif établi, déjà verrouillé par des tests, est « le texte affiché vit dans la donnée, pas dans le code » — display_name d'une arme, d'un ingrédient, d'un PointOfInterest. Le jour où une localisation arrive, c'est cette entrée qu'elle remplace, pas une ligne de .gd. »
+  ÉCHEC: test_localisation_iss075.gd::test_les_textes_du_camp_sont_des_cles_qui_resolvent — A6 — et la clé « TOUT ce que le joueur lit vit ici. Il n'existe aucune table de traduction dans ce dépôt ; le motif établi, déjà verrouillé par des tests, est « le texte affiché vit dans la donnée, pas dans le code » — display_name d'une arme, d'un ingrédient, d'un PointOfInterest. Le jour où une localisation arrive, c'est cette entrée qu'elle remplace, pas une ligne de .gd. » doit exister dans la table source
+  ÉCHEC: test_localisation_iss075.gd::test_les_textes_du_camp_sont_des_cles_qui_resolvent — A6 — `textes/victoire` doit porter une CLÉ, pas du texte : « Le camp est libéré. Le feu se rallume. »
+  ÉCHEC: test_localisation_iss075.gd::test_les_textes_du_camp_sont_des_cles_qui_resolvent — A6 — et la clé « Le camp est libéré. Le feu se rallume. » doit exister dans la table source
+  ÉCHEC: test_localisation_iss075.gd::test_les_textes_du_camp_sont_des_cles_qui_resolvent — A6 — `textes/recompense_posee` doit porter une CLÉ, pas du texte : « Les pillards ont laissé une caisse près du foyer. »
+  ÉCHEC: test_localisation_iss075.gd::test_les_textes_du_camp_sont_des_cles_qui_resolvent — A6 — et la clé « Les pillards ont laissé une caisse près du foyer. » doit exister dans la table source
+  ÉCHEC: test_localisation_iss075.gd::test_le_hud_traduit_une_cle_et_laisse_passer_un_texte_brut — A7 — le HUD affiche le FRANÇAIS « Le camp est libéré. Le feu se rallume. », pas la clé : ["❖", "camp.braise.libere", "Un texte hérité, non migré — il doit passer tel quel.", "◆ verrouillé", "Mains nues", "Flèches : 0", "", "", "Vous êtes mort.", "Pause", "Sensibilité souris", "0.0008 rad/px", "INVENTAIRE", "", "", "Conductivité", "Tab / Échap — Fermer", "CUISINE", "", "", "", "GARDIEN DE L\'ORAGE", "", "", ""]
+  ÉCHEC: test_localisation_iss075.gd::test_le_hud_traduit_une_cle_et_laisse_passer_un_texte_brut — A7 — et la clé nue n'apparaît nulle part à l'écran : ["❖", "camp.braise.libere", "Un texte hérité, non migré — il doit passer tel quel.", "◆ verrouillé", "Mains nues", "Flèches : 0", "", "", "Vous êtes mort.", "Pause", "Sensibilité souris", "0.0008 rad/px", "INVENTAIRE", "", "", "Conductivité", "Tab / Échap — Fermer", "CUISINE", "", "", "", "GARDIEN DE L\'ORAGE", "", "", ""]
+  ÉCHEC: test_localisation_iss075.gd::test_aucune_nouvelle_porte_notify_ne_porte_de_texte_ecrit_en_dur — A8 — « scripts/player/player_controller.gd » porte 5 texte(s) joueur écrit(s) en dur pour un plafond de 4. Un texte joueur neuf passe par une CLÉ : ajoutez-la dans resources/localisation/fr.json et appelez Textes.t(). Si le plafond doit vraiment monter, c'est une décision de revue, pas une modification de test
+  ÉCHEC: test_localisation_iss075.gd::test_aucune_nouvelle_porte_notify_ne_porte_de_texte_ecrit_en_dur — A8 — « scripts/world/valley_world.gd » porte 2 texte(s) joueur écrit(s) en dur pour un plafond de 1. Un texte joueur neuf passe par une CLÉ : ajoutez-la dans resources/localisation/fr.json et appelez Textes.t(). Si le plafond doit vraiment monter, c'est une décision de revue, pas une modification de test
+LANCER_GODOT: RC_GODOT=1

@@ -72,9 +72,18 @@ static func ressemble_a_une_cle(texte: String) -> bool:
 	# ROUGE de `test_localisation_iss075.gd`, pas par relecture — une
 	# notification portant un nombre serait partie chercher une traduction et
 	# aurait affiché ⟦0.5⟧ au joueur.
-	var premier: String = texte[0]
-	if premier < "a" or premier > "z":
-		return false
+	# CHAQUE SEGMENT commence par une lettre, pas seulement le premier.
+	# La première rédaction ne gardait que le premier caractère du tout, et
+	# `"0.5"` passait — trouvé par le passage ROUGE. La contre-revue a montré
+	# que `"v1.2"` passait encore : une notification portant un numéro de
+	# version aurait affiché ⟦v1.2⟧. Un segment qui commence par un chiffre
+	# n'est pas un nom.
+	for segment: String in texte.split("."):
+		if segment.is_empty():
+			return false
+		var tete: String = segment[0]
+		if tete < "a" or tete > "z":
+			return false
 	for i: int in range(texte.length()):
 		var c: String = texte[i]
 		var ok: bool = (c >= "a" and c <= "z") or (c >= "0" and c <= "9") \

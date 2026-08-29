@@ -12,3 +12,6 @@ Résultat : 2 réussi(s), 0 échoué(s) ; 2 ObjectDB fuités à la sortie.
 `test_phase_e_chain.gd` ne fait PARTIE D'AUCUN travail de cette passe : il
 monte ValleyWorld comme 50 autres fichiers de test. Il suffit à lui seul à
 retenir l'ambiance. La fuite est donc PRÉEXISTANTE, pas introduite ici.
+
+commit de la mesure : b7bc3831b525ed21a8017b99cf452216633b4cd6
+date                : 2026-08-29T21:22:02Z

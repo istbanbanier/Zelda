@@ -92,7 +92,17 @@ qui a été fait.
 
 ## Ce qui NE l'est pas — le compte exact
 
-Mesuré le 2026-08-29 (`tools/` porte le script d'inventaire) :
+Mesuré le 2026-08-29 par `tools/inventaire_textes_joueur.py` — **le script est
+committé**, donc le chiffre se rejoue. Une première rédaction de cette phrase
+affirmait qu'il vivait dans `tools/` alors qu'il n'y était pas : c'était un
+compteur en prose sans preuve, exactement ce que la règle d'ancrage du
+`CLAUDE.md` interdit. Sortie datée :
+`evidence/world_v2/camp_hardening/inventaire_textes_joueur.txt`.
+
+```
+python3 tools/inventaire_textes_joueur.py
+```
+
 
 | Catégorie | Littéraux | Fichiers |
 |---|---:|---:|
@@ -118,6 +128,23 @@ la franchit finit sur l'écran. Restent **non couvertes** : `prompt_verb()`, le
 `text` posé en `.tscn`, `display_name` des `.tres`. Un garde-fou qui devinerait
 produirait des faux rouges, et un garde-fou à faux rouges finit désarmé
 (PROMPT4 §1.2). Elles sont comptées ci-dessus, pas gardées.
+
+### L'angle mort DANS la porte gardée, et il est vivant
+
+Le scanner ne lit qu'un littéral placé sur **la même ligne** que `"notify"`.
+Trois formes lui échappent, et la contre-revue en a trouvé une **en service** :
+
+| Forme | Exemple réel |
+|---|---|
+| un **enrobage** qui relaie | `scripts/tools/dev_mode.gd` — `_notify()` fait `bus.call("notify", text)` ; ses trois textes français crus comptent **zéro** |
+| le littéral porté par une variable | `bus.call("notify", message)` |
+| l'appel réparti sur deux lignes | `bus.call("notify",\n\t"…")` |
+
+`dev_mode.gd` ne part pas dans un build joué, donc l'impact est nul aujourd'hui
+— mais l'angle mort, lui, est général. Le déclarer vaut mieux que de laisser
+croire que la porte est étanche : **la loi empêche la dette de croître par le
+chemin direct, pas par un enrobage.** Fermer l'enrobage demanderait de suivre
+les appels, ce qu'un scan textuel ne fait pas sans faux positifs.
 
 Contrôle négatif joué : un `bus.call("notify", "Un texte joueur tout neuf,
 écrit en dur.")` ajouté dans `reset_button.gd` rend la loi ROUGE, et elle

@@ -1,0 +1,25 @@
+LANCER_GODOT: --headless ajouté (pas de --rendu : aucun affichage disponible).
+LANCER_GODOT: VERROU=/home/user/Zelda/.git/heavy_tools.lock
+LANCER_GODOT: XDG_DATA_HOME=/tmp/lancer_godot_ud_jkYQILpa
+LANCER_GODOT: CWD=/home/user/Zelda
+LANCER_GODOT: CMD=/usr/local/bin/godot --headless --path . --script tools/godot/test_runner.gd -- --filter=enemy_riposte_iss085
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+
+=== TEST RUNNER — Godot 4.7.1-stable (custom_build) ===
+filtre: enemy_riposte_iss085
+  ok   test_enemy_riposte_iss085.gd::test_un_garde_frappe_de_loin_se_tourne_avance_et_reste_chez_lui (9 assertions)
+  ok   test_enemy_riposte_iss085.gd::test_sous_le_feu_repete_le_garde_ne_franchit_jamais_sa_frontiere (10 assertions)
+  ok   test_enemy_riposte_iss085.gd::test_l_impact_reveille_le_voisinage_sans_le_faire_sortir (5 assertions)
+  ok   test_enemy_riposte_iss085.gd::test_un_bruit_hors_territoire_ne_fait_pas_sortir_le_garde (7 assertions)
+  ok   test_enemy_riposte_iss085.gd::test_dans_le_territoire_un_coup_acquiert_toujours_la_cible (2 assertions)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ok   test_enemy_riposte_iss085.gd::test_la_vallee_v1_garde_ses_adversaires_au_repos (3 assertions)
+erreurs de script dans le journal : 0
+
+=== RÉSULTAT: 6 réussi(s), 0 échoué(s) ===
+WARNING: 2 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 1 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)
+LANCER_GODOT: RC_GODOT=0

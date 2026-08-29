@@ -1,0 +1,588 @@
+LANCER_GODOT: --headless ajouté (pas de --rendu : aucun affichage disponible).
+LANCER_GODOT: VERROU=/home/user/Zelda/.git/heavy_tools.lock
+LANCER_GODOT: XDG_DATA_HOME=/tmp/lancer_godot_ud_93FwQWdg
+LANCER_GODOT: CWD=/home/user/Zelda
+LANCER_GODOT: CMD=/usr/local/bin/godot --headless --path . --script tools/godot/test_runner.gd -- --filter=enemy_base,enemy_territory_iss083,enemy_riposte_iss085,raider,ravine_troll,centaur_hunter,combat_coordinator,combat_exchange,attack_controller,garrison_combat,boss_guardian,boss_arena,boss_director,boss_run,valley,camp_libere
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+
+=== TEST RUNNER — Godot 4.7.1-stable (custom_build) ===
+filtre: enemy_base,enemy_territory_iss083,enemy_riposte_iss085,raider,ravine_troll,centaur_hunter,combat_coordinator,combat_exchange,attack_controller,garrison_combat,boss_guardian,boss_arena,boss_director,boss_run,valley,camp_libere
+  ok   test_boss_arena.gd::test_the_arena_is_a_disc_between_32_and_42_metres (6 assertions)
+  ok   test_boss_arena.gd::test_nothing_stands_in_the_middle_of_the_arena (6 assertions)
+  ok   test_boss_arena.gd::test_a_raised_pylon_is_powered_by_the_ground_rail (11 assertions)
+  ok   test_boss_arena.gd::test_the_closed_ground_ring_terminates (2 assertions)
+  ok   test_boss_arena.gd::test_the_guardian_never_leaves_the_arena (2 assertions)
+  ok   test_boss_arena.gd::test_the_guardian_cannot_push_the_player_through_the_wall (1 assertions)
+  ok   test_boss_arena.gd::test_the_camera_widens_progressively_near_the_boss (6 assertions)
+  ok   test_boss_arena.gd::test_the_arena_restores_the_antechamber_checkpoint (7 assertions)
+  ok   test_boss_arena.gd::test_retry_reloads_the_arena_not_the_valley (5 assertions)
+  ok   test_boss_arena.gd::test_the_hud_shows_a_boss_bar_only_in_the_arena (4 assertions)
+  ok   test_boss_arena.gd::test_the_arena_is_never_a_one_way_trap (7 assertions)
+  ok   test_boss_guardian.gd::test_the_awakening_grants_a_grace_window_before_the_first_attack (3 assertions)
+  ok   test_boss_guardian.gd::test_a_stun_recovery_gets_no_grace (1 assertions)
+  ok   test_boss_guardian.gd::test_the_armour_divides_damage_without_making_him_invulnerable (4 assertions)
+  ok   test_boss_guardian.gd::test_two_pylons_ground_him_and_expose_the_core (10 assertions)
+  ok   test_boss_guardian.gd::test_the_armour_closes_again_after_the_stun (3 assertions)
+  ok   test_boss_guardian.gd::test_a_health_threshold_never_fires_twice (2 assertions)
+  ok   test_boss_guardian.gd::test_the_crystals_appear_in_phase_two_and_open_the_core (10 assertions)
+  ok   test_boss_guardian.gd::test_conductive_weapons_backfire_during_overload_and_wood_does_not (5 assertions)
+  ok   test_boss_guardian.gd::test_electric_resistance_softens_the_backlash (2 assertions)
+  ok   test_boss_guardian.gd::test_the_ground_strike_gives_a_real_warning_window (3 assertions)
+  ok   test_boss_guardian.gd::test_phase_three_speeds_up_within_the_specified_band (3 assertions)
+  ok   test_boss_guardian.gd::test_death_cuts_everything_and_writes_the_victory (11 assertions)
+  ok   test_boss_guardian.gd::test_the_guardian_is_beatable_with_the_guaranteed_loot (5 assertions)
+  ok   test_boss_guardian.gd::test_the_guardian_stays_in_frame_while_locked_on (2 assertions)
+  ok   test_centaur_hunter.gd::test_hunter_tuning_and_silhouette_match_the_spec (8 assertions)
+  ok   test_centaur_hunter.gd::test_the_hunter_roars_before_a_major_move (2 assertions)
+  ok   test_centaur_hunter.gd::test_the_charge_holds_its_line_and_can_be_sidestepped (4 assertions)
+  ok   test_centaur_hunter.gd::test_the_volley_is_capped_and_then_rests (3 assertions)
+  ok   test_centaur_hunter.gd::test_the_hunter_abandons_at_its_territory_border (3 assertions)
+  ok   test_centaur_hunter.gd::test_the_charge_runs_at_its_declared_speed (3 assertions)
+  ok   test_combat_coordinator.gd::test_never_more_than_two_simultaneous_melee_attackers (4 assertions)
+  ok   test_combat_coordinator.gd::test_a_dead_holder_frees_its_token (4 assertions)
+  ok   test_combat_coordinator.gd::test_the_activity_cap_puts_the_farthest_to_sleep (3 assertions)
+  ok   test_combat_coordinator.gd::test_a_capped_enemy_never_freezes_with_an_armed_hitbox (4 assertions)
+  ok   test_combat_exchange.gd::test_a_single_press_lands_a_single_blow (5 assertions)
+  ok   test_combat_exchange.gd::test_attack_engages_at_the_next_tick (3 assertions)
+  ok   test_combat_exchange.gd::test_hammering_delivers_the_full_combo_then_resets (8 assertions)
+  ok   test_combat_exchange.gd::test_movement_is_locked_during_the_attack (4 assertions)
+  ok   test_combat_exchange.gd::test_a_dead_dummy_takes_no_further_hits (3 assertions)
+  ok   test_combat_exchange.gd::test_two_dummies_side_by_side_each_take_one_hit_per_swing (3 assertions)
+  ok   test_enemy_base.gd::test_a_lost_target_becomes_a_memory_then_a_search_then_home (5 assertions)
+  ok   test_enemy_base.gd::test_pursuit_is_bounded_by_the_territory (3 assertions)
+  ok   test_enemy_base.gd::test_a_noise_makes_an_idle_enemy_suspicious_then_investigate (5 assertions)
+  ok   test_enemy_base.gd::test_the_red_raider_flees_when_an_ally_dies_nearby (2 assertions)
+  ok   test_enemy_base.gd::test_an_alerting_enemy_shares_its_target_with_nearby_allies (7 assertions)
+  ok   test_enemy_riposte_iss085.gd::test_un_garde_frappe_de_loin_se_tourne_avance_et_reste_chez_lui (9 assertions)
+  ok   test_enemy_riposte_iss085.gd::test_sous_le_feu_repete_le_garde_ne_franchit_jamais_sa_frontiere (10 assertions)
+  ok   test_enemy_riposte_iss085.gd::test_l_impact_reveille_le_voisinage_sans_le_faire_sortir (5 assertions)
+  ok   test_enemy_riposte_iss085.gd::test_dans_le_territoire_un_coup_acquiert_toujours_la_cible (2 assertions)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ok   test_enemy_riposte_iss085.gd::test_la_vallee_v1_garde_ses_adversaires_au_repos (3 assertions)
+  ok   test_enemy_territory_iss083.gd::test_la_vision_n_acquiert_pas_au_dela_du_territoire (3 assertions)
+  ok   test_enemy_territory_iss083.gd::test_le_cri_d_un_allie_n_impose_pas_une_cible_hors_territoire (3 assertions)
+  ok   test_enemy_territory_iss083.gd::test_une_fleche_venue_de_loin_n_impose_pas_sa_cible (3 assertions)
+  ok   test_enemy_territory_iss083.gd::test_dans_le_territoire_la_vision_acquiert_toujours (2 assertions)
+  ok   test_enemy_territory_iss083.gd::test_dans_le_territoire_le_cri_d_un_allie_porte_toujours (5 assertions)
+  ok   test_enemy_territory_iss083.gd::test_dans_le_territoire_un_coup_recu_revele_toujours_l_attaquant (3 assertions)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ok   test_heads_reach_the_real_valley.gd::test_the_hero_in_the_valley_has_a_head (7 assertions)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ok   test_heads_reach_the_real_valley.gd::test_every_raider_in_the_valley_has_a_head (2 assertions)
+  ok   test_raider.gd::test_raider_sees_and_chases_the_player_in_its_cone (3 assertions)
+  ok   test_raider.gd::test_raider_ignores_the_player_behind_it (2 assertions)
+  ok   test_raider.gd::test_raider_never_sees_through_a_wall (2 assertions)
+  ok   test_raider.gd::test_raider_telegraphs_then_lands_its_blow (5 assertions)
+  ok   test_raider.gd::test_a_timed_dodge_avoids_the_blow_and_makes_the_raider_retreat (5 assertions)
+  ok   test_raider.gd::test_two_sword_hits_stagger_the_raider (4 assertions)
+  ok   test_raider.gd::test_the_duel_can_be_won (5 assertions)
+  ok   test_raider.gd::test_raider_tuning_matches_the_spec (7 assertions)
+  ok   test_raider_black.gd::test_black_tuning_matches_the_spec (8 assertions)
+  ok   test_raider_black.gd::test_black_chains_a_combo_through_the_real_window (2 assertions)
+  ok   test_raider_black.gd::test_the_frontal_guard_soaks_damage_but_the_back_does_not (3 assertions)
+  ok   test_raider_black.gd::test_two_sword_hits_do_not_stagger_the_breaker (1 assertions)
+  ok   test_raider_black.gd::test_breaking_the_guard_opens_the_breaker (4 assertions)
+  ok   test_raider_blue.gd::test_blue_tuning_matches_the_spec (8 assertions)
+  ok   test_raider_blue.gd::test_blue_thrusts_from_spear_range_and_telegraphs (2 assertions)
+  ok   test_raider_blue.gd::test_blue_sidesteps_a_telegraphed_heavy_once_per_cooldown (4 assertions)
+  ok   test_raider_blue.gd::test_blue_reopens_distance_while_its_attack_cools_down (2 assertions)
+  ok   test_raider_blue.gd::test_blue_flanks_instead_of_walking_straight_in (2 assertions)
+  ok   test_raider_visual.gd::test_the_raider_library_is_baked_with_its_own_attack_grammar (10 assertions)
+  ok   test_raider_visual.gd::test_the_three_families_have_distinct_bodies_not_just_distinct_tints (14 assertions)
+  ok   test_raider_visual.gd::test_the_real_raider_mounts_the_model_and_keeps_its_gameplay_volumes (6 assertions)
+  ok   test_raider_visual.gd::test_the_ai_states_drive_the_clips_and_death_lies_down_once (6 assertions)
+  ok   test_ravine_troll.gd::test_troll_tuning_and_scale_match_the_spec (9 assertions)
+  ok   test_ravine_troll.gd::test_the_back_is_a_real_weak_point (4 assertions)
+  ok   test_ravine_troll.gd::test_the_shockwave_spares_a_jumping_player (4 assertions)
+  ok   test_ravine_troll.gd::test_the_troll_winds_up_and_throws_a_rock_at_mid_range (3 assertions)
+  ok   test_ravine_troll.gd::test_the_troll_cannot_squeeze_through_a_narrow_door (3 assertions)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ok   test_valley_atmosphere.gd::test_the_storm_is_local_to_the_citadel_and_spares_the_crest (5 assertions)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ok   test_valley_atmosphere.gd::test_the_lightning_actually_strikes_then_rests (9 assertions)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ok   test_valley_atmosphere.gd::test_light_and_fog_serve_depth_without_drowning_the_valley (8 assertions)
+  ok   test_valley_caves.gd::test_the_valley_holds_three_named_caves (5 assertions)
+  ok   test_valley_caves.gd::test_each_cave_declares_a_distinct_identifier (14 assertions)
+  ok   test_valley_caves.gd::test_the_waterfall_cave_is_a_room_you_can_stand_in (4 assertions)
+  ok   test_valley_caves.gd::test_the_abandoned_mine_is_a_room_you_can_stand_in (4 assertions)
+  ok   test_valley_caves.gd::test_the_forgotten_crypt_is_a_room_you_can_stand_in (4 assertions)
+  ok   test_valley_caves.gd::test_every_cave_mouth_can_actually_be_walked_through (9 assertions)
+  ok   test_valley_caves.gd::test_the_caves_stand_clear_of_the_existing_landmarks (18 assertions)
+  ok   test_valley_caves.gd::test_each_cave_gives_a_reason_to_go_in (9 assertions)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ok   test_valley_dressing.gd::test_the_river_ribbon_snakes_inside_the_bed_without_collision (140 assertions)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ok   test_valley_dressing.gd::test_the_crest_meadow_is_partitioned_and_sits_on_the_ridge (26 assertions)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ok   test_valley_dressing.gd::test_the_meadow_reaches_the_density_the_bible_asks_for (7 assertions)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ok   test_valley_dressing.gd::test_paths_guide_both_routes_as_pure_visuals (171 assertions)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ok   test_valley_dressing.gd::test_the_camp_reads_as_inhabited_with_tents_and_fire (6 assertions)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ok   test_valley_dressing.gd::test_the_pylon_is_dressed_and_its_runes_glow (4 assertions)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ok   test_valley_dressing.gd::test_the_citadel_gate_is_monumental_and_still_enterable (12 assertions)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ok   test_valley_dressing.gd::test_the_citadel_mass_has_its_own_darker_stone (6 assertions)
+  ok   test_valley_dressing.gd::test_the_vestibule_is_deep_and_warmly_lit (10 assertions)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ok   test_valley_dressing.gd::test_the_mountain_dressing_adds_depth_and_buttresses_really_block (12 assertions)
+  ok   test_valley_landmarks.gd::test_the_five_landmarks_stand_where_the_map_says (33 assertions)
+  ok   test_valley_landmarks.gd::test_each_landmark_declares_a_distinct_point_of_interest (16 assertions)
+  ok   test_valley_landmarks.gd::test_the_flower_field_is_a_multimesh_not_a_thousand_nodes (9 assertions)
+  ok   test_valley_landmarks.gd::test_the_flower_field_keeps_the_gaps_that_make_it_readable (14 assertions)
+  ok   test_valley_landmarks.gd::test_you_can_walk_over_the_stone_bridge (4 assertions)
+  ok   test_valley_landmarks.gd::test_you_can_stand_under_the_stone_bridge (3 assertions)
+  ok   test_valley_landmarks.gd::test_the_watcher_summit_carries_a_body (4 assertions)
+  ok   test_valley_landmarks.gd::test_the_landmarks_are_spread_and_clear_of_the_village (5 assertions)
+  ok   test_valley_painterly.gd::test_the_recipe_lives_in_one_place (4 assertions)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ok   test_valley_painterly.gd::test_the_valley_wears_the_recipe (2 assertions)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ok   test_valley_painterly.gd::test_the_electric_telegraphs_are_never_repainted (4 assertions)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ok   test_valley_painterly.gd::test_the_valley_still_runs_its_own_contracts (3 assertions)
+  ok   test_valley_relics.gd::test_the_four_relics_are_built_from_the_promoted_kit (23 assertions)
+  ok   test_valley_relics.gd::test_each_relic_declares_itself_with_its_own_identifier (23 assertions)
+  ok   test_valley_relics.gd::test_the_relics_stand_clear_of_the_places_already_settled (10 assertions)
+  ok   test_valley_relics.gd::test_the_observatory_platform_carries_a_body (4 assertions)
+  ok   test_valley_relics.gd::test_the_rampart_wall_walk_is_walkable (5 assertions)
+  ok   test_valley_relics.gd::test_the_breach_is_open_and_the_curtain_still_blocks (3 assertions)
+  ok   test_valley_relics.gd::test_each_relic_gives_a_reason_to_come (12 assertions)
+  ok   test_valley_ruins.gd::test_the_four_ruins_stand_on_their_own_sites (19 assertions)
+  ok   test_valley_ruins.gd::test_the_ruins_declare_themselves_with_four_distinct_ids (19 assertions)
+  ok   test_valley_ruins.gd::test_each_ruin_gives_a_reason_to_walk_there (21 assertions)
+  ok   test_valley_ruins.gd::test_the_farmhouse_is_a_shelter_you_can_stand_inside (6 assertions)
+  ok   test_valley_ruins.gd::test_the_fallen_span_carries_you_across_the_river (4 assertions)
+  ok   test_valley_ruins.gd::test_the_ruins_stay_clear_of_the_riverside_village (17 assertions)
+  ok   test_valley_territories.gd::test_the_five_territories_are_built (12 assertions)
+  ok   test_valley_territories.gd::test_each_territory_declares_its_own_identifier (24 assertions)
+  ok   test_valley_territories.gd::test_the_territories_stand_apart_from_the_existing_places (122 assertions)
+  ok   test_valley_territories.gd::test_the_braise_camps_are_several_and_disorderly (17 assertions)
+  ok   test_valley_territories.gd::test_the_azure_patrol_reads_as_a_marked_circuit (24 assertions)
+  ok   test_valley_territories.gd::test_the_obsidian_bastion_is_a_defended_court_you_can_stand_in (11 assertions)
+  ok   test_valley_territories.gd::test_the_colossus_lair_bears_the_traces_of_its_mass (10 assertions)
+  ok   test_valley_territories.gd::test_the_hunter_range_is_marked_before_you_enter (43 assertions)
+  ok   test_valley_undergrounds.gd::test_the_valley_holds_two_underground_places (5 assertions)
+  ok   test_valley_undergrounds.gd::test_each_underground_declares_a_distinct_identifier (10 assertions)
+  ok   test_valley_undergrounds.gd::test_the_hidden_passage_is_a_room_you_can_stand_in (8 assertions)
+  ok   test_valley_undergrounds.gd::test_the_crystal_hollow_is_a_room_you_can_stand_in (8 assertions)
+  ok   test_valley_undergrounds.gd::test_both_mouths_of_the_hidden_passage_can_be_walked_through (6 assertions)
+  ok   test_valley_undergrounds.gd::test_the_crystal_hollow_mouth_can_be_walked_through (4 assertions)
+  ok   test_valley_undergrounds.gd::test_the_hidden_passage_really_comes_out_at_the_other_end (5 assertions)
+  ok   test_valley_undergrounds.gd::test_the_hidden_passage_can_be_walked_back_down (2 assertions)
+  ok   test_valley_undergrounds.gd::test_the_spur_makes_the_passage_worth_taking (4 assertions)
+  ok   test_valley_undergrounds.gd::test_the_undergrounds_stand_clear_of_the_existing_landmarks (28 assertions)
+  ok   test_valley_undergrounds.gd::test_each_underground_gives_a_reason_to_go_in (7 assertions)
+  ok   test_valley_wonders.gd::test_the_second_wave_builds_five_places (8 assertions)
+  ok   test_valley_wonders.gd::test_each_place_declares_a_distinct_new_identifier (14 assertions)
+  ok   test_valley_wonders.gd::test_the_five_places_keep_clear_of_the_existing_ones (15 assertions)
+  ok   test_valley_wonders.gd::test_the_gorge_can_be_walked_from_end_to_end (4 assertions)
+  ok   test_valley_wonders.gd::test_one_can_stand_in_the_shelter_behind_the_falls (8 assertions)
+  ok   test_valley_wonders.gd::test_the_stone_circle_is_a_deliberate_monument (10 assertions)
+  ok   test_valley_wonders.gd::test_the_storm_grove_leans_away_from_the_citadel (11 assertions)
+  ok   test_valley_wonders.gd::test_the_thunderstruck_tree_shows_charred_wood_and_a_pale_split (10 assertions)
+  ok   test_valley_wonders.gd::test_no_place_lights_a_cyan_neon (3 assertions)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ok   test_valley_world.gd::test_the_valley_loads_with_player_camp_and_flow (8 assertions)
+  ok   test_valley_world.gd::test_a_weapon_on_the_ground_enters_the_inventory (3 assertions)
+  ok   test_valley_world.gd::test_a_full_inventory_leaves_the_weapon_on_the_ground (3 assertions)
+  ok   test_valley_world.gd::test_the_chest_gives_its_loot_exactly_once (6 assertions)
+  ok   test_valley_world.gd::test_the_menu_reaches_world_v2 (4 assertions)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ok   test_valley_world.gd::test_the_spawn_ridge_holds_the_player_and_shows_the_landmarks (13 assertions)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ok   test_valley_world.gd::test_the_route_from_ridge_to_north_plain_is_walkable (4 assertions)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ok   test_valley_world.gd::test_a_fall_out_of_the_world_is_rescued_to_spawn (2 assertions)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ok   test_valley_world.gd::test_a_raider_navigates_out_of_a_dead_end_to_reach_the_player (2 assertions)
+[run boss] 1 mise(s) à la terre · 37 coups (15 noyau, 10 cristal) · 1 arme(s) brisée(s) · phases : phase1, grounded_stun, transition12, phase2, transition23, phase3 · vie restante 0/560
+  ok   test_boss_run.gd::test_the_guardian_falls_to_the_loot_the_game_guarantees (17 assertions)
+  ok   test_attack_controller.gd::test_the_hitbox_is_active_exactly_during_the_active_window (9 assertions)
+  ok   test_attack_controller.gd::test_a_buffered_press_chains_at_the_window_not_before (4 assertions)
+  ok   test_attack_controller.gd::test_an_early_press_expires_before_the_window (3 assertions)
+  ok   test_attack_controller.gd::test_a_press_after_the_window_opens_fires_immediately (3 assertions)
+  ok   test_attack_controller.gd::test_the_chain_never_exceeds_three_and_restarts_from_zero (7 assertions)
+  ok   test_attack_controller.gd::test_a_stale_press_does_not_restart_after_the_last_attack (3 assertions)
+  ok   test_attack_controller.gd::test_cancel_kills_the_hitbox_and_resets (4 assertions)
+  ok   test_attack_controller.gd::test_definitions_match_the_spec_windows (15 assertions)
+  ok   test_boss_director.gd::test_only_legal_patterns_are_ever_picked (90 assertions)
+  ok   test_boss_director.gd::test_no_immediate_repeat_when_an_alternative_is_legal (24 assertions)
+  ok   test_boss_director.gd::test_a_single_legal_pattern_may_repeat_no_starvation (1 assertions)
+  ok   test_boss_director.gd::test_the_same_seed_replays_the_same_sequence (2 assertions)
+  ok   test_boss_director.gd::test_cooldown_gates_and_history_records (5 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 7211 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 15 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+[world_v2] porte donjon : posée au seuil §3.3
+[world_v2] arrivée      : spawn
+[world_v2] héros posé   : (0.0, 24.4, 170.0) lacet=0.00
+[peuplement] garnison : 4 posé(s), 0 déjà tombé(s)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_camp_libere.gd::test_tant_que_la_garnison_tient_le_foyer_est_eteint_et_sans_coffre (6 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 5045 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 15 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+[world_v2] porte donjon : posée au seuil §3.3
+[world_v2] arrivée      : spawn
+[world_v2] héros posé   : (0.0, 24.4, 170.0) lacet=0.00
+[peuplement] garnison : 0 posé(s), 4 déjà tombé(s)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_camp_libere.gd::test_un_camp_libere_rallume_son_foyer_et_pose_sa_recompense (10 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 5031 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 15 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+[world_v2] porte donjon : posée au seuil §3.3
+[world_v2] arrivée      : spawn
+[world_v2] héros posé   : (0.0, 24.4, 170.0) lacet=0.00
+[peuplement] garnison : 0 posé(s), 4 déjà tombé(s)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_camp_libere.gd::test_un_coffre_deja_pris_ne_se_repose_pas_plein (3 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 5064 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 15 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+[world_v2] porte donjon : posée au seuil §3.3
+[world_v2] arrivée      : spawn
+[world_v2] héros posé   : (0.0, 24.4, 170.0) lacet=0.00
+[peuplement] garnison : 4 posé(s), 0 déjà tombé(s)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+[peuplement] touché : garrison.ember_camp.red.01
+[peuplement] tombé : garrison.ember_camp.red.01
+[peuplement] touché : garrison.ember_camp.red.02
+[peuplement] tombé : garrison.ember_camp.red.02
+[peuplement] touché : garrison.ember_camp.red.03
+[peuplement] tombé : garrison.ember_camp.red.03
+[peuplement] touché : garrison.ember_camp.blue.01
+[peuplement] tombé : garrison.ember_camp.blue.01
+[peuplement] garnison vaincue
+  ok   test_world_v2_camp_libere.gd::test_la_victoire_est_annoncee_avec_le_texte_de_la_donnee (9 assertions)
+  ok   test_world_v2_camp_libere.gd::test_le_script_de_liberation_ne_contient_aucun_texte_joueur (4 assertions)
+  ok   test_world_v2_camp_libere.gd::test_les_ids_de_la_garnison_commencent_par_l_id_de_la_garnison (6 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 5081 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 15 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+[world_v2] porte donjon : posée au seuil §3.3
+[world_v2] arrivée      : spawn
+[world_v2] héros posé   : (0.0, 24.4, 170.0) lacet=0.00
+[peuplement] garnison : 4 posé(s), 0 déjà tombé(s)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+[peuplement] engagement : garrison.ember_camp.red.01
+[peuplement] engagement : garrison.ember_camp.red.02
+[peuplement] engagement : garrison.ember_camp.red.03
+  ok   test_world_v2_garrison_combat.gd::test_un_garde_engage_le_heros_de_lui_meme (5 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 4940 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 15 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+[world_v2] porte donjon : posée au seuil §3.3
+[world_v2] arrivée      : spawn
+[world_v2] héros posé   : (0.0, 24.4, 170.0) lacet=0.00
+[peuplement] garnison : 4 posé(s), 0 déjà tombé(s)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+[peuplement] engagement : garrison.ember_camp.red.01
+[peuplement] engagement : garrison.ember_camp.red.03
+[peuplement] touché : garrison.ember_camp.red.01
+  ok   test_world_v2_garrison_combat.gd::test_le_heros_blesse_un_garde (4 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 4925 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 15 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+[world_v2] porte donjon : posée au seuil §3.3
+[world_v2] arrivée      : spawn
+[world_v2] héros posé   : (0.0, 24.4, 170.0) lacet=0.00
+[peuplement] garnison : 4 posé(s), 0 déjà tombé(s)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+[peuplement] engagement : garrison.ember_camp.red.01
+[peuplement] engagement : garrison.ember_camp.red.02
+[peuplement] engagement : garrison.ember_camp.red.03
+  ok   test_world_v2_garrison_combat.gd::test_un_garde_blesse_le_heros (3 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 4955 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 15 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+[world_v2] porte donjon : posée au seuil §3.3
+[world_v2] arrivée      : spawn
+[world_v2] héros posé   : (0.0, 24.4, 170.0) lacet=0.00
+[peuplement] garnison : 4 posé(s), 0 déjà tombé(s)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+[peuplement] touché : garrison.ember_camp.red.01
+[peuplement] tombé : garrison.ember_camp.red.01
+[peuplement] touché : garrison.ember_camp.red.02
+[peuplement] tombé : garrison.ember_camp.red.02
+[peuplement] touché : garrison.ember_camp.red.03
+[peuplement] tombé : garrison.ember_camp.red.03
+[peuplement] touché : garrison.ember_camp.blue.01
+[peuplement] tombé : garrison.ember_camp.blue.01
+[peuplement] garnison vaincue
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 5055 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 15 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+[world_v2] porte donjon : posée au seuil §3.3
+[world_v2] arrivée      : spawn
+[world_v2] héros posé   : (0.0, 24.4, 170.0) lacet=0.00
+[peuplement] garnison : 0 posé(s), 4 déjà tombé(s)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_garrison_combat.gd::test_la_garnison_entiere_peut_tomber_et_chaque_mort_est_inscrite (7 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 5148 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 15 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+[world_v2] porte donjon : posée au seuil §3.3
+[world_v2] arrivée      : spawn
+[world_v2] héros posé   : (0.0, 24.4, 170.0) lacet=0.00
+[peuplement] garnison : 4 posé(s), 0 déjà tombé(s)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+[peuplement] touché : garrison.ember_camp.red.01
+[peuplement] tombé : garrison.ember_camp.red.01
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 5052 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 15 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+[world_v2] porte donjon : posée au seuil §3.3
+[world_v2] arrivée      : spawn
+[world_v2] héros posé   : (0.0, 24.4, 170.0) lacet=0.00
+[peuplement] garnison : 3 posé(s), 1 déjà tombé(s)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_garrison_combat.gd::test_la_mort_du_heros_ne_ressuscite_pas_les_gardes_abattus (7 assertions)
+erreurs de script dans le journal : 0
+
+=== RÉSULTAT: 194 réussi(s), 0 échoué(s) ===
+WARNING: 124 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 69 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)
+ERROR: Pages in use exist at exit in PagedAllocator: N12VariantPools12BucketMediumE
+   at: ~PagedAllocator (./core/templates/paged_allocator.h:170)
+ERROR: Pages in use exist at exit in PagedAllocator: N12VariantPools11BucketSmallE
+   at: ~PagedAllocator (./core/templates/paged_allocator.h:170)
+LANCER_GODOT: RC_GODOT=0

@@ -26,9 +26,14 @@
 ## territoire » tient, un archer patient reste hors d'atteinte : le garde vient
 ## à sa frontière et s'y arrête. Les deux exigences sont en tension, et c'est
 ## la borne de territoire qui gagne. Ce qui change : le garde n'est plus
-## immobile, il FAIT FACE, et ses voisins convergent — le joueur doit entrer
-## dans le territoire pour finir, et il y entre contre une garnison éveillée
-## qui le regarde. Le reste est consigné, pas prétendu.
+## immobile, il FAIT FACE, et ses voisins convergent.
+##
+## CE QUE JE N'ÉCRIS PAS, et que j'avais écrit à tort : « le joueur doit entrer
+## dans le territoire pour finir ». RIEN ne l'y oblige. La santé ne régénère
+## pas, un pillard braise a 45 PV, et l'arc tue les quatre gardes depuis 21 m
+## sans risque. La tension archer/frontière est assumée par conception ; la
+## phrase précédente promettait une protection qui n'existe pas. Relevé par la
+## contre-revue à contexte frais.
 extends GateTestCase
 
 const RAIDER: String = "res://scenes/enemies/RaiderRed.tscn"
@@ -280,6 +285,85 @@ func test_l_impact_reveille_le_voisinage_sans_le_faire_sortir() -> void:
 	check(voisin.global_position.distance_to(poste_voisin) <= POURSUITE,
 		"B7 — et il reste sur son propre sol (%.2f m ≤ %.1f)"
 		% [voisin.global_position.distance_to(poste_voisin), POURSUITE])
+
+	await _demonter()
+
+
+# --------------------------------------------------------------------------
+# B8 — LE BRUIT EST UNE SECONDE PORTE, ET ELLE N'ÉTAIT PAS GARDÉE
+# --------------------------------------------------------------------------
+## Ouvert par la contre-revue à contexte frais, contre MA propre fermeture
+## d'ISS-085. J'avais bordé le chemin du COUP et écrit « jamais hors du
+## territoire » ; c'est faux dès qu'on regarde l'autre entrée.
+##
+## `hear_noise()` écrit `_last_known = position` SANS aucun clamp, et
+## `_process_investigate` marche vers ce point SANS aucune garde de distance —
+## contrairement à `_process_chase`, qui abandonne au-delà de
+## `max_pursuit_distance`. N'importe quel bruit hors territoire et à portée
+## d'oreille fait donc sortir le garde, indéfiniment et de façon répétable.
+##
+## C'est la LEÇON D'ISS-083 qui se rejoue : la garde doit vivre au point où la
+## question est posée — ici la DESTINATION d'une investigation — et pas être
+## recopiée sur chaque chemin qui y mène. Un clamp posé dans `hear_noise`
+## laisserait passer la porte suivante.
+func test_un_bruit_hors_territoire_ne_fait_pas_sortir_le_garde() -> void:
+	await _monter(Vector3(0, 0.1, 60.0))   # le joueur est loin et hors jeu ici
+	var garde: EnemyBase = _pillard(Vector3(0, 0.1, 0))
+	await _settle(6)
+	var poste: Vector3 = garde.global_position
+
+	# Un bruit de RUPTURE porte à 14 m, l'ouïe du pillard à 15 : le point à
+	# 13,5 m est donc ENTENDU, et il est hors du territoire de 12 m.
+	var bruit: Vector3 = Vector3(0.0, 0.1, 13.5)
+	var d: float = poste.distance_to(bruit)
+	check(d > POURSUITE,
+		"préalable : le bruit vient de HORS du territoire (%.2f m > %.1f)"
+		% [d, POURSUITE])
+	check(d <= minf(NoiseEvents.BREAK_RADIUS, 15.0),
+		"préalable : et il est bel et bien À PORTÉE D'OREILLE (%.2f m)" % d)
+	check_equal(garde.state(), EnemyBase.State.IDLE, "préalable : il dort")
+
+	NoiseEvents.emit(_tree(), bruit, NoiseEvents.BREAK_RADIUS, &"rupture")
+	# BUDGET DE TEMPS SUFFISANT POUR ATTEINDRE LE BRUIT, et c'est le point qui
+	# a failli me faire enregistrer un faux vert. À 240 frames (4 s), dont 0,6
+	# de pause de suspicion, le garde ne parcourt que ~10 m à 3 m/s : il
+	# n'atteignait pas la frontière, et la borne passait pour une raison qui
+	# n'était pas la sienne. Il faut ~4,8 s pour couvrir 12,7 m ; on en laisse
+	# 10, et on VÉRIFIE qu'il est arrivé.
+	var maximum: float = 0.0
+	for _i: int in range(600):
+		await _tree().physics_frame
+		maximum = maxf(maximum, garde.global_position.distance_to(poste))
+
+	check(maximum > 0.5,
+		"NON VACUITÉ 1 : le garde a RÉELLEMENT bougé vers le bruit (%.2f m). "
+		% maximum + "Un garde sourd passerait la borne ci-dessous sans rien "
+		+ "prouver")
+	# NON VACUITÉ 2, ET SA RÉÉCRITURE EST DOCUMENTÉE PARCE QU'ELLE COMPTE.
+	#
+	# Écrite d'abord pour le comportement CASSÉ — « soit il atteint le bruit,
+	# soit il franchit » — elle était juste en rouge et devient fausse en vert :
+	# une fois borné, le garde ne fait NI l'un NI l'autre, par construction.
+	# La bonne question en vert est « est-il allé AUSSI LOIN QU'IL POUVAIT ? »,
+	# sans quoi un garde simplement lent passerait la borne du dessus.
+	#
+	# LE SEUIL QUI COMPTE, LUI, N'A PAS BOUGÉ : `maximum <= POURSUITE` est la
+	# loi §12.9, et c'est elle qui a rougi à 12,70 m avant le correctif.
+	# Assouplir CE seuil-là aurait été le contournement ; préciser la
+	# non-vacuité ne l'est pas.
+	check(maximum >= POURSUITE - 1.5,
+		"NON VACUITÉ 2 : il a marché JUSQU'À sa frontière (%.2f m pour un "
+		% maximum + "territoire de %.1f) avant de s'arrêter. S'il était resté "
+		% POURSUITE + "loin derrière, la borne ci-dessous n'aurait mesuré que "
+		+ "sa lenteur")
+	check(maximum <= POURSUITE,
+		"B8 — même en allant voir un bruit, il ne franchit PAS sa frontière "
+		+ "(%.2f m ≤ %.1f). Sans cette garde, un joueur qui court hors du "
+		% [maximum, POURSUITE] + "territoire promène la garnison où il veut, "
+		+ "indéfiniment — ce qu'ISS-083 avait fermé sur le seul chemin de la "
+		+ "vue")
+	check(not _poursuit(garde),
+		"B8 — et il ne poursuit personne : il n'a vu personne")
 
 	await _demonter()
 

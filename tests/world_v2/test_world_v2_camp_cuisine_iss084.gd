@@ -186,6 +186,53 @@ func test_camp_tenu_le_foyer_ne_propose_rien_et_refuse_de_cuisiner() -> void:
 
 
 # --------------------------------------------------------------------------
+# A2ter — LA BASCULE EN SESSION, et non l'état déduit au montage
+# --------------------------------------------------------------------------
+## Relevé par la contre-revue à contexte frais, et c'était le vrai trou : A1,
+## A3 et A4 mesurent tous l'état DÉDUIT AU MONTAGE. Aucun ne tuait la garnison
+## en cours de partie pour voir le verbe basculer. Si `_sur_mort` comptait mal,
+## tout serait resté vert et la cuisine ne se serait JAMAIS ouverte dans une
+## vraie partie — le défaut le plus coûteux possible, invisible au filet.
+func test_le_foyer_bascule_quand_la_garnison_tombe_en_session() -> void:
+	remember_saves()
+	remember_root()
+	_semer({})
+	await _monter(WORLD_V2_SCENE)
+
+	var foyer: Node = _foyer_cuisine()
+	check_not_null(foyer, "le foyer de cuisine existe")
+	if foyer == null:
+		await _demonter()
+		restore_saves()
+		return
+	check_equal(_vivants(), 4, "préalable : les quatre gardes tiennent")
+	check_equal(String(foyer.call("prompt_verb")), "",
+		"préalable : le foyer est muet AVANT la victoire — sinon la bascule "
+		+ "ci-dessous ne prouverait rien")
+
+	# On les tue POUR DE VRAI, par la hurtbox : la porte que le jeu emprunte.
+	for e: Node in _world.find_children("*", "EnemyBase", true, false):
+		var evenement: DamageEvent = DamageEvent.new()
+		evenement.amount = 9999.0
+		var boites: Array[Node] = e.find_children(
+			"Hurtbox", "HurtboxComponent", true, false)
+		if not boites.is_empty():
+			(boites[0] as HurtboxComponent).receive_hit(evenement)
+	for _i: int in range(20):
+		await _tree().physics_frame
+
+	check_equal(_vivants(), 0, "les quatre gardes sont tombés")
+	check_equal(String(foyer.call("prompt_verb")), VERBE_ATTENDU,
+		"A2ter — le foyer redit « %s » SANS remontage : la bascule se fait "
+		% VERBE_ATTENDU + "en session, pas seulement à la reprise")
+	check_equal(String(foyer.call("refus_cle")), "",
+		"A2ter — et il n'a plus de refus à donner")
+
+	await _demonter()
+	restore_saves()
+
+
+# --------------------------------------------------------------------------
 # A3 — camp LIBÉRÉ : la cuisine redevient ce qu'elle était
 # --------------------------------------------------------------------------
 func test_camp_libere_le_foyer_redevient_utilisable() -> void:
@@ -255,6 +302,23 @@ func test_l_etat_du_foyer_se_deduit_a_chaque_reprise() -> void:
 ## derniers n'ont AUCUNE garnison. Une condition qui les bloquerait retirerait
 ## la cuisine du reste du jeu — le genre de régression qu'on ne voit qu'en
 ## jouant, donc jamais ici.
+## L'ANTICHAMBRE DU BOSS — le TROISIÈME `Campfire`, que les commentaires
+## énuméraient sans que rien ne le vérifie (contre-revue). Seul le défaut de
+## `_revendique = false` le protégeait ; désormais c'est une assertion.
+func test_le_foyer_de_l_antichambre_n_est_jamais_revendique() -> void:
+	var foyer: Campfire = Campfire.new()
+	_tree().root.add_child(foyer)
+	await _tree().process_frame
+	check(not bool(foyer.call("est_revendique")),
+		"un Campfire neuf n'est revendiqué par personne — c'est ce défaut-là "
+		+ "qui protège la vallée V1 et l'antichambre du boss")
+	check_equal(String(foyer.call("prompt_verb")), VERBE_ATTENDU,
+		"et il propose sa cuisine")
+	_tree().root.remove_child(foyer)
+	foyer.queue_free()
+	await _tree().process_frame
+
+
 func test_le_foyer_de_la_vallee_v1_reste_utilisable() -> void:
 	remember_saves()
 	remember_root()
