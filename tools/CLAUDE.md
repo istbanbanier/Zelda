@@ -710,3 +710,38 @@ Trois règles, dans cet ordre d'importance :
 
 Et la règle qui les précède toutes : **avant d'écrire un délai, le mesurer une
 fois.** Un nombre rond choisi de mémoire est un pari, pas un budget.
+
+## Une suite longue mesure un arbre qui peut CHANGER sous elle
+
+Mesuré le 2026-08-29 : dix-sept minutes de suite jetées, et le verdict qu'elle
+aurait rendu aurait été pire que perdu — il aurait été **incitable sans qu'on
+le sache**.
+
+`validate_fast.sh` imprime sa provenance à l'étape 0a, une fois, au départ. Mais
+GDScript charge les scripts **à la demande** : `valley_world.gd` n'est lu que
+lorsqu'un test l'instancie. Éditer un `.gd` pendant que la suite tourne donne
+donc un résultat MIXTE — l'ancienne version pour ce qui était déjà chargé, la
+nouvelle pour le reste — et rien dans le journal ne le distingue d'un passage
+propre. La bannière de provenance dit la vérité de l'instant 0, pas celle du
+verdict.
+
+Ce qui rend le piège coûteux, c'est qu'il ne casse rien : la suite finit, publie
+un compte, et ce compte a l'air d'un résultat.
+
+```bash
+git status --porcelain | wc -l     # DOIT être 0 avant de lancer
+# puis : ne toucher AUCUN .gd, .tscn, .tres ni .json de ressource
+# jusqu'au jeton de fin. Les .md et .yml de CI sont sans effet.
+```
+
+Si une correction ne peut pas attendre : **arrêter la suite, committer, la
+relancer.** Un passage de 80 minutes qu'on jette coûte moins cher qu'un vert
+qu'on ne peut pas citer — et c'est la même règle que « une capture vient d'un
+arbre committé », appliquée au temps au lieu de l'espace.
+
+Corollaire mesuré le même jour, sur `pkill` : `pkill -f 'validate_fast'` tue
+**le shell qui l'exécute**, parce que sa propre ligne de commande porte le
+motif — le tour se termine en 143 et la suite, elle, survit. C'est le piège du
+`pgrep -f` qui se voit lui-même, déjà consigné plus haut, sous sa forme
+destructrice. Viser `pgrep -x godot` et les PID lus AVANT, puis vérifier la
+mort réelle.
