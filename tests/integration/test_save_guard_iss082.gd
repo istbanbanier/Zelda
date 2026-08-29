@@ -1,0 +1,293 @@
+## ISS-082 — un slot PRÉSENT mais illisible n'est à personne, et surtout pas
+## au premier écrivain qui passe.
+##
+## POURQUOI CE FICHIER EXISTE. `SaveSystem.load_slot()` rend `{}` dans quatre
+## cas que l'appelant ne peut pas distinguer : slot absent, JSON tronqué,
+## enveloppe incomplète, et `schema_version` PLUS RÉCENT — ce dernier refusé
+## *précisément pour protéger* la sauvegarde d'un build futur (§19.4). Un
+## écrivain qui repart de `{}` puis écrit ne corrompt pas le fichier : il le
+## REMPLACE par un état neuf et rétrogradé, et la copie de secours suit au
+## deuxième passage.
+##
+## La garde existe depuis C10 dans `world_v2_root.gd::autosave()`, depuis
+## ISS-080 dans `antechamber.gd::_write_checkpoint()`, et dans
+## `world_v2_encounters_builder.gd::_persister_mort()`. Trois écrivains ne
+## l'avaient pas :
+##
+##   - `dungeon_room.gd::save_room_state()`     — chaque salle résolue
+##   - `boss_arena.gd::_on_boss_died()`         — la victoire
+##   - `valley_world.gd::_autosave()`           — coffres, flèches, buffs…
+##
+## Le troisième n'était même pas nommé dans ISS-082 ; la cartographie de cette
+## passe l'a trouvé. Deux salles de donjon suffisaient à effacer le fichier ET
+## sa copie de secours.
+##
+## CE QUE CE FICHIER MESURE, ET COMMENT IL PEUT ROUGIR. Chaque cas empoisonne
+## le slot, appelle l'écrivain POUR DE VRAI, puis compare les OCTETS du
+## fichier et de son `.bak` avant et après. Un refus qui n'écrit rien laisse
+## les deux identiques. Le dernier cas est la garde de non-vacuité : sur un
+## slot normal, les trois écrivains doivent écrire — sans quoi on aurait
+## « corrigé » le défaut en cassant la sauvegarde.
+extends GateTestCase
+
+const SLOT: String = "slot0"
+const VALLEY: String = "res://scenes/world/valley/ValleyWorld.tscn"
+
+## Un JSON coupé en plein milieu : `load_slot` ne peut pas l'analyser.
+const TRONQUE: String = '{"schema_version": 4, "slot": "slot0", "data": {"che'
+
+## Une enveloppe PARFAITEMENT formée, mais d'un schéma que ce build ne sait
+## pas lire. C'est le cas qui fait le plus mal : le fichier est intact, sain,
+## et appartient à une version future du jeu.
+const FUTUR: String = '{"schema_version": 99, "slot": "slot0", ' \
+	+ '"saved_at_utc": "2027-01-01T00:00:00", "data": {"schema": 99, ' \
+	+ '"checkpoint": "world_v2.valley", "enemies_slain": ["garrison.x.01"]}}'
+
+
+func _tree() -> SceneTree:
+	return Engine.get_main_loop() as SceneTree
+
+
+func _settle(ticks: int) -> void:
+	for _i: int in range(ticks):
+		await _tree().physics_frame
+
+
+func _save_system() -> Node:
+	return _tree().root.get_node_or_null("/root/SaveSystem")
+
+
+func _chemin() -> String:
+	var systeme: Node = _save_system()
+	if systeme == null:
+		return ""
+	return ProjectSettings.globalize_path(String(systeme.call("slot_path", SLOT)))
+
+
+## Écrit le contenu BRUT du slot, sans passer par SaveSystem — c'est la seule
+## façon de fabriquer un fichier que `load_slot` refusera.
+func _empoisonner(contenu: String) -> void:
+	var chemin: String = _chemin()
+	DirAccess.make_dir_recursive_absolute(chemin.get_base_dir())
+	var f: FileAccess = FileAccess.open(chemin, FileAccess.WRITE)
+	f.store_string(contenu)
+	f.close()
+
+
+## Pose aussi un `.bak` reconnaissable : sans lui, on ne prouverait rien sur
+## la copie de secours, et c'est elle que le SECOND passage détruit.
+func _empoisonner_avec_bak(contenu: String) -> void:
+	_empoisonner(contenu)
+	var f: FileAccess = FileAccess.open(_chemin() + ".bak", FileAccess.WRITE)
+	f.store_string(contenu)
+	f.close()
+
+
+func _octets(chemin: String) -> PackedByteArray:
+	if not FileAccess.file_exists(chemin):
+		return PackedByteArray()
+	return FileAccess.get_file_as_bytes(chemin)
+
+
+func _nettoyer() -> void:
+	var chemin: String = _chemin()
+	for c: String in [chemin, chemin + ".bak", chemin + ".tmp"]:
+		if FileAccess.file_exists(c):
+			DirAccess.remove_absolute(c)
+
+
+## Une salle de donjon nue : `DungeonRoom extends Node3D`, `room_state()`
+## supporte l'absence de graphe et de blocs. Rien d'autre n'est nécessaire
+## pour atteindre son écriture.
+func _salle() -> Node:
+	var salle: Node = ClassDB.instantiate("Node3D")
+	salle.set_script(load("res://scripts/dungeon/dungeon_room.gd"))
+	salle.set("room_id", &"test.iss082.salle")
+	salle.name = "SalleISS082"
+	_tree().root.add_child(salle)
+	return salle
+
+
+func _arene() -> Node:
+	var arene: Node = ClassDB.instantiate("Node3D")
+	arene.set_script(load("res://scripts/boss/boss_arena.gd"))
+	arene.set("room_id", &"test.iss082.arene")
+	arene.name = "AreneISS082"
+	_tree().root.add_child(arene)
+	return arene
+
+
+## `is_instance_valid` AVANT tout : une `BossArena` montée nue peut se libérer
+## elle-même pendant l'apaisement, et démonter un objet déjà libéré lève une
+## SCRIPT ERROR que le garde-fou ISS-027 du runner compte — un test vert
+## deviendrait rouge pour une faute de ménage, pas pour la chose mesurée.
+## Le paramètre est `Variant`, pas `Node`, ET C'EST LE POINT : GDScript vérifie
+## le type de l'argument AVANT d'entrer dans la fonction, donc une garde
+## `is_instance_valid` à l'intérieur d'une signature typée `Node` n'est jamais
+## atteinte — l'erreur est levée au site d'appel. Mesuré ici même.
+func _demonter(brut: Variant) -> void:
+	if brut == null or not is_instance_valid(brut):
+		return
+	var noeud: Node = brut as Node
+	if noeud == null:
+		return
+	if noeud.get_parent() != null:
+		noeud.get_parent().remove_child(noeud)
+	noeud.queue_free()
+	await _settle(2)
+
+
+# --------------------------------------------------------------------------
+# 1-2 — la salle de donjon
+# --------------------------------------------------------------------------
+func test_une_salle_de_donjon_refuse_un_slot_tronque() -> void:
+	remember_saves()
+	_nettoyer()
+	_empoisonner_avec_bak(TRONQUE)
+	var avant: PackedByteArray = _octets(_chemin())
+	var avant_bak: PackedByteArray = _octets(_chemin() + ".bak")
+
+	var salle: Node = _salle()
+	var ecrit: bool = bool(salle.call("save_room_state"))
+	await _demonter(salle)
+
+	check(not ecrit,
+		"save_room_state() doit RENDRE FALSE sur un slot illisible — un vrai "
+		+ "refus se voit dans le code retour, pas seulement dans le fichier")
+	check_equal(_octets(_chemin()), avant,
+		"le fichier tronqué est resté OCTET POUR OCTET le même")
+	check_equal(_octets(_chemin() + ".bak"), avant_bak,
+		"la copie de secours est restée OCTET POUR OCTET la même")
+	_nettoyer()
+	restore_saves()
+
+
+func test_une_salle_de_donjon_refuse_un_schema_futur() -> void:
+	remember_saves()
+	_nettoyer()
+	_empoisonner_avec_bak(FUTUR)
+	var avant: PackedByteArray = _octets(_chemin())
+	var avant_bak: PackedByteArray = _octets(_chemin() + ".bak")
+
+	var salle: Node = _salle()
+	var ecrit: bool = bool(salle.call("save_room_state"))
+	await _demonter(salle)
+
+	check(not ecrit,
+		"save_room_state() doit refuser un schéma 99 : ce fichier appartient "
+		+ "à un build plus récent, pas à celui-ci (§19.4)")
+	check_equal(_octets(_chemin()), avant,
+		"la sauvegarde du futur est intacte après la salle de donjon")
+	check_equal(_octets(_chemin() + ".bak"), avant_bak,
+		"sa copie de secours aussi")
+	_nettoyer()
+	restore_saves()
+
+
+# --------------------------------------------------------------------------
+# 3 — deux salles d'affilée : c'est le SECOND passage qui détruisait le .bak
+# --------------------------------------------------------------------------
+func test_deux_salles_d_affilee_ne_detruisent_pas_la_copie_de_secours() -> void:
+	remember_saves()
+	_nettoyer()
+	_empoisonner_avec_bak(FUTUR)
+	var avant_bak: PackedByteArray = _octets(_chemin() + ".bak")
+
+	for i: int in range(2):
+		var salle: Node = _salle()
+		salle.set("room_id", StringName("test.iss082.salle%d" % i))
+		salle.call("save_room_state")
+		await _demonter(salle)
+
+	check_equal(_octets(_chemin() + ".bak"), avant_bak,
+		"APRÈS DEUX salles résolues, la copie de secours est intacte — sans "
+		+ "la garde, la première la remplaçait et la seconde l'effaçait")
+	_nettoyer()
+	restore_saves()
+
+
+# --------------------------------------------------------------------------
+# 4 — la victoire du boss
+# --------------------------------------------------------------------------
+func test_la_victoire_du_boss_refuse_un_schema_futur() -> void:
+	remember_saves()
+	_nettoyer()
+	_empoisonner_avec_bak(FUTUR)
+	var avant: PackedByteArray = _octets(_chemin())
+
+	var arene: Node = _arene()
+	arene.call("_on_boss_died")
+	await _settle(2)
+	await _demonter(arene)
+
+	check_equal(_octets(_chemin()), avant,
+		"la sauvegarde du futur est intacte après la mort du boss — écrire "
+		+ "`boss_defeated` dans un état neuf effacerait la partie du joueur")
+	_nettoyer()
+	restore_saves()
+
+
+# --------------------------------------------------------------------------
+# 5 — l'autosave de la vallée V1, le troisième écrivain, absent d'ISS-082
+# --------------------------------------------------------------------------
+func test_l_autosave_de_la_vallee_refuse_un_schema_futur() -> void:
+	remember_saves()
+	remember_root()
+	_nettoyer()
+	_empoisonner_avec_bak(FUTUR)
+	var avant: PackedByteArray = _octets(_chemin())
+
+	var vallee: Node = (load(VALLEY) as PackedScene).instantiate()
+	_tree().root.add_child(vallee)
+	await _settle(10)
+	vallee.call("_autosave")
+	await _settle(2)
+	await _demonter(vallee)
+
+	check_equal(_octets(_chemin()), avant,
+		"la sauvegarde du futur survit à un autosave de la vallée — c'est le "
+		+ "chemin le plus fréquent du jeu : coffres, flèches, buffs")
+	_nettoyer()
+	restore_saves()
+	restore_root()
+
+
+# --------------------------------------------------------------------------
+# 6 — LA GARDE DE NON-VACUITÉ. Sans elle, on « corrigerait » ISS-082 en
+#     empêchant toute sauvegarde, et les cinq cas ci-dessus resteraient verts.
+# --------------------------------------------------------------------------
+func test_un_slot_normal_reste_inscriptible_par_les_trois_ecrivains() -> void:
+	remember_saves()
+	_nettoyer()
+	var systeme: Node = _save_system()
+	check_not_null(systeme, "SaveSystem est monté")
+	if systeme == null:
+		restore_saves()
+		return
+	check(bool(systeme.call("save_slot", SLOT,
+			{"schema": 4, "checkpoint": "world_v2.valley"})),
+		"le slot de départ est bien écrit")
+
+	var salle: Node = _salle()
+	var ecrit: bool = bool(salle.call("save_room_state"))
+	await _demonter(salle)
+	check(ecrit, "sur un slot LISIBLE, la salle de donjon écrit toujours")
+
+	var apres_salle: Dictionary = systeme.call("load_slot", SLOT) as Dictionary
+	check(apres_salle.has("dungeon"),
+		"et son état de salle est réellement dans le fichier")
+	check_equal(String(apres_salle.get("checkpoint", "")), "world_v2.valley",
+		"sans avoir écrasé le champ d'une autre scène — c'est une FUSION")
+
+	var arene: Node = _arene()
+	arene.call("_on_boss_died")
+	await _settle(2)
+	await _demonter(arene)
+	var apres_boss: Dictionary = systeme.call("load_slot", SLOT) as Dictionary
+	check(bool(apres_boss.get("boss_defeated", false)),
+		"sur un slot LISIBLE, la victoire du boss est bien écrite")
+	check(apres_boss.has("dungeon"),
+		"et elle n'a pas effacé l'état de salle posé juste avant")
+
+	_nettoyer()
+	restore_saves()

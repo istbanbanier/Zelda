@@ -446,13 +446,16 @@ func _on_boss_died() -> void:
 	_victory_written = true
 	var save_system: Node = get_node_or_null("/root/SaveSystem")
 	if save_system != null:
-		var data: Dictionary = {}
-		if bool(save_system.call("has_save", SAVE_SLOT)):
-			data = save_system.call("load_slot", SAVE_SLOT) as Dictionary
-		if data.is_empty():
-			data = {"schema": 2}
-		data["boss_defeated"] = true
-		save_system.call("save_slot", SAVE_SLOT, data)
+		# ISS-082 — écrire la victoire dans un `{}` issu d'un slot illisible
+		# effaçait la partie du joueur au lieu de la couronner.
+		var base: Variant = SaveMergeGuard.base_de_fusion(
+			save_system, SAVE_SLOT, "arène du boss")
+		if base != null:
+			var data: Dictionary = base as Dictionary
+			if data.is_empty():
+				data = {"schema": 2}
+			data["boss_defeated"] = true
+			save_system.call("save_slot", SAVE_SLOT, data)
 	# Le puits de terre se tait : plus une seule veine cyan dans l'arène.
 	if _earth != null:
 		_earth.enabled = false

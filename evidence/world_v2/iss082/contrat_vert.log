@@ -1,0 +1,74 @@
+LANCER_GODOT: VERROU=/home/user/Zelda/.git/heavy_tools.lock
+LANCER_GODOT: XDG_DATA_HOME=/tmp/lancer_godot_ud_gdcMTAew
+LANCER_GODOT: CWD=/home/user/Zelda
+LANCER_GODOT: CMD=/usr/local/bin/godot --headless --path . --script tools/godot/test_runner.gd -- --filter=save_guard_iss082
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+
+=== TEST RUNNER — Godot 4.7.1-stable (custom_build) ===
+filtre: save_guard_iss082
+WARNING: [salle de donjon] slot présent mais ILLISIBLE — écriture refusée pour ne pas l'écraser (§19.4, ISS-082)
+     at: push_warning (core/variant/variant_utility.cpp:1033)
+     GDScript backtrace (most recent call first):
+         [0] base_de_fusion (res://scripts/save/save_merge_guard.gd:56)
+         [1] save_room_state (res://scripts/dungeon/dungeon_room.gd:140)
+         [2] test_une_salle_de_donjon_refuse_un_slot_tronque (res://tests/integration/test_save_guard_iss082.gd:151)
+         [3] _run_script (res://tools/godot/test_runner.gd:297)
+         [4] _initialize (res://tools/godot/test_runner.gd:80)
+  ok   test_save_guard_iss082.gd::test_une_salle_de_donjon_refuse_un_slot_tronque (3 assertions)
+WARNING: [salle de donjon] slot présent mais ILLISIBLE — écriture refusée pour ne pas l'écraser (§19.4, ISS-082)
+     at: push_warning (core/variant/variant_utility.cpp:1033)
+     GDScript backtrace (most recent call first):
+         [0] base_de_fusion (res://scripts/save/save_merge_guard.gd:56)
+         [1] save_room_state (res://scripts/dungeon/dungeon_room.gd:140)
+         [2] test_une_salle_de_donjon_refuse_un_schema_futur (res://tests/integration/test_save_guard_iss082.gd:173)
+         [3] _run_script (res://tools/godot/test_runner.gd:297)
+         [4] _root_delta (res://tools/godot/test_runner.gd:390)
+  ok   test_save_guard_iss082.gd::test_une_salle_de_donjon_refuse_un_schema_futur (3 assertions)
+WARNING: [salle de donjon] slot présent mais ILLISIBLE — écriture refusée pour ne pas l'écraser (§19.4, ISS-082)
+     at: push_warning (core/variant/variant_utility.cpp:1033)
+     GDScript backtrace (most recent call first):
+         [0] base_de_fusion (res://scripts/save/save_merge_guard.gd:56)
+         [1] save_room_state (res://scripts/dungeon/dungeon_room.gd:140)
+         [2] test_deux_salles_d_affilee_ne_detruisent_pas_la_copie_de_secours (res://tests/integration/test_save_guard_iss082.gd:199)
+         [3] _run_script (res://tools/godot/test_runner.gd:297)
+         [4] _root_delta (res://tools/godot/test_runner.gd:390)
+WARNING: [salle de donjon] slot présent mais ILLISIBLE — écriture refusée pour ne pas l'écraser (§19.4, ISS-082)
+     at: push_warning (core/variant/variant_utility.cpp:1033)
+     GDScript backtrace (most recent call first):
+         [0] base_de_fusion (res://scripts/save/save_merge_guard.gd:56)
+         [1] save_room_state (res://scripts/dungeon/dungeon_room.gd:140)
+         [2] test_deux_salles_d_affilee_ne_detruisent_pas_la_copie_de_secours (res://tests/integration/test_save_guard_iss082.gd:199)
+         [3] _demonter (res://tests/integration/test_save_guard_iss082.gd:137)
+         [4] _settle (res://tests/integration/test_save_guard_iss082.gd:53)
+  ok   test_save_guard_iss082.gd::test_deux_salles_d_affilee_ne_detruisent_pas_la_copie_de_secours (1 assertions)
+WARNING: [arène du boss] slot présent mais ILLISIBLE — écriture refusée pour ne pas l'écraser (§19.4, ISS-082)
+     at: push_warning (core/variant/variant_utility.cpp:1033)
+     GDScript backtrace (most recent call first):
+         [0] base_de_fusion (res://scripts/save/save_merge_guard.gd:56)
+         [1] _on_boss_died (res://scripts/boss/boss_arena.gd:451)
+         [2] test_la_victoire_du_boss_refuse_un_schema_futur (res://tests/integration/test_save_guard_iss082.gd:219)
+         [3] _run_script (res://tools/godot/test_runner.gd:297)
+         [4] _root_delta (res://tools/godot/test_runner.gd:390)
+  ok   test_save_guard_iss082.gd::test_la_victoire_du_boss_refuse_un_schema_futur (1 assertions)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+WARNING: [vallée] slot présent mais ILLISIBLE — écriture refusée pour ne pas l'écraser (§19.4, ISS-082)
+     at: push_warning (core/variant/variant_utility.cpp:1033)
+     GDScript backtrace (most recent call first):
+         [0] base_de_fusion (res://scripts/save/save_merge_guard.gd:56)
+         [1] _autosave (res://scripts/world/valley_world.gd:966)
+         [2] test_l_autosave_de_la_vallee_refuse_un_schema_futur (res://tests/integration/test_save_guard_iss082.gd:243)
+         [3] _settle (res://tests/integration/test_save_guard_iss082.gd:53)
+  ok   test_save_guard_iss082.gd::test_l_autosave_de_la_vallee_refuse_un_schema_futur (1 assertions)
+  ok   test_save_guard_iss082.gd::test_un_slot_normal_reste_inscriptible_par_les_trois_ecrivains (7 assertions)
+erreurs de script dans le journal : 0
+
+=== RÉSULTAT: 6 réussi(s), 0 échoué(s) ===
+ERROR: Resumed function '_sweep()' after await, but class instance is gone. At script: res://tests/test_case.gd:383
+   at: resume (modules/gdscript/gdscript_function.cpp:323)
+WARNING: 2 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 1 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)
+LANCER_GODOT: RC_GODOT=0
+RC=0

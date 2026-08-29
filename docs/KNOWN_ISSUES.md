@@ -3032,7 +3032,7 @@ il acquiert la cible.
 lui-même plutôt que dans le seul appelant vision. À faire dans une passe qui
 peut rejouer les suites d'adversaires V1 et V2.
 
-## ISS-082 — Le trou de C10 subsiste hors de l'antichambre — S3, OUVERT, PRÉEXISTANT
+## ISS-082 — Le trou de C10 subsiste hors de l'antichambre — S3, **FERMÉ le 2026-08-29**
 
 **Trouvé le 2026-08-28** par la revue de complétude d'ISS-074, en cherchant
 autre chose. C10 puis ISS-080 ont fermé, chacun à son endroit, le même défaut :
@@ -3049,11 +3049,32 @@ qui font encore `if data.is_empty(): data = {"schema": 2}` puis `save_slot`.
 — y compris `enemies_slain` — à la première salle de donjon résolue. Le fichier
 n'est pas corrompu par le jeu, il est REMPLACÉ par un état neuf et rétrogradé.
 
-**Pourquoi ce n'est pas corrigé ici** : la directive de la passe ISS-074 dit
-« corrige ISS-080 sans élargir la passe ». Ces deux appels sont sur le chemin
-du donjon et du boss, pas sur celui du peuplement. La correction est un
-copier-coller de la garde existante, mais elle appartient à une passe donjon
-qui pourra la prouver — pas à celle-ci, qui ne le peut pas.
+**Pourquoi ce n'était pas corrigé alors** : la directive de la passe ISS-074
+disait « corrige ISS-080 sans élargir la passe ». Ces appels sont sur le chemin
+du donjon et du boss, pas sur celui du peuplement.
+
+## FERMETURE, le 2026-08-29
+
+**Un TROISIÈME écrivain, que cette fiche ne nommait pas.** La cartographie de
+la passe POI a trouvé `valley_world.gd::_autosave()` — le chemin le plus
+fréquent du jeu : coffres, flèches, buffs. Il portait le même défaut.
+
+**La correction n'est pas le copier-coller annoncé.** Les trois gardes
+existantes vivent dans deux fichiers GELÉS, donc non refactorables ; trois
+NOUVEAUX sites en avaient besoin le même jour. C'est la règle de trois de
+`PROMPT4_METHOD` §8 : `scripts/save/save_merge_guard.gd` porte désormais la
+décision, et rend `null` pour « refuse » là où `{}` veut dire « aucune
+sauvegarde, pars de zéro ». La confusion qui a créé ISS-082 devient
+impossible au niveau du type.
+
+**Preuve** : `tests/integration/test_save_guard_iss082.gd`, rouge d'abord à
+**1 réussi / 8 échoué** puis **6 / 0**. Chaque cas empoisonne le slot, appelle
+l'écrivain POUR DE VRAI, et compare les OCTETS du fichier et de son `.bak`.
+Un cas mesure l'enchaînement de DEUX salles — c'est le second passage qui
+effaçait la copie de secours. Le dernier cas est la garde de non-vacuité :
+sur un slot lisible les trois écrivains écrivent toujours, sinon on aurait
+« corrigé » le défaut en cassant la sauvegarde.
+Journaux : `evidence/world_v2/iss082/contrat_rouge.log` et `contrat_vert.log`.
 
 ---
 

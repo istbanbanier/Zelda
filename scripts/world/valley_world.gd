@@ -960,9 +960,14 @@ func _autosave() -> void:
 	# false EN DUR. La victoire du joueur était effacée par sa propre
 	# exploration. On charge, on recouvre les champs que CETTE scène possède,
 	# on réécrit — exactement le modèle de `boss_arena.gd`.
-	var payload: Dictionary = {}
-	if bool(save_system.call("has_save", SAVE_SLOT)):
-		payload = save_system.call("load_slot", SAVE_SLOT) as Dictionary
+	# ISS-082 — le troisième écrivain sans garde, et le plus fréquent du jeu :
+	# coffres, flèches, buffs. Un slot présent mais illisible n'est pas le
+	# nôtre à réécrire (§19.4).
+	var base: Variant = SaveMergeGuard.base_de_fusion(
+		save_system, SAVE_SLOT, "vallée")
+	if base == null:
+		return
+	var payload: Dictionary = base as Dictionary
 	payload.merge({
 		"schema": SAVE_SCHEMA,
 		"checkpoint": "valley.camp.start",

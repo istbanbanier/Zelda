@@ -133,9 +133,15 @@ func save_room_state() -> bool:
 	var save_system: Node = get_node_or_null("/root/SaveSystem")
 	if save_system == null or room_id == &"":
 		return false
-	var data: Dictionary = {}
-	if bool(save_system.call("has_save", SAVE_SLOT)):
-		data = save_system.call("load_slot", SAVE_SLOT) as Dictionary
+	# ISS-082 — `load_slot` rend `{}` aussi bien pour un slot absent que pour
+	# un JSON tronqué ou un schéma PLUS RÉCENT. Repartir de `{}` remplaçait la
+	# sauvegarde d'un build futur par un état neuf, et deux salles résolues
+	# emportaient jusqu'à la copie de secours.
+	var base: Variant = SaveMergeGuard.base_de_fusion(
+		save_system, SAVE_SLOT, "salle de donjon")
+	if base == null:
+		return false
+	var data: Dictionary = base as Dictionary
 	if data.is_empty():
 		data = {"schema": 2}
 	var rooms: Dictionary = data.get("dungeon", {}) as Dictionary
