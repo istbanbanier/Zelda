@@ -1,0 +1,34 @@
+{
+  "doc": "Le camp braise de r05 comme premier POI COMPLET — PILOTÉ PAR DONNÉES. Le script `WorldV2CampLiberation` ne connaît ni identifiant de garnison, ni récompense, ni texte : il lit ce fichier. Contrat : docs/contrats/camp_libere_world_v2.md. Le layout `world_v2_layout.json` est GELÉ et reste la source des bornes et du checkpoint `camp` (45, 6, 65) ; ce fichier-ci porte ce que la libération de ce camp implique.",
+  "schema": 1,
+  "camps": [
+    {
+      "id": "camp.ember_terrace",
+      "garrison": "garrison.ember_camp",
+      "doc": "La garnison de r05 — quatre gardes, la PREMIÈRE rencontre du jeu. Le layout dit de r05 : « première rencontre 3 approches, cuisine, checkpoint camp ». Les pillards occupent la terrasse qui doit devenir le camp du joueur ; la libérer, c'est rallumer son feu.",
+
+      "foyer_visuel": "Places/place_camp/FeuVisuel",
+      "foyer_doc": "Chemin du CampfireProp du lieu GELÉ camp_checkpoint_place.gd. On ne fait que basculer sa visibilité : le démonter, le déplacer ou toucher `FeuDeCuisine` (le Campfire interactif) casserait test_world_v2_places_behavior.gd, qui exige un Campfire dans le groupe `interactable` — c'est un contrat de checkpoint, pas de décor.",
+
+      "recompense": {
+        "coffre_id": "camp.chest.ember_terrace.01",
+        "arme": "worn_sword",
+        "fleches": 10,
+        "position": [44.0, 6.0, 68.0],
+        "doc": "FIXE, jamais tirée au sort : aucune table de butin, aucune économie globale. L'épée usée est le premier vrai pas au-delà du gourdin — utile immédiatement, et elle change la rencontre suivante. La position est à l'intérieur de r05 (x[8,64] z[40,100]) et à quelques mètres du checkpoint `camp`, pour qu'on la voie en revenant au feu."
+      },
+
+      "sauvegarde": {
+        "champ_camps": "camps_liberes",
+        "champ_coffres": "opened_chests",
+        "doc": "Deux champs ADDITIFS. `camps_liberes` a la même forme qu'`enemies_slain`. `opened_chests` REPREND le nom de la V1 (valley_world.gd) au lieu d'en inventer un : c'est déjà le vocabulaire du dépôt pour « ce coffre est vide ». Les deux sont écrits par SaveMergeGuard.base_de_fusion() — sans quoi libérer le camp détruirait la sauvegarde d'un build futur (ISS-082)."
+      },
+
+      "textes": {
+        "doc": "TOUT ce que le joueur lit vit ici. Il n'existe aucune table de traduction dans ce dépôt ; le motif établi, déjà verrouillé par des tests, est « le texte affiché vit dans la donnée, pas dans le code » — display_name d'une arme, d'un ingrédient, d'un PointOfInterest. Le jour où une localisation arrive, c'est cette entrée qu'elle remplace, pas une ligne de .gd.",
+        "victoire": "Le camp est libéré. Le feu se rallume.",
+        "recompense_posee": "Les pillards ont laissé une caisse près du foyer."
+      }
+    }
+  ]
+}

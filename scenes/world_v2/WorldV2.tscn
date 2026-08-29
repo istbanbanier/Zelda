@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=9 format=3]
 
 ; World V2 — VALLÉE WHITEBOX (phase V2.1). Le sol temporaire de V2.0 a été
 ; remplacé par le monde réel : 64 chunks de relief continu, hydrologie,
@@ -12,6 +12,7 @@
 
 [ext_resource type="Script" path="res://scripts/world_v2/world_v2_root.gd" id="1_root"]
 [ext_resource type="Script" path="res://scripts/world_v2/world_v2_encounters_builder.gd" id="5_encounters"]
+[ext_resource type="Script" path="res://scripts/world_v2/world_v2_camp_liberation.gd" id="6_camp_lib"]
 [ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="2_player"]
 [ext_resource type="PackedScene" path="res://scenes/ui/GameplayShell.tscn" id="3_shell"]
 [ext_resource type="Shader" path="res://shaders/world_v2/SH_WorldV2Sky.gdshader" id="4_sky"]
@@ -54,6 +55,9 @@ script = ExtResource("1_root")
 
 [node name="Encounters" type="Node3D" parent="."]
 script = ExtResource("5_encounters")
+
+[node name="CampLiberation" type="Node3D" parent="."]
+script = ExtResource("6_camp_lib")
 
 [node name="Navigation" type="Node3D" parent="."]
 

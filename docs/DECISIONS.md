@@ -1642,3 +1642,33 @@ au gel pendant une passe reste modifiable *dans cette même passe*, à condition
 que chaque régénération porte son diff (une ligne, la sienne) et sa
 justification. Un fichier entré au gel dans une passe ANTÉRIEURE relève, lui,
 de la procédure lourde de D-055 et D-056.
+
+## D-058 — le manifeste de gel accueille `world_v2_camp_liberation.gd` (2026-08-29)
+
+**Contexte.** La directive lead du 2026-08-29 demande de transformer le camp
+braise en premier POI complet, et interdit explicitement de modifier les
+fichiers géométriques gelés.
+
+**Le conflit mécanique.** `tools/gel_verifier.sh` couvre `scripts/world_v2/*.gd`
+par un glob. Tout fichier NEUF dans ce répertoire rend donc `[GEL INCOMPLET]`,
+même s'il ne touche à rien. C'est exactement ce qui s'est produit à D-057 pour
+`world_v2_encounters_builder.gd`.
+
+**Décision.** Régénérer le manifeste, et PROUVER que le diff est purement
+additif plutôt que de l'affirmer :
+
+```
+retirées : 1   ajoutées : 2
+2c2  — la ligne de date du commentaire d'en-tête
+38a39 — 0754b97c…  scripts/world_v2/world_v2_camp_liberation.gd
+```
+
+**Zéro sha256 existant retiré ou modifié.** Les 45 empreintes gelées d'avant
+sont identiques après. Revérification : 46/46 intacts.
+
+**Alternative rejetée** : étendre `world_v2_encounters_builder.gd` (gelé) pour
+y loger la libération. Elle aurait demandé de MODIFIER une empreinte gelée au
+lieu d'en ajouter une, ce que ni la directive ni la procédure R2B.3.1 §4
+n'autorisent sans régression démontrée. Le conteneur frère observe sans rien
+éditer, et c'est la seule forme qui laisse les trois fichiers gelés — le
+bâtisseur, la racine, le lieu du camp — strictement intacts.
