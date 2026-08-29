@@ -1643,7 +1643,66 @@ que chaque régénération porte son diff (une ligne, la sienne) et sa
 justification. Un fichier entré au gel dans une passe ANTÉRIEURE relève, lui,
 de la procédure lourde de D-055 et D-056.
 
-## D-058 — le manifeste de gel accueille `world_v2_camp_liberation.gd` (2026-08-29)
+## D-059 — l'enveloppe du cache de scripts du moteur passe de 138/74 à 139/75 (2026-08-29)
+
+**Contexte.** `validate_fast` sur `1ad628ff` rend 1022 tests réussis, 0 échoué,
+toutes les étapes vertes — et un verdict ROUGE, sur un seul critère :
+`ENGINE_SCRIPT_CACHE_TELEMETRY` en dérive, +1 objet et +1 ressource contre le
+contrat du 2026-08-20. `PROJECT_RESOURCE_LEAK_GATE`, celui qui détecte un
+défaut réel, est VERT.
+
+**Pourquoi je n'ai pas entériné tout de suite.** Ma tranche ajoute DEUX scripts
+neufs sous `scripts/` — `save_merge_guard.gd` et `world_v2_camp_liberation.gd`
+— et la dérive est de UN. L'explication évidente sur-prédisait donc le fait
+observé : c'est très exactement le cas que l'en-tête de
+`tools/gate_fuite_composition.sh` décrit comme « le portail agrégé bouge sans
+explication », et où il demande la composition. Entériner sur cette base
+aurait été faire taire un rouge, pas accepter une enveloppe.
+
+**La mesure.** Suite complète en `--verbose`, 4 050 s, vidage de 150 Mo,
+**1022 réussis / 0 échoué** — le même compte que la passe non verbeuse, ce qui
+vaut contrôle croisé. `objets annoncés = objets énumérés = 139` : l'ensemble
+mesuré égale l'ensemble expliqué, il ne reste rien d'inattribué.
+
+**L'attribution, exacte et singulière.** Le journal brut nomme les chemins :
+
+    res://scripts/save/save_merge_guard.gd          <- PRÉSENT, la croissance
+    res://scripts/world_v2/world_v2_camp_liberation.gd   <- ABSENT
+
+`world_v2_camp_liberation.gd` n'est PAS épinglé. Le portail le confirme par un
+second angle : la seule provenance nouvelle est `scripts/save`.
+
+**Le mécanisme, vérifié et non supposé.** Un script est retenu par le cache de
+classes globales du moteur quand d'autres l'appellent PAR SON NOM DE CLASSE.
+`SaveMergeGuard.base_de_fusion()` est appelé depuis quatre fichiers
+(`valley_world`, `boss_arena`, `dungeon_room`, `world_v2_camp_liberation`) ;
+`WorldV2CampLiberation` n'est cité nulle part — il n'existe que comme script
+attaché à un nœud de scène, et part avec elle. Les quatre scripts
+`scripts/world_v2` déjà présents dans le résidu suivent la même règle : chacun
+est appelé par nom de classe depuis un à quatre fichiers. La loi explique
+l'ensemble du résidu, pas seulement le cas qui m'arrange.
+
+**Décision.** Entériner : 138 → 139 objets, 74 → 75 ressources, `.gd` 71 → 72,
+provenance `scripts/save` ajoutée. Écrit depuis le journal brut SAUVEGARDÉ de
+cette mesure — pas depuis une seconde suite, qui aurait mesuré autre chose.
+
+**Ce que l'entérinement a coûté, et qu'il faut savoir.** L'outil régénère
+`provenances` à partir des seuls chemins `.gd` : les entrées
+`shaders/characters` et `shaders/foliage` que portait la version du 2026-08-20
+n'étaient donc pas régénérables, et ont disparu. Ce n'est pas une perte de
+couverture — la comparaison ne signale que les provenances NOUVELLES — mais
+c'est une information qui s'efface à chaque entérinement, et le contrat le dit
+maintenant en clair. Les champs `mesure_le` et `mesure_par` ne sont pas générés
+non plus ; ils ont été réécrits à la main, pointés sur CETTE mesure.
+
+**Alternative rejetée.** Déclarer la dérive « attendue » sur la foi du portail
+projet vert, sans composition. Elle aurait donné la bonne conclusion pour une
+mauvaise raison — et la fois où la dérive ne viendra PAS d'un script neuf,
+c'est cette habitude-là qui la laissera passer.
+
+---
+
+## D-058 — le manifeste de gel accueille## D-058 — le manifeste de gel accueille `world_v2_camp_liberation.gd` (2026-08-29)
 
 **Contexte.** La directive lead du 2026-08-29 demande de transformer le camp
 braise en premier POI complet, et interdit explicitement de modifier les

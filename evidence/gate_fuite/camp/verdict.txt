@@ -1,0 +1,21 @@
+=== RÉSIDU DE FIN DE PROCESSUS — DÉCOMPOSITION BRUTE ===
+  objets annoncés     : 139
+  objets énumérés     : 139
+      GDScript                 75
+      GDScriptNativeClass      61
+      Shader                   3
+  ressources annoncées: 75
+  ressources énumérées: 75  (72 .gd + 3 .gdshader + 0 autres)
+  RID DummyShader          3
+  shader justifié     : res://shaders/characters/SH_CharacterPainterlyCutout.gdshader  <- preload de res://scripts/lookdev/hero_shot_lab.gd
+  shader justifié     : res://shaders/characters/SH_CharacterPainterly.gdshader  <- preload de res://scripts/lookdev/hero_shot_lab.gd
+  shader justifié     : res://shaders/foliage/SH_FoliageWindPainterly.gdshader  <- preload de res://scripts/lookdev/hero_shot_lab.gd
+
+PROJECT_RESOURCE_LEAK_GATE : VERT — aucune ressource du projet ne survit
+ENGINE_SCRIPT_CACHE_TELEMETRY : DÉRIVE — redevient BLOQUANTE
+    * croissance : GDScript = 75, contrat = 74
+    * croissance : .gd = 72, contrat = 71
+    * provenance(s) nouvelle(s) : scripts/save
+
+suite : code 0, 4050s
+portail : code 2  (0 vert · 1 ressource du projet · 2 dérive télémétrie · 3 bloqué)

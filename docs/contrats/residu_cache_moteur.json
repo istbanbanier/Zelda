@@ -1,28 +1,44 @@
 {
-  "doc": "ENVELOPPE CONNUE du résidu de fin de processus attribué au cache de scripts du moteur (ISS-065). Mesurée, jamais devinée. Le portail agrégé de validate_fast compare la signature à ces trois nombres AU CHIFFRE PRÈS ; toute dérive rougit. Régénérer avec tools/gate_fuite_composition.sh --entériner, et seulement avec une justification écrite : ce geste accepte une nouvelle enveloppe, il ne fait pas taire un rouge.",
-  "mesure_le": "2026-08-20",
-  "mesure_par": "suite complète en --verbose, 949 tests réussis 0 échoué, décomposition dans evidence/world_v2/v2_3_r2b3_1/iss059/RESIDU_SUITE_COMPLETE.md",
+  "doc": "ENVELOPPE CONNUE du résidu de fin de processus attribué au cache de scripts du moteur (ISS-065). Mesurée, jamais devinée. Le portail agrégé de validate_fast compare la signature à ces nombres AU CHIFFRE PRÈS ; toute CROISSANCE rougit. Régénérer avec tools/gate_fuite_composition.sh --entériner, et seulement avec une justification écrite : ce geste accepte une nouvelle enveloppe, il ne fait pas taire un rouge.",
+  "doc_provenances": "`provenances` est dérivé des seuls chemins .gd (voir gate_fuite_ressources.py, `prov`). Les entrées shaders/characters et shaders/foliage que portait la version du 2026-08-20 n'étaient donc PAS régénérables par l'outil ; leur absence ici n'est pas une perte de couverture, et la comparaison ne signale de toute façon que les provenances NOUVELLES.",
+  "mesure_le": "2026-08-29",
+  "mesure_par": "suite complète en --verbose, 1022 tests réussis 0 échoué, 4050 s, vidage 150 913 970 octets ; objets annoncés = objets énumérés = 139 ; décomposition et log brut dans evidence/gate_fuite/camp/. Attribution de la croissance : res://scripts/save/save_merge_guard.gd, et lui seul (D-059).",
   "classes": {
-    "GDScript": 74,
+    "GDScript": 75,
     "GDScriptNativeClass": 61,
     "Shader": 3
   },
   "extensions": {
-    ".gd": 71,
+    ".gd": 72,
     ".gdshader": 3
   },
   "provenances": [
-    "resources/combat", "resources/enemies", "resources/ingredients",
-    "resources/tuning", "resources/weapons", "scripts/art", "scripts/characters",
-    "scripts/combat", "scripts/components", "scripts/core", "scripts/dungeon",
-    "scripts/electricity", "scripts/enemies", "scripts/interaction",
-    "scripts/inventory", "scripts/lookdev", "scripts/player", "scripts/reaction",
-    "scripts/ui", "scripts/world", "scripts/world_v2", "shaders/characters",
-    "shaders/foliage"
+    "resources/combat",
+    "resources/enemies",
+    "resources/ingredients",
+    "resources/tuning",
+    "resources/weapons",
+    "scripts/art",
+    "scripts/characters",
+    "scripts/combat",
+    "scripts/components",
+    "scripts/core",
+    "scripts/dungeon",
+    "scripts/electricity",
+    "scripts/enemies",
+    "scripts/interaction",
+    "scripts/inventory",
+    "scripts/lookdev",
+    "scripts/player",
+    "scripts/reaction",
+    "scripts/save",
+    "scripts/ui",
+    "scripts/world",
+    "scripts/world_v2"
   ],
   "rids": {
     "DummyShader": 3
   },
-  "total_objets": 138,
-  "total_ressources": 74
+  "total_objets": 139,
+  "total_ressources": 75
 }
