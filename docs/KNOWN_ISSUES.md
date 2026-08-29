@@ -2998,6 +2998,67 @@ présent mais illisible n'est plus jamais réécrit par l'antichambre.
 
 ---
 
+## ISS-084 — On cuisine au feu du camp pendant qu'il est tenu, et le foyer est invisible — S4, OUVERT
+
+**Découvert le 2026-08-29** par la contre-revue du POI pilote (constat n° 11).
+
+Le camp braise éteint son foyer tant que la garnison le tient : c'est la
+transformation qui rend la victoire visible (C6). Mais « éteindre » veut dire
+ici **masquer le `CampfireProp`**, et rien d'autre — le `Campfire` interactif,
+`FeuDeCuisine`, reste dans le groupe `interactable`.
+
+Conséquence, jamais dite jusqu'ici : le joueur peut ouvrir l'interface de
+cuisine **au milieu d'un camp ennemi**, devant un foyer qu'il ne voit pas.
+L'invite s'affiche, l'action fonctionne.
+
+**Pourquoi ce n'est pas corrigé.** `camp_checkpoint_place.gd` est GELÉ, et
+`test_world_v2_places_behavior.gd` exige un `Campfire` dans le groupe
+`interactable` — c'est un contrat de checkpoint, pas de décor. Retirer le
+foyer du groupe casserait ce contrat ; le déplacer ou le démonter aussi. Le
+choix pris est le moins destructeur : ne toucher qu'une visibilité.
+
+**Ce qu'il faudrait**, le jour où le lieu se dégèle : que le `Campfire` refuse
+l'interaction tant que son camp est tenu, sans quitter le groupe. Un état, pas
+une désinscription.
+
+- **Sévérité** : S4 — aucun blocage, aucune perte ; une affordance qui ment.
+- **Reproduction** : arriver au camp braise sans tuer la garnison, viser
+  l'emplacement du foyer masqué, appuyer sur `E`.
+
+---
+
+## ISS-085 — Hors territoire, un garde frappé ne réagit plus du tout — S4, OUVERT
+
+**Découvert le 2026-08-29** par la contre-revue du POI pilote, en examinant la
+correction d'ISS-083 elle-même.
+
+ISS-083 a centralisé la garde de territoire dans `_acquire_target()` : c'est
+la bonne place, et le défaut qu'elle ferme est réel. Mais elle a une
+conséquence non discutée dans la fiche : un coup reçu depuis hors territoire
+ne produit désormais **aucune** réaction — ni `SUSPICIOUS`, ni `INVESTIGATE`,
+ni même un regard. Le garde encaisse et continue de dormir.
+
+Concrètement : on peut cribler la garnison de flèches depuis 21 m sans qu'elle
+bronche. Le bruit d'impact ne comble pas le trou — `NoiseEvents.IMPACT_RADIUS`
+ne porte pas jusque-là.
+
+**Ce n'est pas une régression** : avant ISS-083, le garde partait en chasse
+hors de son territoire, ce qui était pire. Mais « ne pas poursuivre » et « ne
+pas réagir » ne sont pas la même décision, et seule la première a été prise
+consciemment.
+
+**Ce qu'il faudrait** : qu'un coup reçu hors territoire déclenche tout de même
+une alerte locale — se tourner, passer en `SUSPICIOUS`, revenir à son poste —
+sans jamais acquérir la cible. La garde reste sur l'acquisition ; la réaction
+en sort.
+
+- **Sévérité** : S4 — le joueur y gagne, il ne s'y bloque pas. Mais c'est un
+  exploit d'archer, et le genre de chose qu'un essai humain remonte vite.
+- **Reproduction** : depuis 21 m du camp braise, tirer sur un garde. Il ne
+  réagit pas.
+
+---
+
 ## ISS-083 — L'acquisition de cible sur cri d'allié ou sur coup reçu ignore le territoire — S4, **FERMÉ le 2026-08-29**
 
 **Découvert le 2026-08-28** par la contre-revue ISS-074 (constat n° 5), en
