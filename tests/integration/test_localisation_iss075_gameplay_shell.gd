@@ -14,7 +14,11 @@
 ##   C4  les paramètres de format sont identiques dans les deux langues ;
 ##   C5  le pluriel du Pulse est porté par les clés, plus par le code ;
 ##   C6  l'Unicode traverse la table intact (accents, ’, —, \n) ;
-##   C7  aucune clé brute ne paraît à l'écran ;
+##   C7  aucune clé brute ne paraît à l'écran (état de construction) ;
+##   C7bis les chemins d'EXÉCUTION — notifications, messages du viseur,
+##       HUD dynamique, cuisine — ne montrent jamais une clé nue, et la
+##       couverture est COMPTÉE (le trou démontré par la contre-revue :
+##       C7 seul n'atteignait que les clés posées à la construction) ;
 ##   C8  le changement de langue à chaud change réellement l'écran ;
 ##   C9  les tables de localisation partent dans l'export ;
 ##   C10 la localisation ne touche à aucune clé de sauvegarde ;
@@ -94,6 +98,11 @@ const FRANCAIS_EPINGLE: Dictionary = {
 	"resonance.refus.endurance": "Endurance insuffisante",
 	"resonance.refus.cible_perdue": "Cible perdue",
 	"resonance.refus.interrompu": "Interrompu",
+	# La clé PROPRE du verdict &"step" (delta 3) : même texte français que
+	# `resonance.action.arc_anchor` aujourd'hui, mais deux contextes
+	# d'affichage ne partagent plus une clé — ils doivent pouvoir diverger
+	# dans une autre langue sans toucher le code.
+	"resonance.message.arc_step": "Arc Step",
 	"resonance.message.lien_etabli": "Lien établi",
 	"resonance.message.polarite_engagee": "Polarité engagée",
 	"resonance.message.pulse_vide": "Impulsion — aucune cible à portée",
@@ -193,7 +202,14 @@ func test_une_cle_de_tranche_absente_reste_bruyante() -> void:
 	var fantome: String = "hud.tranche.fantome.inexistante"
 	check(Textes.ressemble_a_une_cle(fantome),
 		"préalable : la clé fantôme a la forme d'une clé")
+	# C3 exerce le chemin d'erreur À DESSEIN, comme A3 ; l'étape 2 de
+	# validate_fast traite tout « ERROR: » du journal en échec, et elle a
+	# raison — on fait taire l'IMPRESSION le temps de l'appel, on n'annule
+	# pas l'erreur : le marqueur et le compte restent vérifiés ci-dessous.
+	var impression: bool = Engine.print_error_messages
+	Engine.print_error_messages = false
 	var rendu: String = Textes.t(fantome)
+	Engine.print_error_messages = impression
 	check(rendu.begins_with("⟦") and rendu.contains(fantome),
 		"C3 — le joueur voit un texte manifestement cassé : %s" % rendu)
 	check(Textes.absentes_source().has(fantome),
@@ -312,6 +328,313 @@ func test_aucune_cle_brute_ne_parait_a_l_ecran() -> void:
 
 	_tree().root.remove_child(shell)
 	shell.queue_free()
+	await _tree().process_frame
+
+
+# --------------------------------------------------------------------------
+# C7bis — les chemins d'EXÉCUTION ne montrent jamais une clé nue
+# --------------------------------------------------------------------------
+## POURQUOI C7 ne suffisait pas, INSTRUMENTÉ par la contre-revue : C7 lit les
+## labels une frame après l'instanciation — il n'atteint que les ~10 clés
+## posées à la CONSTRUCTION. Dé-enrober `Textes.t()` sur un chemin d'EXÉCUTION
+## (le message « port retenu » du viseur) laissait le gate VERT pendant que le
+## joueur aurait lu la clé nue à l'écran. Et A9 ne rattrape pas : une chaîne
+## en forme de clé y est classée `technique` PAR CONCEPTION — c'est ce qui
+## fait baisser le compte à la migration.
+##
+## Ce cas PILOTE donc les familles d'exécution avec un JOUEUR RÉEL dans la
+## scène de la coquille — notifications, messages du viseur/Résonance, HUD
+## dynamique (flèches, plats, invite, arme, quatre buffs), cuisine complète —
+## puis relit les Label/Button après chaque stimulus. Deux verrous : aucun
+## texte affiché n'a la forme d'une clé, et le français attendu de CHAQUE clé
+## pilotée est réellement paru (bilan de couverture compté à la fin).
+##
+## PÉRIMÈTRE DIT FRANCHEMENT — clés de la tranche HORS de portée de ce cas :
+## boss.phase.* (10 clés : exigent un StormGuardian vivant dans la scène),
+## inventaire.detail.stats (exige une arme réelle sélectionnée en grille),
+## cuisine.plat_defaut (repli si RecipeRules ne nomme pas le plat) et
+## cuisine.apercu.instable (exige un mélange incompatible). Leur français
+## reste épinglé par C1, et la résolution de leurs tables par C13.
+##
+## Les états `focus`/`pending` du viseur exigeraient un ResonanceController
+## vivant : pour eux, on appelle les fonctions qui CALCULENT la ligne que
+## `_refresh_resonance_hud` pose telle quelle dans le label (`_set_label`),
+## et on épingle leur rendu par `check_equal`.
+
+class CibleInvite:
+	extends Node3D
+
+	## La coquille n'exige de sa cible d'interaction qu'une méthode
+	## `prompt_verb()` (voir `_on_interact_focus_changed`).
+	func prompt_verb() -> String:
+		return "le coffre"
+
+
+## C7bis — textes actuellement affichés par les Label/Button de la coquille.
+func _textes_affiches(shell: CanvasLayer) -> Array[String]:
+	var out: Array[String] = []
+	for l: Node in shell.find_children("*", "Label", true, false):
+		out.append((l as Label).text)
+	for b: Node in shell.find_children("*", "Button", true, false):
+		out.append((b as Button).text)
+	return out
+
+
+## C7bis — relit l'écran après un stimulus : aucune forme de clé, et mémorise
+## tout ce qui est affiché pour le bilan de couverture final.
+func _relever(shell: CanvasLayer, vus: Dictionary) -> void:
+	for t: String in _textes_affiches(shell):
+		check(not Textes.ressemble_a_une_cle(t),
+			"C7bis — « %s » a la forme d'une clé : une clé nue à l'écran est "
+			% t + "exactement ce que la migration devait rendre impossible")
+		vus[t] = true
+
+
+func test_les_chemins_d_execution_ne_montrent_jamais_une_cle_nue() -> void:
+	check(Textes.definir_locale(Textes.LOCALE_SOURCE), "langue source active")
+	var racine: Node = Node.new()
+	racine.name = "C7bisRacine"
+	_tree().root.add_child(racine)
+	var player: PlayerController = (load("res://scenes/player/Player.tscn")
+		as PackedScene).instantiate() as PlayerController
+	racine.add_child(player)
+	var shell: GameplayShell = (load(SHELL) as PackedScene).instantiate() \
+		as GameplayShell
+	racine.add_child(shell)
+	await _tree().process_frame
+	await _tree().process_frame   # _bind_player est différé d'une frame
+	check(shell.bound_player() == player,
+		"préalable : la coquille sert le joueur de SA scène — sans lui, les "
+		+ "familles arme/buff/cuisine resteraient hors de portée")
+
+	var vus: Dictionary = {}        # tout texte paru à l'écran (ensemble)
+	var attendus: Dictionary = {}   # clé pilotée -> français attendu
+
+	# 1. CONSTRUCTION — l'acquis de C7 — plus le label de sensibilité piloté
+	# par le même chemin que le curseur (`_refresh_sensitivity_label`).
+	for cle: String in ["inventaire.titre", "inventaire.conductivite",
+			"inventaire.fermer", "menu.pause.commandes", "cuisine.titre",
+			"cuisine.confirmer", "cuisine.retirer_dernier",
+			"cuisine.reprendre", "boss.nom"]:
+		attendus[cle] = Textes.t(cle)
+	shell.call("_refresh_sensitivity_label", 0.0031)
+	attendus["menu.pause.sensibilite"] = \
+		Textes.t("menu.pause.sensibilite") % 0.0031
+	_relever(shell, vus)
+
+	# 2. NOTIFICATIONS — la clé publiée sur la porte, exactement comme
+	# `cooking_confirm` le fait quand la réserve déborde.
+	shell.call("_on_notification", "cuisine.reserve_pleine")
+	attendus["cuisine.reserve_pleine"] = Textes.t("cuisine.reserve_pleine")
+	_relever(shell, vus)
+
+	# 3. HUD DYNAMIQUE — flèches, plats, invite, arme aux mains nues, buffs.
+	shell.call("_on_arrows_changed", 7)
+	attendus["hud.fleches"] = Textes.t("hud.fleches") % 7
+	shell.call("_on_meals_changed", 2)
+	attendus["hud.plats"] = Textes.t("hud.plats") % 2
+	var cible_invite: CibleInvite = CibleInvite.new()
+	racine.add_child(cible_invite)
+	shell.call("_on_interact_focus_changed", cible_invite)
+	attendus["hud.invite.format"] = Textes.t("hud.invite.format") % "le coffre"
+	check_equal(shell.prompt_text(), String(attendus["hud.invite.format"]),
+		"C7bis — l'invite d'interaction est le format traduit")
+	# Le joueur porte sa dotation de départ : on la retire par le chemin réel
+	# de la rupture (§11.2 « équiper suivante ou mains nues ») jusqu'aux mains
+	# nues — c'est le SEUL chemin qui affiche le repli d'arme.
+	var inventaire_armes: InventoryComponent = player.inventory()
+	for i: int in range(InventoryComponent.MAX_WEAPONS):
+		if inventaire_armes.equipped() == null:
+			break
+		inventaire_armes.remove_weapon(inventaire_armes.equipped())
+	check(inventaire_armes.equipped() == null,
+		"préalable : joueur aux mains nues après retrait de la dotation")
+	shell.call("_refresh_weapon_text")
+	attendus["hud.arme.mains_nues"] = Textes.t("hud.arme.mains_nues")
+	_relever(shell, vus)
+	for effet: StringName in GameplayShell.BUFF_LABELS.keys():
+		player.status().apply_buff(effet, 1.0, 30.0)
+		shell.call("_refresh_buff_label")
+		var compose: String = Textes.t("hud.buff.format") % [
+			Textes.t(String(GameplayShell.BUFF_LABELS[effet])), 30]
+		check_equal(shell.buff_label_text(), compose,
+			"C7bis — le label de buff « %s » est la composition traduite" % effet)
+		attendus[String(GameplayShell.BUFF_LABELS[effet])] = compose
+		attendus["hud.buff.format"] = compose
+		_relever(shell, vus)
+
+	# 4. CUISINE — le flux réel, avec l'inventaire du joueur.
+	var inventory: InventoryComponent = player.inventory()
+	var fruit: IngredientDefinition = \
+		load("res://resources/ingredients/heal_fruit.tres") as IngredientDefinition
+	var herbe: IngredientDefinition = \
+		load("res://resources/ingredients/stamina_herb.tres") as IngredientDefinition
+	inventory.add_ingredient(fruit, 1)
+	inventory.add_ingredient(herbe, 1)
+	check(bool(shell.open_cooking(player)), "préalable : l'atelier s'ouvre")
+	attendus["cuisine.choisir"] = Textes.t("cuisine.choisir")
+	_relever(shell, vus)
+	check(shell.cooking_add(&"heal_fruit"), "préalable : fruit choisi")
+	check(shell.cooking_add(&"stamina_herb"), "préalable : herbe choisie")
+	var noms: String = "%s, %s" % [
+		String(shell.call("_ingredient_display_name", &"heal_fruit")),
+		String(shell.call("_ingredient_display_name", &"stamina_herb"))]
+	attendus["cuisine.choisir_compte"] = \
+		Textes.t("cuisine.choisir_compte") % [2, noms]
+	var resultat: Dictionary = RecipeRules.cook(
+		[fruit, herbe] as Array[IngredientDefinition])
+	check(bool(resultat.get("valid", false))
+			and String(resultat.get("effect", "")) == "stamina"
+			and float(resultat.get("duration", 0.0)) > 0.0,
+		"préalable : fruit + herbe rend un plat valide à effet endurance — "
+		+ "c'est lui qui fait courir l'aperçu complet (soin + effet)")
+	attendus["cuisine.apercu.soin"] = Textes.t("cuisine.apercu.soin") % [
+		String(resultat.get("name", "")), int(resultat.get("heal", 0.0))]
+	attendus["cuisine.apercu.effet"] = Textes.t("cuisine.apercu.effet") % [
+		String(shell.call("_effect_display_name", "stamina")),
+		int(round(float(resultat.get("duration", 0.0))))]
+	attendus["cuisine.effet.stamina"] = Textes.t("cuisine.effet.stamina")
+	_relever(shell, vus)
+	shell.cooking_confirm()
+	attendus["cuisine.fait"] = \
+		Textes.t("cuisine.fait") % String(resultat.get("name", ""))
+	_relever(shell, vus)
+	check(not shell.is_cooking_open() and not _tree().paused,
+		"la confirmation ferme l'atelier et rend le monde")
+	# Les trois autres familles d'effet, par le chemin que l'aperçu emprunte.
+	for effet_nom: String in ["attack", "defense", "elec_resist"]:
+		var rendu_effet: String = \
+			String(shell.call("_effect_display_name", effet_nom))
+		check_equal(rendu_effet, Textes.t("cuisine.effet." + effet_nom),
+			"C7bis — l'effet « %s » se nomme par sa clé" % effet_nom)
+		vus[rendu_effet] = true
+		attendus["cuisine.effet." + effet_nom] = \
+			Textes.t("cuisine.effet." + effet_nom)
+
+	# 5. RÉSONANCE — chaque verdict, chaque message, posé dans le VRAI label.
+	for verdict: StringName in GameplayShell.RESONANCE_REFUSALS.keys():
+		shell.call("_on_resonance_verdict", &"pulse", verdict, false)
+		shell.call("_refresh_resonance_hud", 0.0)
+		var cle_refus: String = String(GameplayShell.RESONANCE_REFUSALS[verdict])
+		check_equal(shell.resonance_state_text(), Textes.t(cle_refus),
+			"C7bis — le refus « %s » paraît traduit dans le viseur" % verdict)
+		vus[shell.resonance_state_text()] = true
+		attendus[cle_refus] = Textes.t(cle_refus)
+	var succes: Dictionary[StringName, String] = {
+		&"linked": "resonance.message.lien_etabli",
+		&"engaged": "resonance.message.polarite_engagee",
+		&"step": "resonance.message.arc_step",
+	}
+	for verdict: StringName in succes.keys():
+		shell.call("_on_resonance_verdict", &"pulse", verdict, true)
+		shell.call("_refresh_resonance_hud", 0.0)
+		check_equal(shell.resonance_state_text(), Textes.t(succes[verdict]),
+			"C7bis — le verdict exécuté « %s » a SA clé — le delta 3 sépare "
+			% verdict + "enfin &\"step\" de la ligne d'action du viseur")
+		vus[shell.resonance_state_text()] = true
+		attendus[String(succes[verdict])] = Textes.t(succes[verdict])
+	shell.call("_on_resonance_pulse", 0)
+	shell.call("_refresh_resonance_hud", 0.0)
+	attendus["resonance.message.pulse_vide"] = \
+		Textes.t("resonance.message.pulse_vide")
+	vus[shell.resonance_state_text()] = true
+	shell.call("_on_resonance_pulse", 1)
+	shell.call("_refresh_resonance_hud", 0.0)
+	attendus["resonance.message.pulse_une"] = \
+		Textes.t("resonance.message.pulse_une") % 1
+	vus[shell.resonance_state_text()] = true
+	shell.call("_on_resonance_pulse", 3)
+	shell.call("_refresh_resonance_hud", 0.0)
+	attendus["resonance.message.pulse_plusieurs"] = \
+		Textes.t("resonance.message.pulse_plusieurs") % 3
+	vus[shell.resonance_state_text()] = true
+	shell.call("_on_resonance_link_dissolved")
+	shell.call("_refresh_resonance_hud", 0.0)
+	attendus["resonance.message.lien_rompu"] = \
+		Textes.t("resonance.message.lien_rompu")
+	vus[shell.resonance_state_text()] = true
+	shell.call("_on_resonance_grounded", null)
+	shell.call("_refresh_resonance_hud", 0.0)
+	attendus["resonance.message.terre_effectuee"] = \
+		Textes.t("resonance.message.terre_effectuee")
+	vus[shell.resonance_state_text()] = true
+	shell.call("_on_resonance_ground_cancelled", &"pas_au_sol")
+	shell.call("_refresh_resonance_hud", 0.0)
+	attendus["resonance.message.terre_annulee"] = \
+		Textes.t("resonance.message.terre_annulee") \
+		% Textes.t("resonance.refus.pas_au_sol")
+	vus[shell.resonance_state_text()] = true
+	attendus["resonance.viseur.titre"] = Textes.t("resonance.viseur.titre")
+	check_equal(shell.resonance_action_text(),
+		Textes.t("resonance.viseur.titre"),
+		"C7bis — hors focus, la ligne d'action porte le titre du Bracelet")
+	_relever(shell, vus)
+
+	# 6. VISEUR SOUS FOCUS — les lignes que `_set_label` pose telles quelles.
+	var cible: ResonanceTargetComponent = ResonanceTargetComponent.new()
+	for kind: StringName in GameplayShell.RESONANCE_ACTIONS.keys():
+		cible.kind = kind
+		var ligne: String = \
+			String(shell.call("_resonance_action_line", true, cible, false))
+		var cle_action: String = String(GameplayShell.RESONANCE_ACTIONS[kind])
+		check_equal(ligne,
+			Textes.t("resonance.viseur.action") % Textes.t(cle_action),
+			"C7bis — la ligne d'action « %s » est la composition traduite" % kind)
+		vus[ligne] = true
+		attendus[cle_action] = Textes.t(cle_action)
+	attendus["resonance.viseur.action"] = \
+		Textes.t("resonance.viseur.action") % Textes.t("resonance.action.port")
+	cible.kind = &"port"
+	var ligne_lier: String = \
+		String(shell.call("_resonance_action_line", true, cible, true))
+	check_equal(ligne_lier,
+		Textes.t("resonance.viseur.action") % Textes.t("resonance.viseur.lier"),
+		"C7bis — un port retenu change le verbe de la ligne d'action")
+	vus[ligne_lier] = true
+	attendus["resonance.viseur.lier"] = Textes.t("resonance.viseur.lier")
+	cible.free()
+	var ligne_retenu: String = \
+		String(shell.call("_resonance_state_line", true, null, true, false))
+	check(not Textes.ressemble_a_une_cle(ligne_retenu),
+		"C7bis — LE trou démontré par la contre-revue : « %s » ne doit "
+		% ligne_retenu + "jamais être la clé nue")
+	check_equal(ligne_retenu, Textes.t("resonance.viseur.port_retenu"),
+		"C7bis — l'état « port retenu » est le français de sa clé")
+	vus[ligne_retenu] = true
+	attendus["resonance.viseur.port_retenu"] = \
+		Textes.t("resonance.viseur.port_retenu")
+	var ligne_vide: String = \
+		String(shell.call("_resonance_state_line", true, null, false, false))
+	check_equal(ligne_vide, Textes.t("resonance.viseur.aucune_cible"),
+		"C7bis — le focus sans cible explique quoi faire, en français")
+	vus[ligne_vide] = true
+	attendus["resonance.viseur.aucune_cible"] = \
+		Textes.t("resonance.viseur.aucune_cible")
+
+	# 7. BILAN DE COUVERTURE — chaque clé pilotée a réellement paru.
+	var manquees: Array[String] = []
+	for cle: String in attendus.keys():
+		var attendu: String = String(attendus[cle])
+		var trouve: bool = false
+		for texte: String in vus.keys():
+			if texte.contains(attendu):
+				trouve = true
+				break
+		if not trouve:
+			manquees.append(cle)
+	manquees.sort()
+	check(manquees.is_empty(),
+		"C7bis — chaque clé pilotée doit paraître en français à l'écran ; "
+		+ "manquent : %s" % [manquees])
+	check(attendus.size() >= 55,
+		"C7bis — bilan : %d clé(s) de la tranche réellement vues à l'écran "
+		% attendus.size() + "(C7 seul n'en atteignait que ~10 sur 76). Un "
+		+ "compte effondré signalerait un test vidé de ses stimuli — le "
+		+ "périmètre restant est déclaré en tête de ce cas")
+
+	_tree().paused = false
+	_tree().root.remove_child(racine)
+	racine.queue_free()
 	await _tree().process_frame
 
 

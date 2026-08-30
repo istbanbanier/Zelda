@@ -82,6 +82,7 @@
   "resonance.refus.endurance": "Not enough stamina",
   "resonance.refus.cible_perdue": "Target lost",
   "resonance.refus.interrompu": "Interrupted",
+  "resonance.message.arc_step": "Arc Step",
   "resonance.message.lien_etabli": "Link established",
   "resonance.message.polarite_engagee": "Polarity engaged",
   "resonance.message.pulse_vide": "Pulse — no target in range",

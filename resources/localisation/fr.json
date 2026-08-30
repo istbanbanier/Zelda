@@ -84,6 +84,7 @@
   "resonance.refus.endurance": "Endurance insuffisante",
   "resonance.refus.cible_perdue": "Cible perdue",
   "resonance.refus.interrompu": "Interrompu",
+  "resonance.message.arc_step": "Arc Step",
   "resonance.message.lien_etabli": "Lien établi",
   "resonance.message.polarite_engagee": "Polarité engagée",
   "resonance.message.pulse_vide": "Impulsion — aucune cible à portée",

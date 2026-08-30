@@ -1546,7 +1546,11 @@ func _on_resonance_verdict(_action: StringName, verdict: StringName,
 			_announce_resonance(
 				Textes.t("resonance.message.polarite_engagee"), false)
 		&"step":
-			_announce_resonance(Textes.t("resonance.action.arc_anchor"), false)
+			# SA clé, distincte de `resonance.action.arc_anchor` : même texte
+			# français aujourd'hui, mais deux contextes d'affichage (ligne
+			# d'action du viseur / verdict d'exécution) doivent pouvoir se
+			# traduire séparément.
+			_announce_resonance(Textes.t("resonance.message.arc_step"), false)
 
 
 ## Le Pulse ne montrait rien du tout hors du laboratoire : au moins dire

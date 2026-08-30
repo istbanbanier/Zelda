@@ -134,7 +134,16 @@ func test_une_cle_absente_de_la_source_est_signalee_et_visible() -> void:
 		"A3 — la résolution nue rend le vide, sans bruit : c'est la brique "
 		+ "qui permet de CONSTATER une absence sans la provoquer")
 
+	# A3 exerce le chemin d'erreur À DESSEIN ; l'étape 2 de validate_fast
+	# traite tout « ERROR: » du journal en échec, et elle a raison — on fait
+	# taire l'IMPRESSION le temps de l'appel, on n'annule pas l'erreur : le
+	# marqueur ⟦…⟧ et le compte absentes_source() restent vérifiés ci-dessous.
+	# Restauration de la valeur SAUVEGARDÉE, jamais `true` en dur : un lanceur
+	# qui aurait coupé l'impression doit la retrouver coupée.
+	var impression: bool = Engine.print_error_messages
+	Engine.print_error_messages = false
 	var rendu: String = Textes.t(fantome)
+	Engine.print_error_messages = impression
 	check(rendu.contains(fantome) and rendu.begins_with("⟦"),
 		"A3 — le joueur voit un texte manifestement cassé : %s" % rendu)
 	check(Textes.absentes_source().has(fantome),
@@ -612,19 +621,27 @@ static func compter_joueur(source: String) -> int:
 
 
 func test_aucun_nouveau_texte_joueur_ecrit_en_dur_dans_le_code() -> void:
+	# NON-VACUITÉ PAR CONTRÔLE NÉGATIF JOUÉ, plus par plancher numérique :
+	# l'ancien `compte.size() >= 10 and total >= 100` rendait ce test ROUGE
+	# sur un dépôt PROPRE en fin de campagne de migration — il punissait son
+	# propre achèvement, le défaut exact corrigé sur A8 le 2026-08-30. Le
+	# détecteur est éprouvé sur pièces par D1-D4 (test_…_detecteur.gd) ; on
+	# rejoue ici ses deux bras sur du synthétique : CE test rougit si le
+	# détecteur se vide, sans jamais exiger que la dette du dépôt reste haute.
+	check_equal(compter_joueur("label.text = \"Tout nouveau texte joueur\""), 1,
+		"A9 — contrôle : un texte joueur cru compte un")
+	check_equal(
+		compter_joueur("label.text = Textes.t(\"menu.pause.commandes\")"), 0,
+		"A9 — contrôle : une clé migrée compte zéro — la migration fait "
+		+ "baisser le compte, le détecteur ne doit pas la punir")
+
 	var compte: Dictionary = {}
-	var total: int = 0
 	for chemin: String in _scripts():
 		if chemin.begins_with("res://scripts/tools/"):
 			continue  # hors build joué — inventorié, pas gardé (comme A8)
 		var n: int = compter_joueur(_lire(chemin))
 		if n > 0:
 			compte[chemin.trim_prefix("res://")] = n
-			total += n
-	check(compte.size() >= 10 and total >= 100,
-		"préalable NON VACUITÉ : le détecteur voit %d littéral(aux) joueur "
-		% total + "dans %d fichier(s) — un compte effondré signalerait un "
-		% compte.size() + "détecteur cassé, pas un dépôt soudain propre")
 
 	check_equal(int(compte.get("scripts/ui/gameplay_shell.gd", 0)), 0,
 		"A9 — la tranche ISS-075 est migrée : gameplay_shell.gd ne porte "
