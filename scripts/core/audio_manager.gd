@@ -48,6 +48,13 @@ var _ambience: AudioStreamPlayer = null
 ## bon choix parce qu'il exprime la non-propriété, pas parce qu'il éviterait une
 ## collision. Corrigé après lecture de `core/object/object.cpp`.
 var _ambience_owner: WeakRef = null
+## ISS-088 — CE QUI joue, déclaré par l'INTENTION du gestionnaire, jamais
+## déduit d'une propriété de ressource : le flux joué est une copie sans
+## chemin (voir `play_ambience`), et une identité lue sur `resource_path`
+## casse dès que la copie joue ; l'égalité d'octets, elle, décrit un CONTENU,
+## pas une demande. Posé par `play_ambience` à côté du propriétaire, VIDÉ par
+## `_release_ambience` : une ambiance rendue n'a plus d'identité.
+var _ambience_id: StringName = &""
 ## Dernier instant de lecture par identifiant. Le tour de rôle du pool est
 ## DESTRUCTIF : sans cette garde, un balayage qui touche trois cibles rejoue
 ## le même son trois fois dans la même frame, et huit pas coupent la mort.
@@ -91,19 +98,63 @@ func play_ambience(sound: StringName, owner: Object) -> void:
 	var stream: AudioStream = _sfx_stream(sound)
 	# Son introuvable : rien ne démarre, donc rien à revendiquer, et le
 	# propriétaire PRÉCÉDENT garde sa prise — c'est voulu, il est le seul à
-	# pouvoir encore rendre ce qui joue. L'appelant, lui, n'apprend rien : c'est
-	# la même discrétion que `play_sfx`, et elle se voit dans les tests.
+	# pouvoir encore rendre ce qui joue. L'appelant, lui, n'apprend rien —
+	# même discrétion que `play_sfx`, et elle se voit dans les tests — mais le
+	# JOURNAL, si : `_sfx_stream` avertit une fois par nom (ISS-088).
 	if stream == null:
 		return
-	# Les WAV générés ne portent pas de boucle : on la pose ici, sur la
-	# ressource chargée. `loop_end` DOIT être renseigné — laissé à 0, le
-	# moteur arrête la lecture immédiatement (audio_stream_wav.cpp:249).
+	# Les WAV générés ne portent pas de boucle : on la pose ici. `loop_end`
+	# DOIT être renseigné — laissé à 0, le moteur arrête la lecture
+	# immédiatement (audio_stream_wav.cpp:249).
+	#
+	# ISS-088 — DEUX FAUTES DANS LE MÊME GESTE, corrigées ensemble.
+	# 1) La borne était `data.size() / 2` — « 16 bits mono : deux octets par
+	#    échantillon ». Or chaque `.wav.import` du projet porte
+	#    `compress/mode=2` : `data` contient des octets QOA COMPRESSÉS, et
+	#    `loop_end` se compte en TRAMES par canal (`set_loop_end(int p_frame)`,
+	#    audio_stream_wav.h:145 ; le bouclage rejoue à `offset >= loop_end`,
+	#    cpp:307). Mesuré : amb_valley décodé fait 176 400 trames, son `data`
+	#    QOA 71 408 octets — l'ambiance livrée REBOUCLAIT à 0,81 s d'un clip
+	#    de 4,0 s. La borne juste vient de la durée DÉCODÉE : `get_length()`
+	#    rend trames/mix_rate pour TOUS les formats, la branche QOA décodant
+	#    l'en-tête au lieu de compter les octets (cpp:489-512). Et la borne
+	#    est INCLUSIVE (troisième défaut, off-by-one mesuré par la
+	#    contre-analyse) : le moteur lit jusqu'à `loop_end` COMPRIS
+	#    (`aux = (limit - offset) / increment + 1`, cpp:344) — bornée au
+	#    COMPTE, la lecture déborderait d'une trame à chaque tour. C'est la
+	#    convention de l'importeur du moteur lui-même, qui pose `frames - 1`
+	#    (sondé : 22049 sur une fixture de 22050 trames, 176399 sur
+	#    amb_valley, 176400 trames).
+	# 2) La mutation frappait l'exemplaire PARTAGÉ du cache (`_sfx_streams` +
+	#    ResourceCache) que `play_sfx` réutilise. On boucle donc une COPIE.
+	#    La copie reste SANS `resource_path` — non par danger : une repose par
+	#    `set_path_cache()` serait inoffensive, car `~Resource()` ne désinscrit
+	#    du ResourceCache que l'entrée qui pointe CE MÊME objet, et la copie
+	#    n'y est pas inscrite (core/io/resource.cpp:790-802 ; mesuré, journal
+	#    rouge_T3_contre_v1 : chemin reposé sans erreur ni dégât de cache) —
+	#    mais parce qu'AUCUN contrat n'en a besoin : l'identité du flux joué
+	#    est l'INTENTION déclarée ici, `_ambience_id`, exposée par
+	#    `ambience_id()`. Contrat : tests/unit/test_ambience_loop_iss088.gd
+	#    (T3 épingle le chemin vide, T4/T5 l'intention posée puis vidée).
 	var wav: AudioStreamWAV = stream as AudioStreamWAV
 	if wav != null and wav.loop_mode == AudioStreamWAV.LOOP_DISABLED:
-		wav.loop_mode = AudioStreamWAV.LOOP_FORWARD
-		wav.loop_begin = 0
-		# 16 bits mono : deux octets par échantillon.
-		wav.loop_end = wav.data.size() / 2
+		# DISPENSE STÉRÉO, assumée : `get_length()` porte déjà la division par
+		# canal pour tous les formats — c'est précisément pourquoi la borne
+		# passe par lui. Toute formule PAR FORMAT écrite ici rendrait une
+		# fixture stéréo obligatoire pour l'épingler ; il n'y en a aucune, et
+		# il n'y a aucune formule.
+		var trames: int = roundi(wav.get_length() * wav.mix_rate)
+		# Un flux vide garderait une borne 0 — le moteur couperait net : on ne
+		# pose alors pas de boucle, le flux joue une fois comme avant
+		# (contrat : cas Y, jamais de borne -1 sur un flux vide).
+		if trames > 0:
+			var copie: AudioStreamWAV = wav.duplicate() as AudioStreamWAV
+			copie.loop_mode = AudioStreamWAV.LOOP_FORWARD
+			copie.loop_begin = 0
+			# La DERNIÈRE TRAME, incluse — pas le compte (borne inclusive,
+			# voir le point 1 ci-dessus).
+			copie.loop_end = trames - 1
+			stream = copie
 	if _ambience == null or not is_instance_valid(_ambience):
 		_ambience = AudioStreamPlayer.new()
 		_ambience.name = "Ambience"
@@ -112,8 +163,10 @@ func play_ambience(sound: StringName, owner: Object) -> void:
 	_ambience.stream = stream
 	_ambience.play()
 	# APRÈS `play()`, et sur la dernière demande reçue : deux ambiances ne se
-	# superposent jamais, donc la dernière voix est la seule propriétaire.
+	# superposent jamais, donc la dernière voix est la seule propriétaire —
+	# et la seule identité.
 	_ambience_owner = weakref(owner) if owner != null else null
+	_ambience_id = sound
 
 
 ## Arrêt GLOBAL, sans condition de propriétaire. Réservé aux appelants qui savent
@@ -160,6 +213,7 @@ func stop_ambience_owned_by(owner: Object) -> bool:
 ## cours de processus. Il est gardé pour cela, pas pour une cause qu'il n'a pas.
 func _release_ambience() -> void:
 	_ambience_owner = null
+	_ambience_id = &""
 	if _ambience == null or not is_instance_valid(_ambience):
 		return
 	_ambience.stop()
@@ -168,6 +222,15 @@ func _release_ambience() -> void:
 
 func is_ambience_playing() -> bool:
 	return _ambience != null and is_instance_valid(_ambience) and _ambience.playing
+
+
+## ISS-088 — l'identité de l'ambiance en cours : le NOM demandé à
+## `play_ambience`, `&""` quand rien n'a été demandé ou que tout est rendu.
+## C'est l'identité que le contrat ISS-086 lit pour dire « la vallée joue » ;
+## un son introuvable ne la touche pas (retour avant la pose), une libération
+## la vide toujours.
+func ambience_id() -> StringName:
+	return _ambience_id
 
 
 ## Les volumes étaient ÉCRITS dans `settings.cfg` et relus uniquement pour
@@ -183,8 +246,11 @@ func _restore_saved_volumes() -> void:
 
 
 ## Joue un son court par nom (`hit_land`, `refuse`, `ui_move`, …).
-## Silencieusement sans effet si le fichier n'existe pas : un son manquant ne
-## doit jamais casser une action de gameplay — il se voit dans les tests.
+## Sans effet si le fichier n'existe pas : un son manquant ne doit jamais
+## casser une action de gameplay — il se voit dans les tests, et depuis
+## ISS-088 il se voit aussi dans le JOURNAL (`_sfx_stream` avertit une fois
+## par nom : dans une build exportée, c'est la seule trace qu'un asset
+## manque au PCK).
 func play_sfx(sound: StringName, bus: String = "SFX") -> void:
 	var now: float = float(Time.get_ticks_msec()) / 1000.0
 	var previous: float = float(_last_played.get(sound, -1.0))
@@ -213,6 +279,15 @@ func _sfx_stream(sound: StringName) -> AudioStream:
 	var stream: AudioStream = null
 	if ResourceLoader.exists(path):
 		stream = load(path) as AudioStream
+	else:
+		# ISS-088 (audit export) — le gameplay reste inoffensif, mais le
+		# JOURNAL apprend : aucun portail d'export ne peut « entendre », et un
+		# asset audio absent du PCK était invisible de tous les balayages. Un
+		# `push_warning`, jamais `push_error` (l'étape 2b de validate_fast
+		# traite tout `ERROR:` comme un échec — même règle que le refus de
+		# propriétaire nul). Le cache négatif ci-dessous borne le bruit : une
+		# seule ligne par nom et par processus.
+		push_warning("[audio] son introuvable : %s" % path)
 	_sfx_streams[sound] = stream
 	return stream
 

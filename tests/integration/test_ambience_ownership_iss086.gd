@@ -89,7 +89,12 @@ func _etat() -> String:
 	if joueur.stream != null:
 		flux = joueur.stream.resource_path
 		if flux.is_empty():
-			flux = "<ressource sans chemin>"
+			# Depuis ISS-088 le flux joué est une copie sans chemin : le
+			# diagnostic donne ses octets ; le VERDICT, lui, passe par
+			# l'intention (`ambience_id()`, voir _ambiance_de_la_vallee_joue).
+			var wav: AudioStreamWAV = joueur.stream as AudioStreamWAV
+			flux = "<copie sans chemin, data=%d o>" % wav.data.size() \
+				if wav != null else "<ressource sans chemin>"
 	return "playing=%s, stream=%s, playback=%s" \
 		% [joueur.playing, flux, joueur.has_stream_playback()]
 
@@ -112,12 +117,29 @@ func _attendre_liberation() -> void:
 		ecoule += _tree().root.get_process_delta_time()
 
 
+## L'IDENTITÉ DU FLUX JOUÉ EST L'INTENTION DU GESTIONNAIRE (ISS-088).
+## La correction d'ISS-088 fait jouer une COPIE (`duplicate()`) pour que
+## l'exemplaire partagé du cache reste vierge — et une copie a un
+## `resource_path` VIDE : toute identité par chemin casse dès qu'elle joue
+## (mesuré, journal sabotage_C : A2/D1.1/E1/F3 annonçaient « ne joue pas »
+## pendant que ça jouait). L'égalité d'octets, essayée ensuite, décrivait un
+## CONTENU, pas une demande — elle reste là où elle teste le mécanisme de
+## copie lui-même (cas T2 du contrat ISS-088). Ici la question est
+## « QUI joue ? », et la réponse appartient au gestionnaire :
+## `ambience_id()` rend le nom demandé à `play_ambience`, vidé à la
+## libération. `playing` et `has_stream_playback()` restent DANS le
+## verdict : une intention déclarée sans lecture réelle ne serait pas une
+## ambiance qui joue — c'est l'ablation que le sabotage D3 (ISS-088 v3)
+## mesure, une StringName fausse posée dans `_ambience_id` fait rougir ce
+## contrat.
 func _ambiance_de_la_vallee_joue() -> bool:
 	var joueur: AudioStreamPlayer = _lecteur()
-	return joueur != null \
-		and joueur.playing \
-		and joueur.stream != null \
-		and joueur.stream.resource_path == AMB
+	if joueur == null or not joueur.playing or not joueur.has_stream_playback():
+		return false
+	var audio: Node = _audio()
+	if audio == null or not audio.has_method("ambience_id"):
+		return false
+	return StringName(audio.call("ambience_id")) == &"amb_valley"
 
 
 ## `playing` est FAUX pendant toute pause de l'arbre — `SceneFlow.go_to()` met
@@ -394,6 +416,16 @@ func test_une_sortie_tardive_ne_coupe_pas_lambiance_suivante() -> void:
 	check(_ambiance_de_la_vallee_joue(),
 		"E4 — la sortie tardive de la vallée n'a PAS coupé l'ambiance de la "
 		+ "scène suivante (%s)" % _etat())
+
+	# E4b — L'AUTRE BRAS D'E2 (ajouté sur consigne, ISS-088, sans changer E2).
+	# `stop_ambience_owned_by` rend faux dans trois cas indistincts : appelant
+	# nul, aucune propriété en cours, mauvais propriétaire. E2 seul ne prouve
+	# donc pas que le refus venait du BON motif. Au même instant, le NOUVEAU
+	# propriétaire doit pouvoir rendre : si la propriété était vide ou le
+	# comparateur cassé, ce geste échouerait aussi.
+	check(bool(audio.call("stop_ambience_owned_by", suivante)),
+		"E4b — au même instant, le NOUVEAU propriétaire peut rendre : le refus "
+		+ "d'E2 venait bien du mauvais propriétaire, pas d'une propriété vide")
 
 	suivante.queue_free()
 	_remettre_le_flux_a_zero()

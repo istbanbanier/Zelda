@@ -1,0 +1,93 @@
+LANCER_GODOT: --headless ajouté (pas de --rendu : aucun affichage disponible).
+LANCER_GODOT: VERROU=/home/istvan/Projects/Zelda/.git/heavy_tools.lock
+LANCER_GODOT: XDG_DATA_HOME=/tmp/lancer_godot_ud_z6ZJfkhb
+LANCER_GODOT: CWD=/home/istvan/Projects/zelda-wt-iss088
+LANCER_GODOT: CMD=/home/istvan/.local/bin/godot --headless --path . --script tools/godot/test_runner.gd -- --filter=iss088,ambience_ownership_iss086,audio_sfx
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+=== TEST RUNNER — Godot 4.7.1-stable (official) ===
+filtre: iss088,ambience_ownership_iss086,audio_sfx
+[boot] Godot            : 4.7.1-stable (official)
+[boot] renderer         : forward_plus
+[boot] physique 3D      : Jolt Physics
+[boot] tick physique    : 60 Hz
+[boot] pilote de rendu  : headless
+[boot] autoloads        : GameState, EventBus, SaveSystem, AudioManager, SceneFlow
+[boot] flux             : BOOT
+[boot] fondation vérifiée — Phase A.
+[boot] transition vers le menu principal.
+[flow] transition vers : res://scenes/ui/MainMenu.tscn
+[flow] transition vers : res://scenes/world/valley/ValleyWorld.tscn
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ÉCHEC test_ambience_ownership_iss086.gd::test_quitter_la_vallee_arrete_et_libere_son_ambiance — A2 — la vallée montée, son ambiance JOUE vraiment (playing=true, stream=<copie sans chemin, data=71408 o>, playback=true)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ÉCHEC test_ambience_ownership_iss086.gd::test_trois_cycles_ne_laissent_aucune_ambiance_derriere — D1.1 — cycle 1 : l'ambiance de la vallée joue et boucle (playing=true, stream=<copie sans chemin, data=71408 o>, playback=true)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ÉCHEC test_ambience_ownership_iss086.gd::test_une_sortie_tardive_ne_coupe_pas_lambiance_suivante — E1 — la vallée tient l'ambiance avant sa sortie (playing=true, stream=<copie sans chemin, data=71408 o>, playback=true)
+WARNING: [audio] play_ambience(amb_valley) sans propriétaire : refusé. Qui démarre une ambiance doit pouvoir la rendre.
+     at: push_warning (core/variant/variant_utility.cpp:1033)
+     GDScript backtrace (most recent call first):
+         [0] play_ambience (res://scripts/core/audio_manager.gd:95)
+         [1] test_une_ambiance_sans_proprietaire_est_refusee (res://tests/integration/test_ambience_ownership_iss086.gd:470)
+         [2] _rendre_le_silence (res://tests/integration/test_ambience_ownership_iss086.gd:230)
+  ÉCHEC test_ambience_ownership_iss086.gd::test_une_ambiance_sans_proprietaire_est_refusee — F3 — la MÊME demande, avec un propriétaire, démarre bien (playing=true, stream=<copie sans chemin, data=71408 o>, playback=true)
+  ok   test_ambience_loop_iss088.gd::test_pcm_la_borne_de_boucle_est_la_derniere_trame (4 assertions)
+  ok   test_ambience_loop_iss088.gd::test_qoa_la_borne_de_boucle_est_la_derniere_trame (4 assertions)
+  ok   test_ambience_loop_iss088.gd::test_meme_duree_decodee_meme_borne_quel_que_soit_le_poids (3 assertions)
+  ok   test_ambience_loop_iss088.gd::test_le_cache_partage_reste_vierge (5 assertions)
+  ÉCHEC test_ambience_loop_iss088.gd::test_lidentite_de_la_copie_survit_sans_chemin — T4 — l'identité par INTENTION est posée : ambience_id() rend le nom demandé (obtenu « iss088_sabotage_identite_fausse »)
+  ok   test_ambience_loop_iss088.gd::test_trois_cycles_sans_fuite_ni_accumulation (11 assertions)
+  ok   test_ambience_loop_iss088.gd::test_transfert_de_propriete (3 assertions)
+WARNING: [audio] play_ambience(iss088_boucle_qoa) sans propriétaire : refusé. Qui démarre une ambiance doit pouvoir la rendre.
+     at: push_warning (core/variant/variant_utility.cpp:1033)
+     GDScript backtrace (most recent call first):
+         [0] play_ambience (res://scripts/core/audio_manager.gd:95)
+         [1] test_une_ambiance_sans_proprietaire_reste_refusee (res://tests/unit/test_ambience_loop_iss088.gd:508)
+         [2] _settle (res://tests/unit/test_ambience_loop_iss088.gd:118)
+  ok   test_ambience_loop_iss088.gd::test_une_ambiance_sans_proprietaire_reste_refusee (3 assertions)
+WARNING: [audio] son introuvable : res://assets/audio/sfx/iss088_inexistant.wav
+     at: push_warning (core/variant/variant_utility.cpp:1033)
+     GDScript backtrace (most recent call first):
+         [0] _sfx_stream (res://scripts/core/audio_manager.gd:290)
+         [1] has_sfx (res://scripts/core/audio_manager.gd:272)
+         [2] test_un_son_manquant_est_trace_et_sans_degat (res://tests/unit/test_ambience_loop_iss088.gd:547)
+         [3] _run_script (res://tools/godot/test_runner.gd:297)
+         [4] _root_delta (res://tools/godot/test_runner.gd:390)
+WARNING: [audio] son introuvable : res://assets/audio/sfx/iss088_inexistant_2.wav
+     at: push_warning (core/variant/variant_utility.cpp:1033)
+     GDScript backtrace (most recent call first):
+         [0] _sfx_stream (res://scripts/core/audio_manager.gd:290)
+         [1] play_ambience (res://scripts/core/audio_manager.gd:98)
+         [2] test_un_son_manquant_est_trace_et_sans_degat (res://tests/unit/test_ambience_loop_iss088.gd:564)
+         [3] _settle (res://tests/unit/test_ambience_loop_iss088.gd:118)
+  ÉCHEC test_ambience_loop_iss088.gd::test_un_son_manquant_est_trace_et_sans_degat — X3b — et n'en vole pas l'identité : ambience_id() rend toujours le son en cours (obtenu « iss088_sabotage_identite_fausse »)
+  ÉCHEC test_ambience_loop_iss088.gd::test_un_flux_vide_ne_recoit_pas_de_boucle — Y4 — propriété et identité posées quand même : un flux vide se rend comme un autre
+  ok   test_audio_sfx.gd::test_every_declared_sound_exists_and_loads (22 assertions)
+WARNING: [audio] son introuvable : res://assets/audio/sfx/inexistant_volontaire.wav
+     at: push_warning (core/variant/variant_utility.cpp:1033)
+     GDScript backtrace (most recent call first):
+         [0] _sfx_stream (res://scripts/core/audio_manager.gd:290)
+         [1] play_sfx (res://scripts/core/audio_manager.gd:260)
+         [2] test_playing_a_sound_is_safe_even_headless (res://tests/unit/test_audio_sfx.gd:52)
+         [3] _run_script (res://tools/godot/test_runner.gd:297)
+         [4] _root_delta (res://tools/godot/test_runner.gd:390)
+  ok   test_audio_sfx.gd::test_playing_a_sound_is_safe_even_headless (1 assertions)
+  ok   test_audio_sfx.gd::test_the_wired_actions_reference_known_sounds (23 assertions)
+erreurs de script dans le journal : 0
+
+=== RÉSULTAT: 10 réussi(s), 7 échoué(s) ===
+  ÉCHEC: test_ambience_ownership_iss086.gd::test_quitter_la_vallee_arrete_et_libere_son_ambiance — A2 — la vallée montée, son ambiance JOUE vraiment (playing=true, stream=<copie sans chemin, data=71408 o>, playback=true)
+  ÉCHEC: test_ambience_ownership_iss086.gd::test_trois_cycles_ne_laissent_aucune_ambiance_derriere — D1.1 — cycle 1 : l'ambiance de la vallée joue et boucle (playing=true, stream=<copie sans chemin, data=71408 o>, playback=true)
+  ÉCHEC: test_ambience_ownership_iss086.gd::test_une_sortie_tardive_ne_coupe_pas_lambiance_suivante — E1 — la vallée tient l'ambiance avant sa sortie (playing=true, stream=<copie sans chemin, data=71408 o>, playback=true)
+  ÉCHEC: test_ambience_ownership_iss086.gd::test_une_ambiance_sans_proprietaire_est_refusee — F3 — la MÊME demande, avec un propriétaire, démarre bien (playing=true, stream=<copie sans chemin, data=71408 o>, playback=true)
+  ÉCHEC: test_ambience_loop_iss088.gd::test_lidentite_de_la_copie_survit_sans_chemin — T4 — l'identité par INTENTION est posée : ambience_id() rend le nom demandé (obtenu « iss088_sabotage_identite_fausse »)
+  ÉCHEC: test_ambience_loop_iss088.gd::test_un_son_manquant_est_trace_et_sans_degat — X3b — et n'en vole pas l'identité : ambience_id() rend toujours le son en cours (obtenu « iss088_sabotage_identite_fausse »)
+  ÉCHEC: test_ambience_loop_iss088.gd::test_un_flux_vide_ne_recoit_pas_de_boucle — Y4 — propriété et identité posées quand même : un flux vide se rend comme un autre
+WARNING: 42 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 21 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)
+LANCER_GODOT: RC_GODOT=1
