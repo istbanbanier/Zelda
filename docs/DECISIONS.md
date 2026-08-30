@@ -1979,3 +1979,73 @@ décret : l'étape 2b juge en mode AGRÉGAT, sur une suite lancée SANS `--verbo
 et compare au chiffre près. Si ce régime rendait 139 ou 141, le portail
 rougirait sur un contrat pourtant juste. C'est la situation que D-059 a nommée,
 et la seule à ne pas « corriger » au jugé.
+
+## D-064 — la boucle d'ambiance se pose sur une COPIE, et sa borne se compte en trames (2026-08-30)
+
+**Contexte.** ISS-088. `play_ambience` posait `loop_end = data.size() / 2` sur
+l'exemplaire que rend `load()`. Deux défauts dans la même ligne : une unité
+fausse, et une mutation d'un objet partagé.
+
+**Décision.** `loop_end_frame()` calcule la borne par
+`get_length() * mix_rate - 1`, et `_ambience_bouclee()` la pose sur une copie
+mémorisée, une par son, dans un dictionnaire séparé de `_sfx_streams`.
+
+**Pourquoi `get_length()` et pas une arithmétique sur `data`.** Parce qu'il n'en
+existe aucune qui soit juste pour les quatre formats. `AudioStreamWAV::get_length`
+porte exactement le même `switch` sur `format` et la même division par `stereo`
+que le `len` de `_mix_internal`, terminé par `/ mix_rate` : passer par lui, c'est
+employer la conversion que le moteur emploiera lui-même. Sur du QOA, le compte
+vit dans l'en-tête et n'a **aucun** rapport avec `data.size()`.
+
+**Pourquoi le `- 1`.** `_mix_internal` calcule `aux = (limit - offset) / increment + 1`,
+qui INCLUT l'indice `limit` : poser le NOMBRE de trames ferait lire
+`decode_samples` une trame au-delà du tampon, et `set_loop_end` n'a ni clamp ni
+validation. C'est aussi la borne que le moteur produit lui-même —
+`edit/loop_end = -1` devient `CLAMP(loop_end + frames, 0, frames - 1)`.
+
+**Pourquoi `set_path_cache()` et surtout pas `set_path()`.** `Resource::_duplicate`
+ne recopie pas `resource_path`, qui porte `PROPERTY_USAGE_EDITOR` seul : la copie
+naît anonyme. Or le contrat ISS-086 identifie l'ambiance par
+`joueur.stream.resource_path` — une copie anonyme l'aurait rendu rouge.
+`set_path_cache` est la seule affectation `path_cache = p_path`, sans toucher
+`ResourceCache::resources`, et c'est **l'idiome du moteur lui-même** : la branche
+`CACHE_MODE_IGNORE` de `ResourceLoader::_load_start` fait exactement cela.
+`set_path()`, lui, aurait posé `ERR_FAIL_MSG("Another resource is loaded from
+path …")` — une ligne `ERROR:` que l'étape 2b de `validate_fast` compte comme un
+échec — **et** laissé la copie anonyme, puisque `path_cache` est vidé avant
+l'échec.
+
+**Alternative rejetée : poser `edit/loop_mode` et `edit/loop_end` dans le
+`.import`.** Elle est plus simple et elle est fausse : elle pose la boucle sur
+l'exemplaire **partagé** du cache, c'est-à-dire exactement la contamination que
+cette correction supprime. Elle aurait rendu le symptôme invisible en conservant
+la cause.
+
+**Alternative rejetée : dupliquer à chaque appel.** `AudioStreamWAV::data` est un
+`TightLocalVector`, pas un `Vector` à copie sur écriture ; `operator=` fait
+`resize()` puis copie élément par élément, et `get_data()` rend lui aussi une
+copie. Une duplication touche ~143 ko pour 71 ko résidents, et la suite instancie
+`ValleyWorld` des dizaines de fois. La mémorisation remplace ce va-et-vient par
+71 ko résidents, une fois.
+
+**Cache d'INSTANCE, jamais `static var`.** Un cache statique survivrait à l'arbre
+et devrait s'inscrire à `StaticResourceCaches` ;
+`tests/unit/test_invariants.gd::test_tout_cache_statique_de_ressources_est_liberable`
+le prendrait. `_ambience_streams` meurt avec l'autoload, comme `_sfx_streams`.
+
+**Ce que la contre-revue a corrigé dans cette décision.** Une première rédaction
+affirmait qu'une copie survivante serait classée « ressource du PROJET » par
+`tools/gate_fuite_ressources.py`. **C'est faux** : `ResourceCache::clear()`
+n'énumère que `ResourceCache::resources`, où la copie n'entre jamais — elle
+n'apparaîtrait donc PAS dans `Resource still in use:`. Elle est prise par l'autre
+détecteur, `ObjectDB::cleanup()`, qui imprime `Leaked instance: AudioStreamWAV`,
+et le portail rougit par la condition « classe non attribuée au moteur ». La
+conclusion tenait, le mécanisme était faux ; il est corrigé ici et dans le
+commentaire de `_ambience_bouclee`.
+
+**Danger latent consigné.** `Resource::is_built_in()` rend faux dès que
+`path_cache` est un `res://…` sans `::`. Si l'arbre d'ambiance était un jour
+empaqueté ou sauvegardé, la copie serait écrite en `ExtResource` et le
+rechargement rendrait l'exemplaire partagé sans boucle : les deux défauts
+d'ISS-088 reviendraient ensemble, en silence. Non atteignable aujourd'hui — les
+seuls `ResourceSaver.save` du dépôt sont des outils de cuisson hors-ligne.
