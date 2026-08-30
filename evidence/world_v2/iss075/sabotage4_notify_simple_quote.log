@@ -1,0 +1,57 @@
+LANCER_GODOT: --headless ajouté (pas de --rendu : aucun affichage disponible).
+LANCER_GODOT: VERROU=/home/istvan/Projects/Zelda/.git/heavy_tools.lock
+LANCER_GODOT: XDG_DATA_HOME=/tmp/lancer_godot_ud_62dBa36Z
+LANCER_GODOT: CWD=/home/istvan/Projects/zelda-wt-iss075
+LANCER_GODOT: CMD=/home/istvan/.local/bin/godot --headless --path . --script tools/godot/test_runner.gd -- --filter=localisation_iss075
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+=== TEST RUNNER — Godot 4.7.1-stable (official) ===
+filtre: localisation_iss075
+  ok   test_localisation_iss075.gd::test_la_forme_d_une_cle_ne_peut_pas_attraper_un_texte_joueur (96 assertions)
+  ok   test_localisation_iss075.gd::test_chaque_cle_de_la_source_rend_un_texte (86 assertions)
+ERROR: [textes] clé absente de la langue source « fr » : cle.qui.n.existe.pas.du.tout
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_une_cle_absente_de_la_source_est_signalee_et_visible (res://tests/integration/test_localisation_iss075.gd:137)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _root_delta (res://tools/godot/test_runner.gd:390)
+  ok   test_localisation_iss075.gd::test_une_cle_absente_de_la_source_est_signalee_et_visible (4 assertions)
+  ok   test_localisation_iss075.gd::test_la_locale_temoin_change_le_texte_rendu (6 assertions)
+  ok   test_localisation_iss075.gd::test_une_traduction_manquante_retombe_sur_le_francais_sans_echouer (5 assertions)
+  ok   test_localisation_iss075.gd::test_les_textes_du_camp_sont_des_cles_qui_resolvent (6 assertions)
+  ok   test_localisation_iss075.gd::test_le_hud_traduit_une_cle_et_laisse_passer_un_texte_brut (3 assertions)
+  ÉCHEC test_localisation_iss075.gd::test_aucune_nouvelle_porte_notify_ne_porte_de_texte_ecrit_en_dur — A8 — « scripts/ui/gameplay_shell.gd » porte 1 texte(s) joueur écrit(s) en dur pour un plafond de 0. Un texte joueur neuf passe par une CLÉ : ajoutez-la dans resources/localisation/fr.json et appelez Textes.t(). Si le plafond doit vraiment monter, c'est une décision de revue, pas une modification de test
+  ÉCHEC test_localisation_iss075.gd::test_aucun_nouveau_texte_joueur_ecrit_en_dur_dans_le_code — A9 — la tranche ISS-075 est migrée : gameplay_shell.gd ne porte plus AUCUN texte joueur écrit en dur ; un texte neuf passe par une clé de resources/localisation/fr.json : attendu 0, obtenu 1
+  ÉCHEC test_localisation_iss075.gd::test_aucun_nouveau_texte_joueur_ecrit_en_dur_dans_le_code — A9 — « scripts/ui/gameplay_shell.gd » porte 1 texte(s) joueur écrit(s) en dur pour un plafond mesuré de 0. Un texte joueur neuf passe par une CLÉ (resources/localisation/fr.json + Textes.t()). Monter un plafond est une décision de revue, pas une retouche de test
+  ok   test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique (78 assertions)
+  ok   test_localisation_iss075_gameplay_shell.gd::test_la_locale_temoin_couvre_toute_la_tranche (3 assertions)
+ERROR: [textes] clé absente de la langue source « fr » : hud.tranche.fantome.inexistante
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_une_cle_de_tranche_absente_reste_bruyante (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:196)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _root_delta (res://tools/godot/test_runner.gd:390)
+  ok   test_localisation_iss075_gameplay_shell.gd::test_une_cle_de_tranche_absente_reste_bruyante (3 assertions)
+  ok   test_localisation_iss075_gameplay_shell.gd::test_les_parametres_de_format_sont_identiques_dans_les_deux_langues (19 assertions)
+  ok   test_localisation_iss075_gameplay_shell.gd::test_le_pluriel_du_pulse_est_porte_par_les_cles (6 assertions)
+  ok   test_localisation_iss075_gameplay_shell.gd::test_l_unicode_traverse_la_table_intact (6 assertions)
+  ok   test_localisation_iss075_gameplay_shell.gd::test_aucune_cle_brute_ne_parait_a_l_ecran (39 assertions)
+  ok   test_localisation_iss075_gameplay_shell.gd::test_le_changement_de_langue_a_chaud_change_l_ecran (8 assertions)
+  ok   test_localisation_iss075_gameplay_shell.gd::test_les_tables_de_localisation_partent_dans_l_export (5 assertions)
+  ok   test_localisation_iss075_gameplay_shell.gd::test_la_localisation_ne_touche_pas_aux_cles_de_sauvegarde (6 assertions)
+  ok   test_localisation_iss075_gameplay_shell.gd::test_les_replis_affichent_le_jeton_brut_jamais_un_marqueur (75 assertions)
+  ok   test_localisation_iss075_detecteur.gd::test_les_formes_qui_echappaient_au_compteur_sont_comptees (10 assertions)
+  ok   test_localisation_iss075_detecteur.gd::test_une_table_ne_contourne_pas_le_detecteur (5 assertions)
+  ok   test_localisation_iss075_detecteur.gd::test_le_texte_developpeur_et_technique_ne_compte_pas (11 assertions)
+  ok   test_localisation_iss075_detecteur.gd::test_le_lexer_ne_se_laisse_pas_pieger (5 assertions)
+  ÉCHEC test_localisation_iss075_detecteur.gd::test_le_detecteur_lit_le_vrai_gameplay_shell — D5 — la tranche est migrée : zéro texte joueur écrit en dur dans gameplay_shell.gd (inventaire du 2026-08-30 : il en portait 76) : attendu 0, obtenu 1
+erreurs de script dans le journal : 0
+
+=== RÉSULTAT: 22 réussi(s), 4 échoué(s) ===
+  ÉCHEC: test_localisation_iss075.gd::test_aucune_nouvelle_porte_notify_ne_porte_de_texte_ecrit_en_dur — A8 — « scripts/ui/gameplay_shell.gd » porte 1 texte(s) joueur écrit(s) en dur pour un plafond de 0. Un texte joueur neuf passe par une CLÉ : ajoutez-la dans resources/localisation/fr.json et appelez Textes.t(). Si le plafond doit vraiment monter, c'est une décision de revue, pas une modification de test
+  ÉCHEC: test_localisation_iss075.gd::test_aucun_nouveau_texte_joueur_ecrit_en_dur_dans_le_code — A9 — la tranche ISS-075 est migrée : gameplay_shell.gd ne porte plus AUCUN texte joueur écrit en dur ; un texte neuf passe par une clé de resources/localisation/fr.json : attendu 0, obtenu 1
+  ÉCHEC: test_localisation_iss075.gd::test_aucun_nouveau_texte_joueur_ecrit_en_dur_dans_le_code — A9 — « scripts/ui/gameplay_shell.gd » porte 1 texte(s) joueur écrit(s) en dur pour un plafond mesuré de 0. Un texte joueur neuf passe par une CLÉ (resources/localisation/fr.json + Textes.t()). Monter un plafond est une décision de revue, pas une retouche de test
+  ÉCHEC: test_localisation_iss075_detecteur.gd::test_le_detecteur_lit_le_vrai_gameplay_shell — D5 — la tranche est migrée : zéro texte joueur écrit en dur dans gameplay_shell.gd (inventaire du 2026-08-30 : il en portait 76) : attendu 0, obtenu 1
+LANCER_GODOT: RC_GODOT=1

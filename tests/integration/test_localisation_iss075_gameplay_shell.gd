@@ -17,7 +17,8 @@
 ##   C7  aucune clé brute ne paraît à l'écran ;
 ##   C8  le changement de langue à chaud change réellement l'écran ;
 ##   C9  les tables de localisation partent dans l'export ;
-##   C10 la localisation ne touche à aucune clé de sauvegarde.
+##   C10 la localisation ne touche à aucune clé de sauvegarde ;
+##   C13 les replis affichent le jeton brut, jamais un ⟦…⟧ accidentel.
 ## (C11 et C12 — détection d'un texte neuf, non-contournement par table —
 ## vivent dans tests/unit/test_localisation_iss075_detecteur.gd.)
 extends GateTestCase
@@ -416,3 +417,59 @@ func test_la_localisation_ne_touche_pas_aux_cles_de_sauvegarde() -> void:
 		"C10 — le plat ajouté à l'inventaire est le résultat brut")
 	check(not shell_src.contains("add_meal(Textes"),
 		"C10 — jamais un texte traduit dans la donnée d'inventaire")
+
+
+# --------------------------------------------------------------------------
+# C13 — les replis affichent le jeton technique BRUT, jamais un marqueur
+# --------------------------------------------------------------------------
+## Cinq chemins affichaient déjà un jeton technique quand la table de bord ne
+## connaît pas l'entrée (buff, phase de boss, action du viseur, verdict,
+## effet de cuisine). DÉCISION EXPLICITE de la tranche : ce repli RESTE le
+## jeton brut — « mieux vaut un mot brut qu'un silence », commentaire
+## historique de RESONANCE_REFUSALS — et il ne passe JAMAIS par `Textes.t()`,
+## donc jamais de ⟦…⟧ accidentel. Le ⟦…⟧ est réservé à une clé DÉCLARÉE dans
+## une table de bord mais absente de fr.json ; ce cas-là est fermé par le
+## second bras : chaque valeur des quatre tables est une clé qui RÉSOUT.
+func test_les_replis_affichent_le_jeton_brut_jamais_un_marqueur() -> void:
+	check(Textes.definir_locale(Textes.LOCALE_SOURCE), "langue source active")
+	# Bras 1 — les quatre tables sont entièrement raccordées à la source :
+	# aucune entrée CONNUE ne peut produire un ⟦…⟧ à l'écran.
+	var tables: Array[Dictionary] = [
+		GameplayShell.BUFF_LABELS, GameplayShell.BOSS_PHASE_LABELS,
+		GameplayShell.RESONANCE_ACTIONS, GameplayShell.RESONANCE_REFUSALS,
+	]
+	var valeurs: int = 0
+	for table: Dictionary in tables:
+		for jeton: Variant in table.keys():
+			var cle: String = String(table[jeton])
+			valeurs += 1
+			check(Textes.ressemble_a_une_cle(cle),
+				"C13 — la valeur de table « %s » est une clé" % cle)
+			check(Textes.brut(cle, Textes.LOCALE_SOURCE) != "",
+				"C13 — et la clé « %s » résout dans fr.json — sinon le HUD "
+				% cle + "montrerait ⟦%s⟧" % cle)
+	check_equal(valeurs, 35,
+		"préalable NON VACUITÉ : les quatre tables portent bien 35 entrées")
+
+	# Bras 2 — un jeton INCONNU traverse brut : ni marqueur, ni forme de clé.
+	var shell: CanvasLayer = (load(SHELL) as PackedScene).instantiate() as CanvasLayer
+	_tree().root.add_child(shell)
+	await _tree().process_frame
+	shell.call("_on_resonance_verdict", &"pulse", &"verdict_tout_neuf", false)
+	shell.call("_refresh_resonance_hud", 0.0)
+	check_equal(String(shell.call("resonance_state_text")), "verdict_tout_neuf",
+		"C13 — un verdict inconnu s'affiche tel quel, jamais ⟦…⟧")
+	shell.call("_on_resonance_ground_cancelled", &"raison_neuve")
+	shell.call("_refresh_resonance_hud", 0.0)
+	check_equal(String(shell.call("resonance_state_text")),
+		"Mise à la terre annulée — raison_neuve",
+		"C13 — l'annulation de mise à la terre garde le format traduit et "
+		+ "le jeton brut")
+	check_equal(String(shell.call("_effect_display_name", "poison")), "poison",
+		"C13 — un effet de cuisine inconnu retombe sur son identifiant")
+	# (Les replis du buff et de la phase de boss suivent le MÊME motif
+	# `Textes.t(TABLE[x]) if TABLE.has(x) else String(x)` ; ils exigent un
+	# joueur ou un boss vivant et restent couverts par le bras 1.)
+	_tree().root.remove_child(shell)
+	shell.queue_free()
+	await _tree().process_frame

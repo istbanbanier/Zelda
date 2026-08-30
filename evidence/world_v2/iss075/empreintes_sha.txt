@@ -1,0 +1,7 @@
+Empreintes ISS-075 — 2026-08-30T20:41:56+02:00
+HEAD au moment des mesures FINALES : 72ecd7cccd3f6d643b5d77f3e4d70faeff975cba  (72ecd7cc = tranche 1 committée par le lead)
+rouge_avant.log mesuré sur : base 8c6955c6 + scanner/tests NON committés (contenu = celui entré dans 72ecd7cc), gameplay_shell/fr/en encore à l'état 8c6955c6 ; ligne « filtre: localisation_iss075 » présente.
+Fichiers NON committés par-dessus 72ecd7cc (sha256) :
+ba727ac5d1d66ed75ba31bce198d0f438deacb48e297ff2b0f52e805c6e3a9c6  tests/integration/test_localisation_iss075.gd
+5d8387160bfe9ea55d26b6665e89861daea4019035a980bdbb6ae01cc3ccd91b  tests/integration/test_localisation_iss075_gameplay_shell.gd
+9dd824b8e7cef661df66f32d8da3c4b128d55e44b4ee4c75e199bbef02fa6706  tools/inventaire_textes_joueur.py

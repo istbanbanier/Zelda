@@ -260,38 +260,58 @@ func test_le_hud_traduit_une_cle_et_laisse_passer_un_texte_brut() -> void:
 # --------------------------------------------------------------------------
 # A8 — la loi : aucune porte `notify` ne gagne de texte joueur cru
 # --------------------------------------------------------------------------
+## REFONTE 2026-08-30 (contre-mesure de revue). L'ancien comptage lisait la
+## ligne à la main et laissait passer DEUX contournements : un littéral entre
+## apostrophes SIMPLES (`call("notify", 'Texte')` — il exigeait un guillemet
+## double), et un littéral portant un \" échappé (contenu tronqué au premier
+## guillemet). Le comptage passe désormais par le lexer d'A9, qui ferme les
+## deux. Mesuré avant refonte : les comptes restent EXACTEMENT égaux aux
+## plafonds — aucun contournement n'était en service. L'appel réparti sur
+## deux lignes reste un angle mort DÉCLARÉ (docs/LOCALISATION.md) : le
+## littéral porte alors une ligne d'ouverture sans « notify », et c'est A9
+## qui l'attrape par son contenu.
+static func compter_notify(source: String) -> int:
+	var n: int = 0
+	for lit: Dictionary in extraire_litteraux(source):
+		var texte: String = String(lit["texte"])
+		if texte == "notify":
+			continue
+		var ctx: String = String(lit["contexte"])
+		if not (ctx.contains("\"notify\"") or ctx.contains("'notify'")):
+			continue
+		# `call("notify", "…")` — le littéral SUIT une virgule.
+		if String(lit["precede"]) != ",":
+			continue
+		# UNE CLÉ N'EST PAS DU TEXTE. Sans cette distinction, migrer un site
+		# le laisserait compté et la loi punirait le travail qu'elle demande
+		# — trouvé par le passage vert partiel, pas par relecture.
+		if Textes.ressemble_a_une_cle(texte):
+			continue
+		n += 1
+	return n
+
+
 func test_aucune_nouvelle_porte_notify_ne_porte_de_texte_ecrit_en_dur() -> void:
+	# NON-VACUITÉ PAR CONTRÔLE NÉGATIF JOUÉ, plus par compte non nul :
+	# l'ancienne assertion `compte.size() > 0` rendait la loi ROUGE le jour
+	# où la dette tomberait à zéro — elle punissait son propre achèvement.
+	check_equal(compter_notify("bus.call(\"notify\", \"Un texte tout neuf.\")"),
+		1, "A8 — contrôle : un littéral cru sur la porte compte un")
+	check_equal(compter_notify("bus.call(\"notify\", 'Entre apostrophes.')"),
+		1, "A8 — contrôle : les apostrophes simples ne contournent plus")
+	check_equal(
+		compter_notify("bus.call(\"notify\", \"a dit \\\"stop\\\" — fin.\")"),
+		1, "A8 — contrôle : un guillemet échappé ne tronque plus le littéral")
+	check_equal(compter_notify("bus.call(\"notify\", \"cle.deja.migree\")"),
+		0, "A8 — contrôle : une clé migrée ne compte pas")
+	check_equal(compter_notify("bus.call(\"notify\", message)"),
+		0, "A8 — contrôle : le littéral porté par variable relève d'A9")
+
 	var compte: Dictionary = {}
 	for chemin: String in _scripts():
-		var n: int = 0
-		for ligne: String in _lire(chemin).split("\n"):
-			var nu: String = ligne.strip_edges()
-			if nu.begins_with("#"):
-				continue
-			var i: int = nu.find("\"notify\"")
-			while i >= 0:
-				var reste: String = nu.substr(i + 8).strip_edges()
-				# `call("notify", "…` — un littéral SUIT la virgule.
-				if reste.begins_with(","):
-					var apres: String = reste.substr(1).strip_edges()
-					if apres.begins_with("\""):
-						# UNE CLÉ N'EST PAS DU TEXTE. Sans cette distinction,
-						# migrer un site le laisserait compté et la loi
-						# punirait le travail qu'elle demande — trouvé par le
-						# passage vert partiel, pas par relecture.
-						var fin: int = apres.find("\"", 1)
-						var contenu: String = apres.substr(1, fin - 1) \
-							if fin > 0 else ""
-						if not Textes.ressemble_a_une_cle(contenu):
-							n += 1
-				i = nu.find("\"notify\"", i + 1)
+		var n: int = compter_notify(_lire(chemin))
 		if n > 0:
 			compte[chemin.trim_prefix("res://")] = n
-
-	check(compte.size() > 0,
-		"préalable NON VACUITÉ : la loi scanne bien quelque chose — %d "
-		% compte.size() + "fichier(s) trouvé(s). Zéro signalerait un scanner "
-		+ "cassé, pas un dépôt propre")
 
 	for fichier: String in compte.keys():
 		var plafond: int = int(PLAFOND_NOTIFY.get(fichier, 0))
