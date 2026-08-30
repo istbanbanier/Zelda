@@ -1,0 +1,16 @@
+id,family,title,url,declared_formats,license_gate,rank,action,blocking_risk
+EXIST-Q,nature_architecture,Quaternius packs already in repository,https://quaternius.com/,GLTF_FBX_BLEND,CC0,A,REUSE_AND_HARMONIZE,low_poly_visible_in_foreground
+EXIST-K,architecture_vfx_audio,Kenney library already in quarantine,https://kenney.nl/assets,GLB_PNG_OGG,CC0,A,PROMOTE_MINIMUM_ONLY,style_too_simple_for_hero_shots
+EXIST-A,materials,ambientCG surfaces already in repository,https://docs.ambientcg.com/license/,PBR_TEXTURES,CC0,A,REUSE_AS_MATERIAL_BASE,raw_photorealism_requires_stylization
+FAB-BIRCH,nature,Birch Forest Game Ready with LODs,https://www.fab.com/listings/a32f991b-b646-4913-8b80-c679366eed3c,BLEND_FBX_GLB_GODOT,Fab_license_to_verify,A,LAB_A_B_C_BEFORE_PURCHASE,price_and_style_unverified_in_godot
+FAB-PINE,nature,Hand Painted Pine Forest Colourly,https://www.fab.com/listings/32471da9-aecc-444b-8c3f-60f8e85ef0af,BLEND_FBX_GLB,Fab_license_to_verify,A,PRIMARY_NATURE_CANDIDATE,price_lod_collision_need_verification
+FAB-RUINS,ruins,Ancient Ruins Free Asset Pack,https://www.fab.com/listings/c6bd4209-8420-499f-99b7-f47b8492b2d1,UE_BLENDER_FBX_GLB,Fab_license_to_verify,A,DOWNLOAD_TO_QUARANTINE_ONLY,unreal_materials_not_portable
+FAB-WATER,water_foliage,Stylized Water Plants and Flowers VOL-7,https://www.fab.com/listings/6cc2d6dd-2992-49ea-9235-60a81f5314ad,FBX_GLTF_GLB_USDZ,Fab_license_to_verify,B,ONLY_IF_EXISTING_FOLIAGE_FAILS,possible_style_mismatch
+FAB-CONIFER,nature,Sylora Conifer Trees VOL-8,https://www.fab.com/listings/a90c38a1-0d05-42d1-8b81-0ad906479f37,FBX_OBJ,Fab_license_to_verify,B,ONLY_IF_FAB_PINE_FAILS,duplicate_need
+FAB-ENEMY,enemies,Stylized Dark Fantasy Enemy Pack,https://www.fab.com/listings/e6b93f17-075c-4670-b44f-24449987816f,BLEND_FBX_GLB,Fab_license_to_verify,B,FREE_SAMPLE_LAB_ONLY,fiction_and_style_mismatch
+FAB-FPARMS,first_person,Animated Medieval First Person Arms,https://www.fab.com/listings/02377bda-f350-49ce-84a2-16c6be93616a,UNREAL_ONLY,Fab_license_to_verify,C,REFERENCE_ONLY_UNTIL_FBX_CONFIRMED,no_neutral_source_format
+FAB-FPLONGSWORD,first_person,First Person Longsword Animation Set,https://www.fab.com/listings/43a6c6c3-6e5f-4e53-a3f4-71faf08b0d6f,UNREAL_ONLY,Fab_license_to_verify,C,REFERENCE_ONLY,no_neutral_source_format
+FAB-DUNGEON,dungeon,Stylized Dungeon Modular Environment,https://www.fab.com/listings/af82f794-f050-487d-9350-150a76cfdae3,UNREAL_ONLY,Fab_license_to_verify,C,REJECT_CURRENTLY,unreal_specific_materials
+FAB-ENV,nature,Stylized Environment Pack,https://www.fab.com/listings/422ae4e1-9441-47b1-8f61-545f764ee502,UNREAL_ONLY,Fab_license_to_verify,C,REJECT,missing_showcase_assets_and_low_rating
+MIXAMO,animation,Adobe Mixamo,https://helpx.adobe.com/creative-cloud/faq/mixamo-faq.html,FBX,Adobe_terms,A,USE_FOR_BIPED_GENERAL_MOTION_ONLY,not_first_person_specific
+POLYHAVEN,materials_hdri,Poly Haven,https://polyhaven.com/license,GLTF_TEXTURES_HDRI,CC0,A,USE_SELECTIVELY,photorealism_requires_stylization
