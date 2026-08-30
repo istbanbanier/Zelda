@@ -2730,6 +2730,39 @@ de session :
   neutre, mais aucun document de continuité ne pointe vers cette branche et
   `actif` vaut `true` par défaut.
 
-**Prochaine action exacte** : lire le verdict des deux portails d'export rejoués
-sur `28015db2`, puis lancer la contre-revue à contexte frais avec Fable 5. Rien
-d'autre n'est en vol.
+### La contre-revue à contexte frais a rendu PARTIAL, et a eu raison cinq fois
+
+Elle a rejoué le contrat et le contrôle apparié ELLE-MÊME, et vérifié le point
+que je n'avais pas su prouver seul : `tests/integration/test_phase_e_chain.gd`
+ne contient aucun `stop_ambience`, aucun accès à `AudioManager`, et démonte la
+vallée par `queue_free()` sans nettoyage. Le portail est donc vert parce que la
+fuite est fermée, pas parce que la suite efface sa propre trace.
+
+Puis elle a trouvé cinq choses :
+
+1. **« Propriétaire obligatoire » n'était vrai que dans la signature.** Le seul
+   appelant de production passe par `Object.call()`, où le typage ne protège
+   rien. D-062 déclarait la règle, le code la tolérait. `play_ambience` refuse
+   désormais un appel sans propriétaire ; le cas F du contrat rougissait avant.
+2. **Le journal de la course qui fait foi n'était pas archivé** : les chiffres
+   que je citais venaient du journal de la course diagnostic. Ils étaient justes
+   — la n°2 les porte à l'identique — mais je ne les avais pas sourcés. Archivé.
+3. **D-063 citait 4 317 s**, la durée de la course n°1. La n°2 dit 4 318 s.
+4. **Le README revendiquait un bloc de provenance sur « tous » les journaux.**
+   Faux pour ceux du portail de composition, qui n'en émet aucun.
+5. **Deux citations périmées `E5`** au lieu de `E4`.
+
+### État final, mesuré sur l'arbre livré `da0b3e83`
+
+`VALIDATE_FAST : VERT` — gel 46/46, 472 scripts, suite **1046/0**, contrôles
+négatifs 12/12, résidu agrégé **140 contre un contrat de 140**,
+`PROJECT_RESOURCE_LEAK_GATE` vert. Les deux portails d'export verts sur le même
+SHA, enchaînés sans aucun commit entre eux. Le commit de preuve qui suit ne
+change rien au PCK : `evidence/` est exclu de l'export.
+
+**Prochaine action exacte** : rien n'est en vol. Trois décisions appartiennent au
+propriétaire — (1) ISS-087, donner un fond sonore au monde réellement joué, ce
+qui refermerait aussi ISS-088 ; (2) la variante visuelle du camp, à voir sur un
+écran avant de décider de la fusionner ; (3) la tranche ISS-075 suivante, dont
+le plan est prêt et dont le compteur de littéraux doit être corrigé d'abord —
+il annonce 39 là où il y en a ~62.
