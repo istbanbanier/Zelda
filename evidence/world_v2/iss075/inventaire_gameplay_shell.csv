@@ -1,0 +1,77 @@
+fichier;ligne;texte;contexte;classification;cle-proposee
+scripts/ui/gameplay_shell.gd;279;INVENTAIRE;_apply_v4_style;joueur;inventaire.titre
+scripts/ui/gameplay_shell.gd;307;Conductivité;_apply_v4_style;joueur;inventaire.conductivite
+scripts/ui/gameplay_shell.gd;326;Tab / Échap — Fermer;_apply_v4_style;joueur;inventaire.fermer
+scripts/ui/gameplay_shell.gd;530;Commandes;_build_controls_button;joueur;menu.pause.commandes
+scripts/ui/gameplay_shell.gd;698;Dégâts  %.0f\nPortée  %.1f m\nDurabilité  %d / %d;_refresh_detail;joueur;inventaire.detail.stats
+scripts/ui/gameplay_shell.gd;751;Flèches : %d;_on_arrows_changed;joueur;hud.fleches
+scripts/ui/gameplay_shell.gd;762;Plats : %d  (F);_on_meals_changed;joueur;hud.plats
+scripts/ui/gameplay_shell.gd;777;Mains nues;_refresh_weapon_text;joueur;hud.arme.mains_nues
+scripts/ui/gameplay_shell.gd;796;E — %s;_on_interact_focus_changed;joueur;hud.invite.format
+scripts/ui/gameplay_shell.gd;1004;%.4f rad/px;_refresh_sensitivity_label;joueur;menu.pause.sensibilite
+scripts/ui/gameplay_shell.gd;1023;Attaque;set_sensitivity;joueur;hud.buff.attaque
+scripts/ui/gameplay_shell.gd;1024;Défense;set_sensitivity;joueur;hud.buff.defense
+scripts/ui/gameplay_shell.gd;1025;Endurance;set_sensitivity;joueur;hud.buff.endurance
+scripts/ui/gameplay_shell.gd;1026;Résist. élec.;set_sensitivity;joueur;hud.buff.resist_elec
+scripts/ui/gameplay_shell.gd;1049;CUISINE;_build_cooking_panel;joueur;cuisine.titre
+scripts/ui/gameplay_shell.gd;1067;Cuisiner;_build_cooking_panel;joueur;cuisine.confirmer
+scripts/ui/gameplay_shell.gd;1073;Retirer le dernier;_build_cooking_panel;joueur;cuisine.retirer_dernier
+scripts/ui/gameplay_shell.gd;1080;Reprendre;_build_cooking_panel;joueur;cuisine.reprendre
+scripts/ui/gameplay_shell.gd;1153;Réserve de plats pleine;cooking_confirm;joueur;cuisine.reserve_pleine
+scripts/ui/gameplay_shell.gd;1169;Cuisiné : %s;cooking_confirm;joueur;cuisine.fait
+scripts/ui/gameplay_shell.gd;1169;Plat;cooking_confirm;joueur;cuisine.plat_defaut
+scripts/ui/gameplay_shell.gd;1197;Attaque renforcée;_effect_display_name;joueur;cuisine.effet.attack
+scripts/ui/gameplay_shell.gd;1199;Défense renforcée;_effect_display_name;joueur;cuisine.effet.defense
+scripts/ui/gameplay_shell.gd;1201;Endurance renforcée;_effect_display_name;joueur;cuisine.effet.stamina
+scripts/ui/gameplay_shell.gd;1203;Résistance à la foudre;_effect_display_name;joueur;cuisine.effet.elec_resist
+scripts/ui/gameplay_shell.gd;1226;Choisis 1 à 5 ingrédients;_rebuild_cooking_panel;joueur;cuisine.choisir
+scripts/ui/gameplay_shell.gd;1235;Choisis (%d/5) : %s;_rebuild_cooking_panel;joueur;cuisine.choisir_compte
+scripts/ui/gameplay_shell.gd;1244;%s — soigne %d PV;_rebuild_cooking_panel;joueur;cuisine.apercu.soin
+scripts/ui/gameplay_shell.gd;1249;\n%s pendant %d s;_rebuild_cooking_panel;joueur;cuisine.apercu.effet
+scripts/ui/gameplay_shell.gd;1252;\n(mélange instable : le soin est fortement réduit);_rebuild_cooking_panel;joueur;cuisine.apercu.instable
+scripts/ui/gameplay_shell.gd;1282;%s — %d s;_refresh_buff_label;joueur;hud.buff.format
+scripts/ui/gameplay_shell.gd;1301;Le Gardien s'éveille;buff_label_text;joueur;boss.phase.intro
+scripts/ui/gameplay_shell.gd;1302;Armure chargée;buff_label_text;joueur;boss.phase.phase1
+scripts/ui/gameplay_shell.gd;1303;Mis à la terre — le noyau est nu;buff_label_text;joueur;boss.phase.grounded_stun
+scripts/ui/gameplay_shell.gd;1304;L'armure se fend;buff_label_text;joueur;boss.phase.transition12
+scripts/ui/gameplay_shell.gd;1305;Surcharge;buff_label_text;joueur;boss.phase.phase2
+scripts/ui/gameplay_shell.gd;1306;SURCHARGE — le métal renvoie;buff_label_text;joueur;boss.phase.overload
+scripts/ui/gameplay_shell.gd;1307;La tempête monte;buff_label_text;joueur;boss.phase.transition23
+scripts/ui/gameplay_shell.gd;1308;Tempête;buff_label_text;joueur;boss.phase.phase3
+scripts/ui/gameplay_shell.gd;1309;Chancelant;buff_label_text;joueur;boss.phase.stagger
+scripts/ui/gameplay_shell.gd;1310;Silence;buff_label_text;joueur;boss.phase.dead
+scripts/ui/gameplay_shell.gd;1326;GARDIEN DE L'ORAGE;_build_boss_bar;joueur;boss.nom
+scripts/ui/gameplay_shell.gd;1422;Arc Link;boss_phase_text;joueur;resonance.action.port
+scripts/ui/gameplay_shell.gd;1423;Polarité (Maj : repousser);boss_phase_text;joueur;resonance.action.polarity
+scripts/ui/gameplay_shell.gd;1424;Mise à la terre;boss_phase_text;joueur;resonance.action.material
+scripts/ui/gameplay_shell.gd;1425;Arc Step;boss_phase_text;joueur;resonance.action.arc_anchor
+scripts/ui/gameplay_shell.gd;1432;Bracelet en recharge;boss_phase_text;joueur;resonance.refus.cooldown
+scripts/ui/gameplay_shell.gd;1433;Aucune cible;boss_phase_text;joueur;resonance.refus.aucune_cible
+scripts/ui/gameplay_shell.gd;1434;Cible invalide;boss_phase_text;joueur;resonance.refus.invalide
+scripts/ui/gameplay_shell.gd;1435;Trop loin;boss_phase_text;joueur;resonance.refus.hors_portee
+scripts/ui/gameplay_shell.gd;1436;Les deux ports sont trop écartés;boss_phase_text;joueur;resonance.refus.trop_loin
+scripts/ui/gameplay_shell.gd;1437;Un obstacle coupe le trajet;boss_phase_text;joueur;resonance.refus.pas_de_vue
+scripts/ui/gameplay_shell.gd;1438;Ce n'est pas du métal;boss_phase_text;joueur;resonance.refus.pas_metal
+scripts/ui/gameplay_shell.gd;1439;Cet objet n'est pas chargé;boss_phase_text;joueur;resonance.refus.pas_charge
+scripts/ui/gameplay_shell.gd;1440;Trop lourd pour la Polarité;boss_phase_text;joueur;resonance.refus.trop_lourd
+scripts/ui/gameplay_shell.gd;1441;Rien à mettre à la terre;boss_phase_text;joueur;resonance.refus.pas_de_charge
+scripts/ui/gameplay_shell.gd;1442;Il faut les pieds au sol;boss_phase_text;joueur;resonance.refus.pas_au_sol
+scripts/ui/gameplay_shell.gd;1443;Mise à la terre déjà en cours;boss_phase_text;joueur;resonance.refus.occupe
+scripts/ui/gameplay_shell.gd;1444;Le trajet est barré;boss_phase_text;joueur;resonance.refus.obstacle
+scripts/ui/gameplay_shell.gd;1445;Pas de sol à l'arrivée;boss_phase_text;joueur;resonance.refus.pas_de_sol
+scripts/ui/gameplay_shell.gd;1446;Endurance insuffisante;boss_phase_text;joueur;resonance.refus.endurance
+scripts/ui/gameplay_shell.gd;1447;Cible perdue;boss_phase_text;joueur;resonance.refus.cible_perdue
+scripts/ui/gameplay_shell.gd;1448;Interrompu;boss_phase_text;joueur;resonance.refus.interrompu
+scripts/ui/gameplay_shell.gd;1535;Lien établi;_on_resonance_verdict;joueur;resonance.message.lien_etabli
+scripts/ui/gameplay_shell.gd;1537;Polarité engagée;_on_resonance_verdict;joueur;resonance.message.polarite_engagee
+scripts/ui/gameplay_shell.gd;1539;Arc Step;_on_resonance_verdict;joueur;resonance.action.arc_anchor
+scripts/ui/gameplay_shell.gd;1546;Impulsion — aucune cible à portée;_on_resonance_pulse;joueur;resonance.message.pulse_vide
+scripts/ui/gameplay_shell.gd;1548;Impulsion — %d cible%s révélée%s;_on_resonance_pulse;joueur;resonance.message.pulse_une|resonance.message.pulse_plusieurs
+scripts/ui/gameplay_shell.gd;1554;Lien rompu;_on_resonance_link_dissolved;joueur;resonance.message.lien_rompu
+scripts/ui/gameplay_shell.gd;1558;Mise à la terre effectuée;_on_resonance_grounded;joueur;resonance.message.terre_effectuee
+scripts/ui/gameplay_shell.gd;1565;Mise à la terre annulée — %s;_on_resonance_ground_cancelled;joueur;resonance.message.terre_annulee
+scripts/ui/gameplay_shell.gd;1617;Bracelet de Résonance;_resonance_action_line;joueur;resonance.viseur.titre
+scripts/ui/gameplay_shell.gd;1622;Arc Link — relier;_resonance_action_line;joueur;resonance.viseur.lier
+scripts/ui/gameplay_shell.gd;1623;Clic gauche : %s;_resonance_action_line;joueur;resonance.viseur.action
+scripts/ui/gameplay_shell.gd;1632;Port retenu — vise le second port SANS lâcher G;_resonance_state_line;joueur;resonance.viseur.port_retenu
+scripts/ui/gameplay_shell.gd;1636;Aucune cible dans l'axe — approche (18 m) et dégage la vue;_resonance_state_line;joueur;resonance.viseur.aucune_cible

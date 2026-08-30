@@ -1,0 +1,1059 @@
+LANCER_GODOT: --headless ajouté (pas de --rendu : aucun affichage disponible).
+LANCER_GODOT: VERROU=/home/istvan/Projects/Zelda/.git/heavy_tools.lock
+LANCER_GODOT: XDG_DATA_HOME=/tmp/lancer_godot_ud_g9nv5njP
+LANCER_GODOT: CWD=/home/istvan/Projects/zelda-wt-iss075
+LANCER_GODOT: CMD=/home/istvan/.local/bin/godot --headless --path . --script tools/godot/test_runner.gd -- --filter=localisation_iss075
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+=== TEST RUNNER — Godot 4.7.1-stable (official) ===
+filtre: localisation_iss075
+  ok   test_localisation_iss075.gd::test_la_forme_d_une_cle_ne_peut_pas_attraper_un_texte_joueur (20 assertions)
+  ok   test_localisation_iss075.gd::test_chaque_cle_de_la_source_rend_un_texte (10 assertions)
+ERROR: [textes] clé absente de la langue source « fr » : cle.qui.n.existe.pas.du.tout
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_une_cle_absente_de_la_source_est_signalee_et_visible (res://tests/integration/test_localisation_iss075.gd:137)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _root_delta (res://tools/godot/test_runner.gd:390)
+  ok   test_localisation_iss075.gd::test_une_cle_absente_de_la_source_est_signalee_et_visible (4 assertions)
+  ok   test_localisation_iss075.gd::test_la_locale_temoin_change_le_texte_rendu (6 assertions)
+  ok   test_localisation_iss075.gd::test_une_traduction_manquante_retombe_sur_le_francais_sans_echouer (5 assertions)
+  ok   test_localisation_iss075.gd::test_les_textes_du_camp_sont_des_cles_qui_resolvent (6 assertions)
+  ok   test_localisation_iss075.gd::test_le_hud_traduit_une_cle_et_laisse_passer_un_texte_brut (3 assertions)
+  ok   test_localisation_iss075.gd::test_aucune_nouvelle_porte_notify_ne_porte_de_texte_ecrit_en_dur (7 assertions)
+  ÉCHEC test_localisation_iss075.gd::test_aucun_nouveau_texte_joueur_ecrit_en_dur_dans_le_code — A9 — la tranche ISS-075 est migrée : gameplay_shell.gd ne porte plus AUCUN texte joueur écrit en dur ; un texte neuf passe par une clé de resources/localisation/fr.json : attendu 0, obtenu 76
+  ÉCHEC test_localisation_iss075.gd::test_aucun_nouveau_texte_joueur_ecrit_en_dur_dans_le_code — A9 — « scripts/ui/gameplay_shell.gd » porte 76 texte(s) joueur écrit(s) en dur pour un plafond mesuré de 0. Un texte joueur neuf passe par une CLÉ (resources/localisation/fr.json + Textes.t()). Monter un plafond est une décision de revue, pas une retouche de test
+ERROR: [textes] clé absente de la langue source « fr » : inventaire.titre
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : inventaire.conductivite
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : inventaire.fermer
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : inventaire.detail.stats
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : menu.pause.commandes
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : menu.pause.sensibilite
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : hud.fleches
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : hud.plats
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : hud.arme.mains_nues
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : hud.invite.format
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : hud.buff.attaque
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : hud.buff.defense
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : hud.buff.endurance
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : hud.buff.resist_elec
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : hud.buff.format
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : cuisine.titre
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : cuisine.confirmer
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : cuisine.retirer_dernier
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : cuisine.reprendre
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : cuisine.reserve_pleine
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : cuisine.fait
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : cuisine.plat_defaut
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : cuisine.choisir
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : cuisine.choisir_compte
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : cuisine.apercu.soin
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : cuisine.apercu.effet
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : cuisine.apercu.instable
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : cuisine.effet.attack
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : cuisine.effet.defense
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : cuisine.effet.stamina
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : cuisine.effet.elec_resist
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : boss.nom
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : boss.phase.intro
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : boss.phase.phase1
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : boss.phase.grounded_stun
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : boss.phase.transition12
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : boss.phase.phase2
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : boss.phase.overload
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : boss.phase.transition23
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : boss.phase.phase3
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : boss.phase.stagger
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : boss.phase.dead
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : resonance.action.port
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : resonance.action.polarity
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : resonance.action.material
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : resonance.action.arc_anchor
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : resonance.refus.cooldown
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : resonance.refus.aucune_cible
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : resonance.refus.invalide
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : resonance.refus.hors_portee
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : resonance.refus.trop_loin
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : resonance.refus.pas_de_vue
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : resonance.refus.pas_metal
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : resonance.refus.pas_charge
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : resonance.refus.trop_lourd
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : resonance.refus.pas_de_charge
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : resonance.refus.pas_au_sol
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : resonance.refus.occupe
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : resonance.refus.obstacle
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : resonance.refus.pas_de_sol
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : resonance.refus.endurance
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : resonance.refus.cible_perdue
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : resonance.refus.interrompu
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : resonance.message.lien_etabli
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : resonance.message.polarite_engagee
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : resonance.message.pulse_vide
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : resonance.message.pulse_une
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : resonance.message.pulse_plusieurs
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : resonance.message.lien_rompu
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : resonance.message.terre_effectuee
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : resonance.message.terre_annulee
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : resonance.viseur.titre
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : resonance.viseur.lier
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : resonance.viseur.action
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : resonance.viseur.port_retenu
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : resonance.viseur.aucune_cible
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_chaque_cle_de_la_tranche_rend_le_francais_historique (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:154)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:320)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « inventaire.titre » doit rendre le texte historique, octet pour octet : attendu INVENTAIRE, obtenu ⟦inventaire.titre⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « inventaire.conductivite » doit rendre le texte historique, octet pour octet : attendu Conductivité, obtenu ⟦inventaire.conductivite⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « inventaire.fermer » doit rendre le texte historique, octet pour octet : attendu Tab / Échap — Fermer, obtenu ⟦inventaire.fermer⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « inventaire.detail.stats » doit rendre le texte historique, octet pour octet : attendu Dégâts  %.0f
+Portée  %.1f m
+Durabilité  %d / %d, obtenu ⟦inventaire.detail.stats⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « menu.pause.commandes » doit rendre le texte historique, octet pour octet : attendu Commandes, obtenu ⟦menu.pause.commandes⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « menu.pause.sensibilite » doit rendre le texte historique, octet pour octet : attendu %.4f rad/px, obtenu ⟦menu.pause.sensibilite⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « hud.fleches » doit rendre le texte historique, octet pour octet : attendu Flèches : %d, obtenu ⟦hud.fleches⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « hud.plats » doit rendre le texte historique, octet pour octet : attendu Plats : %d  (F), obtenu ⟦hud.plats⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « hud.arme.mains_nues » doit rendre le texte historique, octet pour octet : attendu Mains nues, obtenu ⟦hud.arme.mains_nues⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « hud.invite.format » doit rendre le texte historique, octet pour octet : attendu E — %s, obtenu ⟦hud.invite.format⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « hud.buff.attaque » doit rendre le texte historique, octet pour octet : attendu Attaque, obtenu ⟦hud.buff.attaque⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « hud.buff.defense » doit rendre le texte historique, octet pour octet : attendu Défense, obtenu ⟦hud.buff.defense⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « hud.buff.endurance » doit rendre le texte historique, octet pour octet : attendu Endurance, obtenu ⟦hud.buff.endurance⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « hud.buff.resist_elec » doit rendre le texte historique, octet pour octet : attendu Résist. élec., obtenu ⟦hud.buff.resist_elec⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « hud.buff.format » doit rendre le texte historique, octet pour octet : attendu %s — %d s, obtenu ⟦hud.buff.format⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « cuisine.titre » doit rendre le texte historique, octet pour octet : attendu CUISINE, obtenu ⟦cuisine.titre⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « cuisine.confirmer » doit rendre le texte historique, octet pour octet : attendu Cuisiner, obtenu ⟦cuisine.confirmer⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « cuisine.retirer_dernier » doit rendre le texte historique, octet pour octet : attendu Retirer le dernier, obtenu ⟦cuisine.retirer_dernier⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « cuisine.reprendre » doit rendre le texte historique, octet pour octet : attendu Reprendre, obtenu ⟦cuisine.reprendre⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « cuisine.reserve_pleine » doit rendre le texte historique, octet pour octet : attendu Réserve de plats pleine, obtenu ⟦cuisine.reserve_pleine⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « cuisine.fait » doit rendre le texte historique, octet pour octet : attendu Cuisiné : %s, obtenu ⟦cuisine.fait⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « cuisine.plat_defaut » doit rendre le texte historique, octet pour octet : attendu Plat, obtenu ⟦cuisine.plat_defaut⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « cuisine.choisir » doit rendre le texte historique, octet pour octet : attendu Choisis 1 à 5 ingrédients, obtenu ⟦cuisine.choisir⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « cuisine.choisir_compte » doit rendre le texte historique, octet pour octet : attendu Choisis (%d/5) : %s, obtenu ⟦cuisine.choisir_compte⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « cuisine.apercu.soin » doit rendre le texte historique, octet pour octet : attendu %s — soigne %d PV, obtenu ⟦cuisine.apercu.soin⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « cuisine.apercu.effet » doit rendre le texte historique, octet pour octet : attendu 
+%s pendant %d s, obtenu ⟦cuisine.apercu.effet⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « cuisine.apercu.instable » doit rendre le texte historique, octet pour octet : attendu 
+(mélange instable : le soin est fortement réduit), obtenu ⟦cuisine.apercu.instable⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « cuisine.effet.attack » doit rendre le texte historique, octet pour octet : attendu Attaque renforcée, obtenu ⟦cuisine.effet.attack⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « cuisine.effet.defense » doit rendre le texte historique, octet pour octet : attendu Défense renforcée, obtenu ⟦cuisine.effet.defense⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « cuisine.effet.stamina » doit rendre le texte historique, octet pour octet : attendu Endurance renforcée, obtenu ⟦cuisine.effet.stamina⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « cuisine.effet.elec_resist » doit rendre le texte historique, octet pour octet : attendu Résistance à la foudre, obtenu ⟦cuisine.effet.elec_resist⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « boss.nom » doit rendre le texte historique, octet pour octet : attendu GARDIEN DE L'ORAGE, obtenu ⟦boss.nom⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « boss.phase.intro » doit rendre le texte historique, octet pour octet : attendu Le Gardien s'éveille, obtenu ⟦boss.phase.intro⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « boss.phase.phase1 » doit rendre le texte historique, octet pour octet : attendu Armure chargée, obtenu ⟦boss.phase.phase1⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « boss.phase.grounded_stun » doit rendre le texte historique, octet pour octet : attendu Mis à la terre — le noyau est nu, obtenu ⟦boss.phase.grounded_stun⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « boss.phase.transition12 » doit rendre le texte historique, octet pour octet : attendu L'armure se fend, obtenu ⟦boss.phase.transition12⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « boss.phase.phase2 » doit rendre le texte historique, octet pour octet : attendu Surcharge, obtenu ⟦boss.phase.phase2⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « boss.phase.overload » doit rendre le texte historique, octet pour octet : attendu SURCHARGE — le métal renvoie, obtenu ⟦boss.phase.overload⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « boss.phase.transition23 » doit rendre le texte historique, octet pour octet : attendu La tempête monte, obtenu ⟦boss.phase.transition23⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « boss.phase.phase3 » doit rendre le texte historique, octet pour octet : attendu Tempête, obtenu ⟦boss.phase.phase3⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « boss.phase.stagger » doit rendre le texte historique, octet pour octet : attendu Chancelant, obtenu ⟦boss.phase.stagger⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « boss.phase.dead » doit rendre le texte historique, octet pour octet : attendu Silence, obtenu ⟦boss.phase.dead⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.action.port » doit rendre le texte historique, octet pour octet : attendu Arc Link, obtenu ⟦resonance.action.port⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.action.polarity » doit rendre le texte historique, octet pour octet : attendu Polarité (Maj : repousser), obtenu ⟦resonance.action.polarity⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.action.material » doit rendre le texte historique, octet pour octet : attendu Mise à la terre, obtenu ⟦resonance.action.material⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.action.arc_anchor » doit rendre le texte historique, octet pour octet : attendu Arc Step, obtenu ⟦resonance.action.arc_anchor⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.refus.cooldown » doit rendre le texte historique, octet pour octet : attendu Bracelet en recharge, obtenu ⟦resonance.refus.cooldown⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.refus.aucune_cible » doit rendre le texte historique, octet pour octet : attendu Aucune cible, obtenu ⟦resonance.refus.aucune_cible⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.refus.invalide » doit rendre le texte historique, octet pour octet : attendu Cible invalide, obtenu ⟦resonance.refus.invalide⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.refus.hors_portee » doit rendre le texte historique, octet pour octet : attendu Trop loin, obtenu ⟦resonance.refus.hors_portee⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.refus.trop_loin » doit rendre le texte historique, octet pour octet : attendu Les deux ports sont trop écartés, obtenu ⟦resonance.refus.trop_loin⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.refus.pas_de_vue » doit rendre le texte historique, octet pour octet : attendu Un obstacle coupe le trajet, obtenu ⟦resonance.refus.pas_de_vue⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.refus.pas_metal » doit rendre le texte historique, octet pour octet : attendu Ce n'est pas du métal, obtenu ⟦resonance.refus.pas_metal⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.refus.pas_charge » doit rendre le texte historique, octet pour octet : attendu Cet objet n'est pas chargé, obtenu ⟦resonance.refus.pas_charge⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.refus.trop_lourd » doit rendre le texte historique, octet pour octet : attendu Trop lourd pour la Polarité, obtenu ⟦resonance.refus.trop_lourd⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.refus.pas_de_charge » doit rendre le texte historique, octet pour octet : attendu Rien à mettre à la terre, obtenu ⟦resonance.refus.pas_de_charge⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.refus.pas_au_sol » doit rendre le texte historique, octet pour octet : attendu Il faut les pieds au sol, obtenu ⟦resonance.refus.pas_au_sol⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.refus.occupe » doit rendre le texte historique, octet pour octet : attendu Mise à la terre déjà en cours, obtenu ⟦resonance.refus.occupe⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.refus.obstacle » doit rendre le texte historique, octet pour octet : attendu Le trajet est barré, obtenu ⟦resonance.refus.obstacle⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.refus.pas_de_sol » doit rendre le texte historique, octet pour octet : attendu Pas de sol à l'arrivée, obtenu ⟦resonance.refus.pas_de_sol⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.refus.endurance » doit rendre le texte historique, octet pour octet : attendu Endurance insuffisante, obtenu ⟦resonance.refus.endurance⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.refus.cible_perdue » doit rendre le texte historique, octet pour octet : attendu Cible perdue, obtenu ⟦resonance.refus.cible_perdue⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.refus.interrompu » doit rendre le texte historique, octet pour octet : attendu Interrompu, obtenu ⟦resonance.refus.interrompu⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.message.lien_etabli » doit rendre le texte historique, octet pour octet : attendu Lien établi, obtenu ⟦resonance.message.lien_etabli⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.message.polarite_engagee » doit rendre le texte historique, octet pour octet : attendu Polarité engagée, obtenu ⟦resonance.message.polarite_engagee⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.message.pulse_vide » doit rendre le texte historique, octet pour octet : attendu Impulsion — aucune cible à portée, obtenu ⟦resonance.message.pulse_vide⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.message.pulse_une » doit rendre le texte historique, octet pour octet : attendu Impulsion — %d cible révélée, obtenu ⟦resonance.message.pulse_une⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.message.pulse_plusieurs » doit rendre le texte historique, octet pour octet : attendu Impulsion — %d cibles révélées, obtenu ⟦resonance.message.pulse_plusieurs⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.message.lien_rompu » doit rendre le texte historique, octet pour octet : attendu Lien rompu, obtenu ⟦resonance.message.lien_rompu⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.message.terre_effectuee » doit rendre le texte historique, octet pour octet : attendu Mise à la terre effectuée, obtenu ⟦resonance.message.terre_effectuee⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.message.terre_annulee » doit rendre le texte historique, octet pour octet : attendu Mise à la terre annulée — %s, obtenu ⟦resonance.message.terre_annulee⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.viseur.titre » doit rendre le texte historique, octet pour octet : attendu Bracelet de Résonance, obtenu ⟦resonance.viseur.titre⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.viseur.lier » doit rendre le texte historique, octet pour octet : attendu Arc Link — relier, obtenu ⟦resonance.viseur.lier⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.viseur.action » doit rendre le texte historique, octet pour octet : attendu Clic gauche : %s, obtenu ⟦resonance.viseur.action⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.viseur.port_retenu » doit rendre le texte historique, octet pour octet : attendu Port retenu — vise le second port SANS lâcher G, obtenu ⟦resonance.viseur.port_retenu⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.viseur.aucune_cible » doit rendre le texte historique, octet pour octet : attendu Aucune cible dans l'axe — approche (18 m) et dégage la vue, obtenu ⟦resonance.viseur.aucune_cible⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_la_locale_temoin_couvre_toute_la_tranche — C2 — chaque clé de la tranche est traduite dans la locale témoin ; manquent : ["inventaire.titre", "inventaire.conductivite", "inventaire.fermer", "inventaire.detail.stats", "menu.pause.commandes", "menu.pause.sensibilite", "hud.fleches", "hud.plats", "hud.arme.mains_nues", "hud.invite.format", "hud.buff.attaque", "hud.buff.defense", "hud.buff.endurance", "hud.buff.resist_elec", "hud.buff.format", "cuisine.titre", "cuisine.confirmer", "cuisine.retirer_dernier", "cuisine.reprendre", "cuisine.reserve_pleine", "cuisine.fait", "cuisine.plat_defaut", "cuisine.choisir", "cuisine.choisir_compte", "cuisine.apercu.soin", "cuisine.apercu.effet", "cuisine.apercu.instable", "cuisine.effet.attack", "cuisine.effet.defense", "cuisine.effet.stamina", "cuisine.effet.elec_resist", "boss.nom", "boss.phase.intro", "boss.phase.phase1", "boss.phase.grounded_stun", "boss.phase.transition12", "boss.phase.phase2", "boss.phase.overload", "boss.phase.transition23", "boss.phase.phase3", "boss.phase.stagger", "boss.phase.dead", "resonance.action.port", "resonance.action.polarity", "resonance.action.material", "resonance.action.arc_anchor", "resonance.refus.cooldown", "resonance.refus.aucune_cible", "resonance.refus.invalide", "resonance.refus.hors_portee", "resonance.refus.trop_loin", "resonance.refus.pas_de_vue", "resonance.refus.pas_metal", "resonance.refus.pas_charge", "resonance.refus.trop_lourd", "resonance.refus.pas_de_charge", "resonance.refus.pas_au_sol", "resonance.refus.occupe", "resonance.refus.obstacle", "resonance.refus.pas_de_sol", "resonance.refus.endurance", "resonance.refus.cible_perdue", "resonance.refus.interrompu", "resonance.message.lien_etabli", "resonance.message.polarite_engagee", "resonance.message.pulse_vide", "resonance.message.pulse_une", "resonance.message.pulse_plusieurs", "resonance.message.lien_rompu", "resonance.message.terre_effectuee", "resonance.message.terre_annulee", "resonance.viseur.titre", "resonance.viseur.lier", "resonance.viseur.action", "resonance.viseur.port_retenu", "resonance.viseur.aucune_cible"]
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_la_locale_temoin_couvre_toute_la_tranche — C2 — et la traduction DIFFÈRE du français sur la quasi-totalité (0 clé(s) distinctes) : une locale témoin recopiée ne prouverait aucune indirection. (Quelques formats techniques — « %s — %d s », « %.4f rad/px », « Arc Link » — restent identiques à dessein.)
+ERROR: [textes] clé absente de la langue source « fr » : hud.tranche.fantome.inexistante
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_une_cle_de_tranche_absente_reste_bruyante (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:195)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _root_delta (res://tools/godot/test_runner.gd:390)
+  ok   test_localisation_iss075_gameplay_shell.gd::test_une_cle_de_tranche_absente_reste_bruyante (3 assertions)
+ERROR: [textes] clé absente de la langue source « fr » : hud.fleches
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_les_parametres_de_format_sont_identiques_dans_les_deux_langues (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:224)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: String formatting error: not all arguments converted during string formatting.
+   at: validated_evaluate (core/variant/variant_op.h:829)
+   GDScript backtrace (most recent call first):
+       [0] test_les_parametres_de_format_sont_identiques_dans_les_deux_langues (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:224)
+       [1] _run_script (res://tools/godot/test_runner.gd:297)
+       [2] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: String formatting error: not all arguments converted during string formatting.
+   at: validated_evaluate (core/variant/variant_op.h:829)
+   GDScript backtrace (most recent call first):
+       [0] test_les_parametres_de_format_sont_identiques_dans_les_deux_langues (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:226)
+       [1] _run_script (res://tools/godot/test_runner.gd:297)
+       [2] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : cuisine.choisir_compte
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_les_parametres_de_format_sont_identiques_dans_les_deux_langues (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:228)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: String formatting error: not all arguments converted during string formatting.
+   at: validated_evaluate (core/variant/variant_op.h:770)
+   GDScript backtrace (most recent call first):
+       [0] test_les_parametres_de_format_sont_identiques_dans_les_deux_langues (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:228)
+       [1] _run_script (res://tools/godot/test_runner.gd:297)
+       [2] _root_delta (res://tools/godot/test_runner.gd:390)
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_les_parametres_de_format_sont_identiques_dans_les_deux_langues — C4 — « inventaire.detail.stats » : mêmes spécificateurs, dans le même ordre : attendu %.0f,%.1f,%d,%d, obtenu 
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_les_parametres_de_format_sont_identiques_dans_les_deux_langues — C4 — « menu.pause.sensibilite » : mêmes spécificateurs, dans le même ordre : attendu %.4f, obtenu 
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_les_parametres_de_format_sont_identiques_dans_les_deux_langues — C4 — « hud.fleches » : mêmes spécificateurs, dans le même ordre : attendu %d, obtenu 
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_les_parametres_de_format_sont_identiques_dans_les_deux_langues — C4 — « hud.plats » : mêmes spécificateurs, dans le même ordre : attendu %d, obtenu 
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_les_parametres_de_format_sont_identiques_dans_les_deux_langues — C4 — « hud.invite.format » : mêmes spécificateurs, dans le même ordre : attendu %s, obtenu 
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_les_parametres_de_format_sont_identiques_dans_les_deux_langues — C4 — « hud.buff.format » : mêmes spécificateurs, dans le même ordre : attendu %s,%d, obtenu 
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_les_parametres_de_format_sont_identiques_dans_les_deux_langues — C4 — « cuisine.fait » : mêmes spécificateurs, dans le même ordre : attendu %s, obtenu 
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_les_parametres_de_format_sont_identiques_dans_les_deux_langues — C4 — « cuisine.choisir_compte » : mêmes spécificateurs, dans le même ordre : attendu %d,%s, obtenu 
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_les_parametres_de_format_sont_identiques_dans_les_deux_langues — C4 — « cuisine.apercu.soin » : mêmes spécificateurs, dans le même ordre : attendu %s,%d, obtenu 
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_les_parametres_de_format_sont_identiques_dans_les_deux_langues — C4 — « cuisine.apercu.effet » : mêmes spécificateurs, dans le même ordre : attendu %s,%d, obtenu 
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_les_parametres_de_format_sont_identiques_dans_les_deux_langues — C4 — « resonance.message.pulse_une » : mêmes spécificateurs, dans le même ordre : attendu %d, obtenu 
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_les_parametres_de_format_sont_identiques_dans_les_deux_langues — C4 — « resonance.message.pulse_plusieurs » : mêmes spécificateurs, dans le même ordre : attendu %d, obtenu 
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_les_parametres_de_format_sont_identiques_dans_les_deux_langues — C4 — « resonance.message.terre_annulee » : mêmes spécificateurs, dans le même ordre : attendu %s, obtenu 
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_les_parametres_de_format_sont_identiques_dans_les_deux_langues — C4 — « resonance.viseur.action » : mêmes spécificateurs, dans le même ordre : attendu %s, obtenu 
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_les_parametres_de_format_sont_identiques_dans_les_deux_langues — C4 — formatage réel côté source : attendu Flèches : 7, obtenu ⟦hud.fleches⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_les_parametres_de_format_sont_identiques_dans_les_deux_langues — C4 — formatage réel côté témoin : attendu Arrows: 7, obtenu 
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_les_parametres_de_format_sont_identiques_dans_les_deux_langues — C4 — formatage réel à deux paramètres hétérogènes : attendu Choisis (2/5) : Baie, Viande, obtenu ⟦cuisine.choisir_compte⟧
+ERROR: [textes] clé absente de la langue source « fr » : resonance.message.pulse_une
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_le_pluriel_du_pulse_est_porte_par_les_cles (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:241)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: String formatting error: not all arguments converted during string formatting.
+   at: validated_evaluate (core/variant/variant_op.h:829)
+   GDScript backtrace (most recent call first):
+       [0] test_le_pluriel_du_pulse_est_porte_par_les_cles (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:241)
+       [1] _run_script (res://tools/godot/test_runner.gd:297)
+       [2] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : resonance.message.pulse_plusieurs
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_le_pluriel_du_pulse_est_porte_par_les_cles (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:244)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: String formatting error: not all arguments converted during string formatting.
+   at: validated_evaluate (core/variant/variant_op.h:829)
+   GDScript backtrace (most recent call first):
+       [0] test_le_pluriel_du_pulse_est_porte_par_les_cles (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:244)
+       [1] _run_script (res://tools/godot/test_runner.gd:297)
+       [2] _root_delta (res://tools/godot/test_runner.gd:390)
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_le_pluriel_du_pulse_est_porte_par_les_cles — C5 — le singulier rend l'octet-pour-octet de l'ancien code : attendu Impulsion — 1 cible révélée, obtenu ⟦resonance.message.pulse_une⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_le_pluriel_du_pulse_est_porte_par_les_cles — C5 — le pluriel rend l'octet-pour-octet de l'ancien code : attendu Impulsion — 3 cibles révélées, obtenu ⟦resonance.message.pulse_plusieurs⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_le_pluriel_du_pulse_est_porte_par_les_cles — C5 — la locale témoin distingue aussi ses deux formes
+ERROR: [textes] clé absente de la langue source « fr » : boss.phase.grounded_stun
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_l_unicode_traverse_la_table_intact (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:273)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : boss.nom
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_l_unicode_traverse_la_table_intact (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:275)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : cuisine.effet.elec_resist
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_l_unicode_traverse_la_table_intact (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:277)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : inventaire.fermer
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_l_unicode_traverse_la_table_intact (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:279)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _root_delta (res://tools/godot/test_runner.gd:390)
+ERROR: [textes] clé absente de la langue source « fr » : inventaire.detail.stats
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_l_unicode_traverse_la_table_intact (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:281)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _root_delta (res://tools/godot/test_runner.gd:390)
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_l_unicode_traverse_la_table_intact — C6 — le tiret cadratin survit à l'aller-retour JSON
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_l_unicode_traverse_la_table_intact — C6 — l'apostrophe droite entre lettres survit
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_l_unicode_traverse_la_table_intact — C6 — accents aigus et graves, octet pour octet : attendu Résistance à la foudre, obtenu ⟦cuisine.effet.elec_resist⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_l_unicode_traverse_la_table_intact — C6 — majuscule accentuée (É) et cadratin dans la même chaîne : attendu Tab / Échap — Fermer, obtenu ⟦inventaire.fermer⟧
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_l_unicode_traverse_la_table_intact — C6 — les \n du JSON deviennent de vrais sauts de ligne
+  ok   test_localisation_iss075_gameplay_shell.gd::test_aucune_cle_brute_ne_parait_a_l_ecran (38 assertions)
+ERROR: String formatting error: not all arguments converted during string formatting.
+   at: validated_evaluate (core/variant/variant_op.h:829)
+   GDScript backtrace (most recent call first):
+       [0] test_le_changement_de_langue_a_chaud_change_l_ecran (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:346)
+ERROR: [textes] clé absente de la langue source « fr » : resonance.message.pulse_plusieurs
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:121)
+       [1] test_le_changement_de_langue_a_chaud_change_l_ecran (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:356)
+ERROR: String formatting error: not all arguments converted during string formatting.
+   at: validated_evaluate (core/variant/variant_op.h:829)
+   GDScript backtrace (most recent call first):
+       [0] test_le_changement_de_langue_a_chaud_change_l_ecran (res://tests/integration/test_localisation_iss075_gameplay_shell.gd:356)
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_le_changement_de_langue_a_chaud_change_l_ecran — C8 — le message du viseur suit la locale : attendu , obtenu Impulsion — 2 cibles révélées
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_le_changement_de_langue_a_chaud_change_l_ecran — C8 — la ligne d'action du viseur aussi : attendu , obtenu Bracelet de Résonance
+  ÉCHEC test_localisation_iss075_gameplay_shell.gd::test_le_changement_de_langue_a_chaud_change_l_ecran — C8 — le retour à la source rend le français immédiatement : attendu ⟦resonance.message.pulse_plusieurs⟧, obtenu Impulsion — 2 cibles révélées
+  ok   test_localisation_iss075_gameplay_shell.gd::test_les_tables_de_localisation_partent_dans_l_export (5 assertions)
+  ok   test_localisation_iss075_gameplay_shell.gd::test_la_localisation_ne_touche_pas_aux_cles_de_sauvegarde (6 assertions)
+  ok   test_localisation_iss075_detecteur.gd::test_les_formes_qui_echappaient_au_compteur_sont_comptees (10 assertions)
+  ok   test_localisation_iss075_detecteur.gd::test_une_table_ne_contourne_pas_le_detecteur (5 assertions)
+  ok   test_localisation_iss075_detecteur.gd::test_le_texte_developpeur_et_technique_ne_compte_pas (11 assertions)
+  ok   test_localisation_iss075_detecteur.gd::test_le_lexer_ne_se_laisse_pas_pieger (5 assertions)
+  ÉCHEC test_localisation_iss075_detecteur.gd::test_le_detecteur_lit_le_vrai_gameplay_shell — D5 — la tranche est migrée : zéro texte joueur écrit en dur dans gameplay_shell.gd (inventaire du 2026-08-30 : il en portait 76) : attendu 0, obtenu 76
+erreurs de script dans le journal : 0
+
+=== RÉSULTAT: 16 réussi(s), 109 échoué(s) ===
+  ÉCHEC: test_localisation_iss075.gd::test_aucun_nouveau_texte_joueur_ecrit_en_dur_dans_le_code — A9 — la tranche ISS-075 est migrée : gameplay_shell.gd ne porte plus AUCUN texte joueur écrit en dur ; un texte neuf passe par une clé de resources/localisation/fr.json : attendu 0, obtenu 76
+  ÉCHEC: test_localisation_iss075.gd::test_aucun_nouveau_texte_joueur_ecrit_en_dur_dans_le_code — A9 — « scripts/ui/gameplay_shell.gd » porte 76 texte(s) joueur écrit(s) en dur pour un plafond mesuré de 0. Un texte joueur neuf passe par une CLÉ (resources/localisation/fr.json + Textes.t()). Monter un plafond est une décision de revue, pas une retouche de test
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « inventaire.titre » doit rendre le texte historique, octet pour octet : attendu INVENTAIRE, obtenu ⟦inventaire.titre⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « inventaire.conductivite » doit rendre le texte historique, octet pour octet : attendu Conductivité, obtenu ⟦inventaire.conductivite⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « inventaire.fermer » doit rendre le texte historique, octet pour octet : attendu Tab / Échap — Fermer, obtenu ⟦inventaire.fermer⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « inventaire.detail.stats » doit rendre le texte historique, octet pour octet : attendu Dégâts  %.0f
+Portée  %.1f m
+Durabilité  %d / %d, obtenu ⟦inventaire.detail.stats⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « menu.pause.commandes » doit rendre le texte historique, octet pour octet : attendu Commandes, obtenu ⟦menu.pause.commandes⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « menu.pause.sensibilite » doit rendre le texte historique, octet pour octet : attendu %.4f rad/px, obtenu ⟦menu.pause.sensibilite⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « hud.fleches » doit rendre le texte historique, octet pour octet : attendu Flèches : %d, obtenu ⟦hud.fleches⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « hud.plats » doit rendre le texte historique, octet pour octet : attendu Plats : %d  (F), obtenu ⟦hud.plats⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « hud.arme.mains_nues » doit rendre le texte historique, octet pour octet : attendu Mains nues, obtenu ⟦hud.arme.mains_nues⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « hud.invite.format » doit rendre le texte historique, octet pour octet : attendu E — %s, obtenu ⟦hud.invite.format⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « hud.buff.attaque » doit rendre le texte historique, octet pour octet : attendu Attaque, obtenu ⟦hud.buff.attaque⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « hud.buff.defense » doit rendre le texte historique, octet pour octet : attendu Défense, obtenu ⟦hud.buff.defense⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « hud.buff.endurance » doit rendre le texte historique, octet pour octet : attendu Endurance, obtenu ⟦hud.buff.endurance⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « hud.buff.resist_elec » doit rendre le texte historique, octet pour octet : attendu Résist. élec., obtenu ⟦hud.buff.resist_elec⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « hud.buff.format » doit rendre le texte historique, octet pour octet : attendu %s — %d s, obtenu ⟦hud.buff.format⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « cuisine.titre » doit rendre le texte historique, octet pour octet : attendu CUISINE, obtenu ⟦cuisine.titre⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « cuisine.confirmer » doit rendre le texte historique, octet pour octet : attendu Cuisiner, obtenu ⟦cuisine.confirmer⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « cuisine.retirer_dernier » doit rendre le texte historique, octet pour octet : attendu Retirer le dernier, obtenu ⟦cuisine.retirer_dernier⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « cuisine.reprendre » doit rendre le texte historique, octet pour octet : attendu Reprendre, obtenu ⟦cuisine.reprendre⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « cuisine.reserve_pleine » doit rendre le texte historique, octet pour octet : attendu Réserve de plats pleine, obtenu ⟦cuisine.reserve_pleine⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « cuisine.fait » doit rendre le texte historique, octet pour octet : attendu Cuisiné : %s, obtenu ⟦cuisine.fait⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « cuisine.plat_defaut » doit rendre le texte historique, octet pour octet : attendu Plat, obtenu ⟦cuisine.plat_defaut⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « cuisine.choisir » doit rendre le texte historique, octet pour octet : attendu Choisis 1 à 5 ingrédients, obtenu ⟦cuisine.choisir⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « cuisine.choisir_compte » doit rendre le texte historique, octet pour octet : attendu Choisis (%d/5) : %s, obtenu ⟦cuisine.choisir_compte⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « cuisine.apercu.soin » doit rendre le texte historique, octet pour octet : attendu %s — soigne %d PV, obtenu ⟦cuisine.apercu.soin⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « cuisine.apercu.effet » doit rendre le texte historique, octet pour octet : attendu 
+%s pendant %d s, obtenu ⟦cuisine.apercu.effet⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « cuisine.apercu.instable » doit rendre le texte historique, octet pour octet : attendu 
+(mélange instable : le soin est fortement réduit), obtenu ⟦cuisine.apercu.instable⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « cuisine.effet.attack » doit rendre le texte historique, octet pour octet : attendu Attaque renforcée, obtenu ⟦cuisine.effet.attack⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « cuisine.effet.defense » doit rendre le texte historique, octet pour octet : attendu Défense renforcée, obtenu ⟦cuisine.effet.defense⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « cuisine.effet.stamina » doit rendre le texte historique, octet pour octet : attendu Endurance renforcée, obtenu ⟦cuisine.effet.stamina⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « cuisine.effet.elec_resist » doit rendre le texte historique, octet pour octet : attendu Résistance à la foudre, obtenu ⟦cuisine.effet.elec_resist⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « boss.nom » doit rendre le texte historique, octet pour octet : attendu GARDIEN DE L'ORAGE, obtenu ⟦boss.nom⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « boss.phase.intro » doit rendre le texte historique, octet pour octet : attendu Le Gardien s'éveille, obtenu ⟦boss.phase.intro⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « boss.phase.phase1 » doit rendre le texte historique, octet pour octet : attendu Armure chargée, obtenu ⟦boss.phase.phase1⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « boss.phase.grounded_stun » doit rendre le texte historique, octet pour octet : attendu Mis à la terre — le noyau est nu, obtenu ⟦boss.phase.grounded_stun⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « boss.phase.transition12 » doit rendre le texte historique, octet pour octet : attendu L'armure se fend, obtenu ⟦boss.phase.transition12⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « boss.phase.phase2 » doit rendre le texte historique, octet pour octet : attendu Surcharge, obtenu ⟦boss.phase.phase2⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « boss.phase.overload » doit rendre le texte historique, octet pour octet : attendu SURCHARGE — le métal renvoie, obtenu ⟦boss.phase.overload⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « boss.phase.transition23 » doit rendre le texte historique, octet pour octet : attendu La tempête monte, obtenu ⟦boss.phase.transition23⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « boss.phase.phase3 » doit rendre le texte historique, octet pour octet : attendu Tempête, obtenu ⟦boss.phase.phase3⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « boss.phase.stagger » doit rendre le texte historique, octet pour octet : attendu Chancelant, obtenu ⟦boss.phase.stagger⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « boss.phase.dead » doit rendre le texte historique, octet pour octet : attendu Silence, obtenu ⟦boss.phase.dead⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.action.port » doit rendre le texte historique, octet pour octet : attendu Arc Link, obtenu ⟦resonance.action.port⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.action.polarity » doit rendre le texte historique, octet pour octet : attendu Polarité (Maj : repousser), obtenu ⟦resonance.action.polarity⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.action.material » doit rendre le texte historique, octet pour octet : attendu Mise à la terre, obtenu ⟦resonance.action.material⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.action.arc_anchor » doit rendre le texte historique, octet pour octet : attendu Arc Step, obtenu ⟦resonance.action.arc_anchor⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.refus.cooldown » doit rendre le texte historique, octet pour octet : attendu Bracelet en recharge, obtenu ⟦resonance.refus.cooldown⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.refus.aucune_cible » doit rendre le texte historique, octet pour octet : attendu Aucune cible, obtenu ⟦resonance.refus.aucune_cible⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.refus.invalide » doit rendre le texte historique, octet pour octet : attendu Cible invalide, obtenu ⟦resonance.refus.invalide⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.refus.hors_portee » doit rendre le texte historique, octet pour octet : attendu Trop loin, obtenu ⟦resonance.refus.hors_portee⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.refus.trop_loin » doit rendre le texte historique, octet pour octet : attendu Les deux ports sont trop écartés, obtenu ⟦resonance.refus.trop_loin⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.refus.pas_de_vue » doit rendre le texte historique, octet pour octet : attendu Un obstacle coupe le trajet, obtenu ⟦resonance.refus.pas_de_vue⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.refus.pas_metal » doit rendre le texte historique, octet pour octet : attendu Ce n'est pas du métal, obtenu ⟦resonance.refus.pas_metal⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.refus.pas_charge » doit rendre le texte historique, octet pour octet : attendu Cet objet n'est pas chargé, obtenu ⟦resonance.refus.pas_charge⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.refus.trop_lourd » doit rendre le texte historique, octet pour octet : attendu Trop lourd pour la Polarité, obtenu ⟦resonance.refus.trop_lourd⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.refus.pas_de_charge » doit rendre le texte historique, octet pour octet : attendu Rien à mettre à la terre, obtenu ⟦resonance.refus.pas_de_charge⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.refus.pas_au_sol » doit rendre le texte historique, octet pour octet : attendu Il faut les pieds au sol, obtenu ⟦resonance.refus.pas_au_sol⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.refus.occupe » doit rendre le texte historique, octet pour octet : attendu Mise à la terre déjà en cours, obtenu ⟦resonance.refus.occupe⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.refus.obstacle » doit rendre le texte historique, octet pour octet : attendu Le trajet est barré, obtenu ⟦resonance.refus.obstacle⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.refus.pas_de_sol » doit rendre le texte historique, octet pour octet : attendu Pas de sol à l'arrivée, obtenu ⟦resonance.refus.pas_de_sol⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.refus.endurance » doit rendre le texte historique, octet pour octet : attendu Endurance insuffisante, obtenu ⟦resonance.refus.endurance⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.refus.cible_perdue » doit rendre le texte historique, octet pour octet : attendu Cible perdue, obtenu ⟦resonance.refus.cible_perdue⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.refus.interrompu » doit rendre le texte historique, octet pour octet : attendu Interrompu, obtenu ⟦resonance.refus.interrompu⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.message.lien_etabli » doit rendre le texte historique, octet pour octet : attendu Lien établi, obtenu ⟦resonance.message.lien_etabli⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.message.polarite_engagee » doit rendre le texte historique, octet pour octet : attendu Polarité engagée, obtenu ⟦resonance.message.polarite_engagee⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.message.pulse_vide » doit rendre le texte historique, octet pour octet : attendu Impulsion — aucune cible à portée, obtenu ⟦resonance.message.pulse_vide⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.message.pulse_une » doit rendre le texte historique, octet pour octet : attendu Impulsion — %d cible révélée, obtenu ⟦resonance.message.pulse_une⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.message.pulse_plusieurs » doit rendre le texte historique, octet pour octet : attendu Impulsion — %d cibles révélées, obtenu ⟦resonance.message.pulse_plusieurs⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.message.lien_rompu » doit rendre le texte historique, octet pour octet : attendu Lien rompu, obtenu ⟦resonance.message.lien_rompu⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.message.terre_effectuee » doit rendre le texte historique, octet pour octet : attendu Mise à la terre effectuée, obtenu ⟦resonance.message.terre_effectuee⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.message.terre_annulee » doit rendre le texte historique, octet pour octet : attendu Mise à la terre annulée — %s, obtenu ⟦resonance.message.terre_annulee⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.viseur.titre » doit rendre le texte historique, octet pour octet : attendu Bracelet de Résonance, obtenu ⟦resonance.viseur.titre⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.viseur.lier » doit rendre le texte historique, octet pour octet : attendu Arc Link — relier, obtenu ⟦resonance.viseur.lier⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.viseur.action » doit rendre le texte historique, octet pour octet : attendu Clic gauche : %s, obtenu ⟦resonance.viseur.action⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.viseur.port_retenu » doit rendre le texte historique, octet pour octet : attendu Port retenu — vise le second port SANS lâcher G, obtenu ⟦resonance.viseur.port_retenu⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_chaque_cle_de_la_tranche_rend_le_francais_historique — C1 — « resonance.viseur.aucune_cible » doit rendre le texte historique, octet pour octet : attendu Aucune cible dans l'axe — approche (18 m) et dégage la vue, obtenu ⟦resonance.viseur.aucune_cible⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_la_locale_temoin_couvre_toute_la_tranche — C2 — chaque clé de la tranche est traduite dans la locale témoin ; manquent : ["inventaire.titre", "inventaire.conductivite", "inventaire.fermer", "inventaire.detail.stats", "menu.pause.commandes", "menu.pause.sensibilite", "hud.fleches", "hud.plats", "hud.arme.mains_nues", "hud.invite.format", "hud.buff.attaque", "hud.buff.defense", "hud.buff.endurance", "hud.buff.resist_elec", "hud.buff.format", "cuisine.titre", "cuisine.confirmer", "cuisine.retirer_dernier", "cuisine.reprendre", "cuisine.reserve_pleine", "cuisine.fait", "cuisine.plat_defaut", "cuisine.choisir", "cuisine.choisir_compte", "cuisine.apercu.soin", "cuisine.apercu.effet", "cuisine.apercu.instable", "cuisine.effet.attack", "cuisine.effet.defense", "cuisine.effet.stamina", "cuisine.effet.elec_resist", "boss.nom", "boss.phase.intro", "boss.phase.phase1", "boss.phase.grounded_stun", "boss.phase.transition12", "boss.phase.phase2", "boss.phase.overload", "boss.phase.transition23", "boss.phase.phase3", "boss.phase.stagger", "boss.phase.dead", "resonance.action.port", "resonance.action.polarity", "resonance.action.material", "resonance.action.arc_anchor", "resonance.refus.cooldown", "resonance.refus.aucune_cible", "resonance.refus.invalide", "resonance.refus.hors_portee", "resonance.refus.trop_loin", "resonance.refus.pas_de_vue", "resonance.refus.pas_metal", "resonance.refus.pas_charge", "resonance.refus.trop_lourd", "resonance.refus.pas_de_charge", "resonance.refus.pas_au_sol", "resonance.refus.occupe", "resonance.refus.obstacle", "resonance.refus.pas_de_sol", "resonance.refus.endurance", "resonance.refus.cible_perdue", "resonance.refus.interrompu", "resonance.message.lien_etabli", "resonance.message.polarite_engagee", "resonance.message.pulse_vide", "resonance.message.pulse_une", "resonance.message.pulse_plusieurs", "resonance.message.lien_rompu", "resonance.message.terre_effectuee", "resonance.message.terre_annulee", "resonance.viseur.titre", "resonance.viseur.lier", "resonance.viseur.action", "resonance.viseur.port_retenu", "resonance.viseur.aucune_cible"]
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_la_locale_temoin_couvre_toute_la_tranche — C2 — et la traduction DIFFÈRE du français sur la quasi-totalité (0 clé(s) distinctes) : une locale témoin recopiée ne prouverait aucune indirection. (Quelques formats techniques — « %s — %d s », « %.4f rad/px », « Arc Link » — restent identiques à dessein.)
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_les_parametres_de_format_sont_identiques_dans_les_deux_langues — C4 — « inventaire.detail.stats » : mêmes spécificateurs, dans le même ordre : attendu %.0f,%.1f,%d,%d, obtenu 
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_les_parametres_de_format_sont_identiques_dans_les_deux_langues — C4 — « menu.pause.sensibilite » : mêmes spécificateurs, dans le même ordre : attendu %.4f, obtenu 
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_les_parametres_de_format_sont_identiques_dans_les_deux_langues — C4 — « hud.fleches » : mêmes spécificateurs, dans le même ordre : attendu %d, obtenu 
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_les_parametres_de_format_sont_identiques_dans_les_deux_langues — C4 — « hud.plats » : mêmes spécificateurs, dans le même ordre : attendu %d, obtenu 
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_les_parametres_de_format_sont_identiques_dans_les_deux_langues — C4 — « hud.invite.format » : mêmes spécificateurs, dans le même ordre : attendu %s, obtenu 
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_les_parametres_de_format_sont_identiques_dans_les_deux_langues — C4 — « hud.buff.format » : mêmes spécificateurs, dans le même ordre : attendu %s,%d, obtenu 
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_les_parametres_de_format_sont_identiques_dans_les_deux_langues — C4 — « cuisine.fait » : mêmes spécificateurs, dans le même ordre : attendu %s, obtenu 
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_les_parametres_de_format_sont_identiques_dans_les_deux_langues — C4 — « cuisine.choisir_compte » : mêmes spécificateurs, dans le même ordre : attendu %d,%s, obtenu 
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_les_parametres_de_format_sont_identiques_dans_les_deux_langues — C4 — « cuisine.apercu.soin » : mêmes spécificateurs, dans le même ordre : attendu %s,%d, obtenu 
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_les_parametres_de_format_sont_identiques_dans_les_deux_langues — C4 — « cuisine.apercu.effet » : mêmes spécificateurs, dans le même ordre : attendu %s,%d, obtenu 
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_les_parametres_de_format_sont_identiques_dans_les_deux_langues — C4 — « resonance.message.pulse_une » : mêmes spécificateurs, dans le même ordre : attendu %d, obtenu 
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_les_parametres_de_format_sont_identiques_dans_les_deux_langues — C4 — « resonance.message.pulse_plusieurs » : mêmes spécificateurs, dans le même ordre : attendu %d, obtenu 
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_les_parametres_de_format_sont_identiques_dans_les_deux_langues — C4 — « resonance.message.terre_annulee » : mêmes spécificateurs, dans le même ordre : attendu %s, obtenu 
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_les_parametres_de_format_sont_identiques_dans_les_deux_langues — C4 — « resonance.viseur.action » : mêmes spécificateurs, dans le même ordre : attendu %s, obtenu 
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_les_parametres_de_format_sont_identiques_dans_les_deux_langues — C4 — formatage réel côté source : attendu Flèches : 7, obtenu ⟦hud.fleches⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_les_parametres_de_format_sont_identiques_dans_les_deux_langues — C4 — formatage réel côté témoin : attendu Arrows: 7, obtenu 
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_les_parametres_de_format_sont_identiques_dans_les_deux_langues — C4 — formatage réel à deux paramètres hétérogènes : attendu Choisis (2/5) : Baie, Viande, obtenu ⟦cuisine.choisir_compte⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_le_pluriel_du_pulse_est_porte_par_les_cles — C5 — le singulier rend l'octet-pour-octet de l'ancien code : attendu Impulsion — 1 cible révélée, obtenu ⟦resonance.message.pulse_une⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_le_pluriel_du_pulse_est_porte_par_les_cles — C5 — le pluriel rend l'octet-pour-octet de l'ancien code : attendu Impulsion — 3 cibles révélées, obtenu ⟦resonance.message.pulse_plusieurs⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_le_pluriel_du_pulse_est_porte_par_les_cles — C5 — la locale témoin distingue aussi ses deux formes
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_l_unicode_traverse_la_table_intact — C6 — le tiret cadratin survit à l'aller-retour JSON
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_l_unicode_traverse_la_table_intact — C6 — l'apostrophe droite entre lettres survit
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_l_unicode_traverse_la_table_intact — C6 — accents aigus et graves, octet pour octet : attendu Résistance à la foudre, obtenu ⟦cuisine.effet.elec_resist⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_l_unicode_traverse_la_table_intact — C6 — majuscule accentuée (É) et cadratin dans la même chaîne : attendu Tab / Échap — Fermer, obtenu ⟦inventaire.fermer⟧
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_l_unicode_traverse_la_table_intact — C6 — les \n du JSON deviennent de vrais sauts de ligne
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_le_changement_de_langue_a_chaud_change_l_ecran — C8 — le message du viseur suit la locale : attendu , obtenu Impulsion — 2 cibles révélées
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_le_changement_de_langue_a_chaud_change_l_ecran — C8 — la ligne d'action du viseur aussi : attendu , obtenu Bracelet de Résonance
+  ÉCHEC: test_localisation_iss075_gameplay_shell.gd::test_le_changement_de_langue_a_chaud_change_l_ecran — C8 — le retour à la source rend le français immédiatement : attendu ⟦resonance.message.pulse_plusieurs⟧, obtenu Impulsion — 2 cibles révélées
+  ÉCHEC: test_localisation_iss075_detecteur.gd::test_le_detecteur_lit_le_vrai_gameplay_shell — D5 — la tranche est migrée : zéro texte joueur écrit en dur dans gameplay_shell.gd (inventaire du 2026-08-30 : il en portait 76) : attendu 0, obtenu 76
+LANCER_GODOT: RC_GODOT=1
