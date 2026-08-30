@@ -1,15 +1,15 @@
 {
   "doc": "ENVELOPPE CONNUE du résidu de fin de processus attribué au cache de scripts du moteur (ISS-065). Mesurée, jamais devinée. Le portail agrégé de validate_fast compare la signature à ces nombres AU CHIFFRE PRÈS ; toute CROISSANCE rougit. Régénérer avec tools/gate_fuite_composition.sh --entériner, et seulement avec une justification écrite : ce geste accepte une nouvelle enveloppe, il ne fait pas taire un rouge.",
   "doc_provenances": "`provenances` est dérivé des seuls chemins .gd (voir gate_fuite_ressources.py, `prov`). Les entrées shaders/characters et shaders/foliage que portait la version du 2026-08-20 n'étaient donc PAS régénérables par l'outil ; leur absence ici n'est pas une perte de couverture, et la comparaison ne signale de toute façon que les provenances NOUVELLES.",
-  "mesure_le": "2026-08-29",
-  "mesure_par": "suite complète en --verbose, 1022 tests réussis 0 échoué, 4050 s, vidage 150 913 970 octets ; objets annoncés = objets énumérés = 139 ; décomposition et log brut dans evidence/gate_fuite/camp/. Attribution de la croissance : res://scripts/save/save_merge_guard.gd, et lui seul (D-059).",
+  "mesure_le": "2026-08-30",
+  "mesure_par": "suite complète en --verbose sur l'arbre committé 8254e0b0, 1045 tests réussis 0 échoué, 4318 s, vidage 158967281 octets ; objets annoncés = objets énumérés = 140 ; décomposition et log brut dans evidence/world_v2/iss086/gate_fuite/. UNE SEULE cause de croissance : res://scripts/localisation/textes.gd — `Textes` est appelé par NOM DE CLASSE depuis quatre fichiers, donc épinglé par le moteur (même mécanisme qu'en D-059). La SECONDE cause de la dérive du 2026-08-29 — AudioStreamWAV + AudioStreamPlaybackWAV sur amb_valley.wav — a DISPARU : zéro ressource du projet ne survit. C'est la fermeture d'ISS-086 (D-062), pas un élargissement de l'enveloppe ; D-061 exigeait cet ordre exact, et il a été tenu.",
   "classes": {
-    "GDScript": 75,
+    "GDScript": 76,
     "GDScriptNativeClass": 61,
     "Shader": 3
   },
   "extensions": {
-    ".gd": 72,
+    ".gd": 73,
     ".gdshader": 3
   },
   "provenances": [
@@ -28,6 +28,7 @@
     "scripts/enemies",
     "scripts/interaction",
     "scripts/inventory",
+    "scripts/localisation",
     "scripts/lookdev",
     "scripts/player",
     "scripts/reaction",
@@ -39,6 +40,6 @@
   "rids": {
     "DummyShader": 3
   },
-  "total_objets": 139,
-  "total_ressources": 75
+  "total_objets": 140,
+  "total_ressources": 76
 }

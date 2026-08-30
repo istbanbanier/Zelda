@@ -3346,6 +3346,12 @@ ISS-059). Précédé d'un test qui échoue, sinon elle se reperdra.
 
 ### FERMÉE le 2026-08-30 — par propriété, pas par arrêt global
 
+**Ce que cela change pour le joueur : rien d'audible.** La scène corrigée —
+`ValleyWorld`, la vallée V1 — n'est plus celle qu'on atteint en jouant : le menu
+route vers le monde reconstruit (voir ISS-087, ouverte en découvrant ce point).
+Ce correctif nettoie une fuite de mémoire en fin de processus et déverrouille le
+portail de fuite. Il n'ajoute aucun son.
+
 **Attribution épinglée AU SHA DE BASE, pas déduite d'un arbre postérieur.**
 Rejouée dans un worktree détaché à `2cb48dd60f7255e4f8502e201346f1466c5f4792`,
 aucun fichier modifié : `AudioStreamWAV=1`, `AudioStreamPlaybackWAV=1`,
@@ -3365,9 +3371,11 @@ demandé, et libère le flux. La vallée revendique dans `_ready()`, reprend dan
 `AudioServer::_delete_stream_playback_list_node`, déclenchée par un pas de
 mixage puis `AudioServer::_cleanup_lists`. Le porteur qui fuyait est donc
 `AudioServer::playback_list` → `AudioStreamPlaybackWAV::base`, et **`stop()`
-seul suffit**. Le rapport le disait déjà : « Reference count: 1 », et l'autoload
-absent de la liste — donc son `stream` et son cache `_sfx_streams` étaient déjà
-morts. `stream = null` est de l'hygiène, pas la cause. Ma première rédaction
+seul suffit**. Le rapport le laisse DÉDUIRE — « Reference count: 1 » et
+l'autoload absent de la liste sont compatibles avec un `stream` et un cache déjà
+morts — mais la déduction n'est pas la preuve. La preuve est l'**ablation C** :
+`stream = null` retiré, le contrôle apparié ne montre aucune fuite.
+`stream = null` est donc de l'hygiène, pas la cause. Ma première rédaction
 affirmait l'inverse ; elle est corrigée ici et dans D-062 avant d'être recopiée.
 
 **Pourquoi PAS le `stop_ambience()` global que cette fiche proposait.** Sur le
@@ -3393,11 +3401,14 @@ l'ordonnancement du moteur ; l'arrêt global la fait reposer dessus.
 | # | Ce qui a été mesuré | Résultat |
 |---|---|---|
 | 1 | attribution au SHA de base, worktree intact | les 3 conditions réunies |
-| 2 | contrat AVANT correctif | **12 assertions rouges** |
-| 3 | contrat APRÈS correctif | 3/3, 28 assertions |
-| 4 | ablation A — arrêt retiré | 12 rouges à nouveau |
-| 5 | ablation B — arrêt GLOBAL | `E5` rouge : le son d'autrui coupé |
-| 6 | non-régression ciblée | 27/0 (audio, flux, boot, phase E, menu, victoire) |
+| 2 | contrat AVANT correctif (1re version du contrat) | **12 assertions rouges** |
+| 3 | contrat APRÈS correctif, en `--verbose` | 3/3, **26** assertions, 0 ligne de fuite |
+| 4 | ablation A — arrêt retiré, sur le contrat LIVRÉ | 12 rouges à nouveau |
+| 5 | ablation B — arrêt GLOBAL | `E4` rouge : le son d'autrui coupé |
+| 6 | ablation C — `stream = null` retiré | 0 ligne de fuite : **`stop()` seul suffit** |
+| 7 | contrôle apparié, le reproducteur EXACT de l'étape 1 | 0 ligne de fuite sur l'arbre corrigé |
+| 8 | non-régression ciblée | 27/0 (audio, flux, boot, phase E, menu, victoire) |
+| 9 | course de composition sur l'arbre committé `8254e0b0` | suite 1045/0 ; `PROJECT_RESOURCE_LEAK_GATE` **VERT** ; **zéro** ressource du projet ne survit |
 
 **Ce que le contrat mesure, et ce qu'il ne peut pas mesurer.** GDScript ne sait
 pas énumérer l'ObjectDB : la ligne « Leaked instance » n'existe que dans le
@@ -3442,6 +3453,12 @@ silence total entre deux actions est ce qui fait projet non fini ».
   `git grep -l AudioStreamPlayer -- scenes/` — aucun résultat.
 
 ## ISS-088 — La boucle d'ambiance est posée sur un compte d'octets faux — S4, OUVERT
+
+**En clair** : le code croit que le son de fond dure une certaine durée, alors
+qu'il en dure une autre. Le jour où un fond sonore sera réellement joué, il se
+relancera au mauvais moment — un hoquet audible, pas un plantage. Aujourd'hui
+personne ne l'entend, parce qu'aucun monde jouable ne demande de fond sonore
+(ISS-087). Rien à décider tout de suite ; à corriger en même temps qu'ISS-087.
 
 **Découvert le 2026-08-30**, en fermant ISS-086, par lecture de la source du
 moteur et du fichier d'import — pas par l'oreille : ce conteneur n'a aucun

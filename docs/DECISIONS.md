@@ -1880,7 +1880,7 @@ constate qu'il n'y en a aujourd'hui aucun.
 | corrige la fuite | oui | oui |
 | dépend de l'ordonnancement du moteur | **oui** | non |
 | tient sur le chemin `queue_free()` | **non, mesuré** | oui |
-| lignes ajoutées | 3 | ~20 |
+| lignes de MÉCANIQUE ajoutées | 3 | ~20 (le diff total est plus gros : c'est du commentaire de justification) |
 | appelants existants cassés | 0 | 0 |
 
 Vingt lignes pour une garantie qui ne repose sur rien d'externe : le prix est
@@ -1924,3 +1924,58 @@ porteur de cache de ressources du dépôt sans aucun motif de fin de vie, là o�
 `scripts/ui/hud_style.gd` enregistre le sien auprès de `StaticResourceCaches`.
 L'asymétrie est notée, pas refermée : elle ne produit aucun résidu mesuré, et
 une passe de fuite n'élargit pas son périmètre sans rouge préalable.
+
+---
+
+## D-063
+
+**L'enveloppe du résidu EST entérinée, 139/75 → 140/76 — et seulement
+maintenant.** Clôt D-061.
+
+D-061 refusait ce geste et écrivait l'ordre à tenir : « 1. corriger ISS-086
+(test rouge d'abord) ; 2. relancer la composition ; 3. n'entériner alors que le
+`+1 GDScript` de `scripts/localisation`, qui est le seul terme légitime. Faire
+l'inverse — entériner puis corriger — laisserait un contrat trop large que plus
+rien n'obligerait à resserrer. »
+
+Les trois étapes ont été tenues dans cet ordre, et la mesure le montre.
+
+| | avant (2026-08-29) | après |
+|---|---|---|
+| objets | 142 | **140** |
+| ressources | 77 | **76** |
+| dont ressources du PROJET | 1 (`amb_valley.wav`) | **0** |
+| `PROJECT_RESOURCE_LEAK_GATE` | ROUGE | **VERT** |
+| causes de dérive | deux, de natures opposées | **une**, légitime |
+
+La seconde cause a disparu, elle n'a pas été absorbée : `AudioStreamWAV` et
+`AudioStreamPlaybackWAV` ne figurent plus au rapport, et la ligne
+« ressources énumérées » porte `0 autres`. Ce qui est entériné est donc le seul
+`+1 GDScript / +1 .gd` de `scripts/localisation/textes.gd`, avec sa provenance
+nouvelle — exactement le terme que D-061 avait qualifié de légitime, par le
+mécanisme de D-059 : `Textes` est appelé par NOM DE CLASSE, donc épinglé par le
+moteur.
+
+**Mesure** : suite complète en `--verbose` sur l'arbre committé `8254e0b0`,
+1045 tests réussis, 0 échoué, 4 317 s, vidage de 158 967 281 octets ; objets
+annoncés = objets énumérés = 140. Décomposition et log brut dans
+`evidence/world_v2/iss086/gate_fuite/`. Une première course, gardée comme
+diagnostic sous `gate_fuite_run1_diagnostic/`, avait donné les mêmes chiffres
+sur l'arbre antérieur `ba829625` — elle ne décrit pas l'arbre livré, et le
+dossier le dit.
+
+**Le gel a été régénéré ENSUITE, pas avant.** `docs/contrats/residu_cache_moteur.json`
+est lui-même gelé : l'entériner change son sha256 et casse le manifeste. Le
+précédent est daté — commit `3e54cf10` le 2026-08-29, réparé par `2cb48dd6` —
+et `tools/CLAUDE.md` en a tiré la règle : « un contrôle passé avant une
+opération ne dit rien de l'état après ». Séquence tenue : entériner → restaurer
+à la main les quatre champs de provenance que l'écriture efface (`doc`,
+`doc_provenances`, `mesure_le`, `mesure_par`) → `gel_verifier.sh --ecrire` →
+relire SANS tube. Le manifeste ne bouge que de deux lignes : sa date d'en-tête
+et le hash du contrat. 46 éléments intacts.
+
+**Ce que l'entérinement n'achète pas.** Il ne rend pas `validate_fast` vert par
+décret : l'étape 2b juge en mode AGRÉGAT, sur une suite lancée SANS `--verbose`,
+et compare au chiffre près. Si ce régime rendait 139 ou 141, le portail
+rougirait sur un contrat pourtant juste. C'est la situation que D-059 a nommée,
+et la seule à ne pas « corriger » au jugé.

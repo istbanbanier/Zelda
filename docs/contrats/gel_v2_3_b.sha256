@@ -1,5 +1,5 @@
 # GEL V2.3-B — sha256 des éléments gelés par la directive de clôture R2B.3.1 §4.
-# Régénéré volontairement le 2026-08-29 ; toute ligne modifiée doit être
+# Régénéré volontairement le 2026-08-30 ; toute ligne modifiée doit être
 # justifiée dans docs/DECISIONS.md par une régression démontrée.
 ead79105e3deaf70629c1bd928e68d355261217dbd2d5150384b4a7590cf9060  assets/architecture/farm/SM_Farm_Ruins.glb
 c44f9c1e474de23fe53b3bbc14ab63785f90bb8083003bb820c5b0d75c2aab47  assets/architecture/flora/SM_ThunderstruckTree.glb
@@ -9,7 +9,7 @@ f98fe307f2b826e519beee094fec9d2206c4147c6f1254386df95b102a331dc6  assets/archite
 24f390476abece0d5e02c1aa359292eec784aa27e89904cb883a49411b5176df  assets/architecture/village/SM_Village_Wall.glb
 8bf1a1b309aee79f92c77371f0f5137c3e6ceefc1ecf4842f038af4f48c77110  assets/environment/caves/SM_WaterfallCave.glb
 5ff4ec6ee7a5bb6fef95114055354f348e2372f39cf4a104b8164f1b212a8d75  assets/environment/caves/SM_WaterfallCave_r2a358.glb
-5551d2cb157efbce47e49211f2fe3e620a1409466f74c5479f8ac07ca441b3cf  docs/contrats/residu_cache_moteur.json
+0e515183a4e12cca376287ad144878129eeac1d7dbb0750e486c926c1b07ee98  docs/contrats/residu_cache_moteur.json
 8f8644a135dc1db023736a28e5dd09f096848f00f67081e6f5e334d50fa89357  evidence/world_v2/v2_3_r2b3/preuves_lead/shots_r2b3.json
 338dff142a95f8215da1491deaf0d05e3518201657c2e1ad4f2cd4ad2d58f0ee  resources/world_v2/world_v2_layout.json
 607be8fb1cc1af7673200cb858b729faaef4646d050b5ed0e151506d7cc8e4cd  scenes/world_v2/landmarks/ResonancePylon.tscn
