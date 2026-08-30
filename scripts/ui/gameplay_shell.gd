@@ -1170,8 +1170,7 @@ func cooking_confirm() -> void:
 	for id: StringName in needed:
 		inventory.consume_ingredients(id, int(needed[id]))
 	inventory.add_meal(result)
-	_on_notification(Textes.t("cuisine.fait")
-		% String(result.get("name", Textes.t("cuisine.plat_defaut"))))
+	_on_notification(Textes.t("cuisine.fait") % _meal_display_name(result))
 	_close_cooking(&"confirm")
 
 
@@ -1181,6 +1180,15 @@ func _cooking_definitions() -> Array[IngredientDefinition]:
 		definitions.append(load("res://resources/ingredients/%s.tres"
 			% String(id)) as IngredientDefinition)
 	return definitions
+
+
+## Nom affiché d'un plat cuisiné. Repli TRADUIT si le résultat ne porte pas
+## de nom : RecipeRules nomme toujours ses plats aujourd'hui, mais un
+## résultat hérité (sauvegarde, donnée future) ne doit jamais montrer une
+## clé nue ni une ligne vide. Extrait du site de notification pour être
+## pilotable — même motif que `_ingredient_display_name` ci-dessous.
+func _meal_display_name(result: Dictionary) -> String:
+	return String(result.get("name", Textes.t("cuisine.plat_defaut")))
 
 
 ## Nom lisible d'un ingrédient. Retombe sur l'identifiant si la ressource

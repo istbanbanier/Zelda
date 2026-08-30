@@ -349,12 +349,15 @@ func test_aucune_cle_brute_ne_parait_a_l_ecran() -> void:
 ## texte affiché n'a la forme d'une clé, et le français attendu de CHAQUE clé
 ## pilotée est réellement paru (bilan de couverture compté à la fin).
 ##
-## PÉRIMÈTRE DIT FRANCHEMENT — clés de la tranche HORS de portée de ce cas :
-## boss.phase.* (10 clés : exigent un StormGuardian vivant dans la scène),
-## inventaire.detail.stats (exige une arme réelle sélectionnée en grille),
-## cuisine.plat_defaut (repli si RecipeRules ne nomme pas le plat) et
-## cuisine.apercu.instable (exige un mélange incompatible). Leur français
-## reste épinglé par C1, et la résolution de leurs tables par C13.
+## PÉRIMÈTRE DIT FRANCHEMENT — résiduel : boss.phase.* (10 clés), non
+## pilotées, exigent un StormGuardian vivant ; leurs VALEURS restent
+## vérifiées en table par C1/C13, leur AFFICHAGE au site d'appel n'est PAS
+## couvert. (Le mot « tenues » du delta 3 survendait : la contre-revue a
+## mesuré qu'un site dé-enrobé traversait C1 — qui épingle Textes.t(clé),
+## insensible au code de la coquille — et C13 — qui vérifie les tables,
+## insensible au site d'appel. Les trois autres clés du résiduel d'alors,
+## cuisine.apercu.instable, cuisine.plat_defaut et inventaire.detail.stats,
+## sont désormais pilotées ci-dessous.)
 ##
 ## Les états `focus`/`pending` du viseur exigeraient un ResonanceController
 ## vivant : pour eux, on appelle les fonctions qui CALCULENT la ligne que
@@ -511,6 +514,64 @@ func test_les_chemins_d_execution_ne_montrent_jamais_une_cle_nue() -> void:
 		attendus["cuisine.effet." + effet_nom] = \
 			Textes.t("cuisine.effet." + effet_nom)
 
+	# 4b. RAGOÛT INSTABLE — deux familles majeures (§13.4) : l'aperçu porte
+	# l'avertissement traduit. C'était une clé « résiduelle » du delta 3 ; la
+	# contre-revue a montré que dé-enrobée, elle traversait le gate vert.
+	var racine_def: IngredientDefinition = \
+		load("res://resources/ingredients/defense_root.tres") \
+		as IngredientDefinition
+	inventory.add_ingredient(herbe, 1)
+	inventory.add_ingredient(racine_def, 1)
+	check(bool(shell.open_cooking(player)), "préalable : l'atelier rouvre")
+	check(shell.cooking_add(&"stamina_herb")
+			and shell.cooking_add(&"defense_root"),
+		"préalable : herbe + racine choisies")
+	var instable: Dictionary = RecipeRules.cook(
+		[herbe, racine_def] as Array[IngredientDefinition])
+	check(bool(instable.get("valid", false))
+			and bool(instable.get("unstable", false)),
+		"préalable : deux familles majeures rendent le mélange instable")
+	attendus["cuisine.apercu.instable"] = Textes.t("cuisine.apercu.instable")
+	check(shell.cooking_preview_text().contains(
+			Textes.t("cuisine.apercu.instable")),
+		"C7bis — l'aperçu du ragoût instable porte l'avertissement traduit : "
+		+ "%s" % shell.cooking_preview_text())
+	_relever(shell, vus)
+	shell.close_cooking()
+
+	# 4c. PLAT SANS NOM — RecipeRules nomme toujours ses plats : le repli du
+	# site de notification (extrait en `_meal_display_name` pour être
+	# pilotable, comportement identique) n'est joignable qu'en direct.
+	var repli_plat: String = String(shell.call("_meal_display_name", {}))
+	check_equal(repli_plat, Textes.t("cuisine.plat_defaut"),
+		"C7bis — un plat sans nom retombe sur la clé traduite, jamais vide")
+	check_equal(String(shell.call("_meal_display_name",
+			{"name": "Sauté du grimpeur"})), "Sauté du grimpeur",
+		"C7bis — un plat nommé garde son nom : le repli ne l'écrase pas")
+	vus[repli_plat] = true
+	attendus["cuisine.plat_defaut"] = Textes.t("cuisine.plat_defaut")
+
+	# 4d. INVENTAIRE — les stats d'une arme RÉELLE dans le panneau de détail.
+	# LE dé-enrobage que la revue a fait passer inaperçu au delta 3 : il doit
+	# maintenant accuser.
+	var gourdin: WeaponDefinition = \
+		load("res://resources/weapons/wood_club.tres") as WeaponDefinition
+	var arme: WeaponInstance = WeaponInstance.create(gourdin)
+	check(inventaire_armes.add_weapon(arme),
+		"préalable : le gourdin entre à l'inventaire")
+	shell.toggle_inventory()
+	check(shell.is_inventory_open(), "préalable : l'inventaire s'ouvre")
+	var stats_attendu: String = Textes.t("inventaire.detail.stats") % [
+		gourdin.base_damage, gourdin.reach_m, arme.current_durability,
+		gourdin.max_durability]
+	check_equal(shell.detail_stats_text(), stats_attendu,
+		"C7bis — le détail d'arme est le format traduit, aux données réelles")
+	attendus["inventaire.detail.stats"] = stats_attendu
+	_relever(shell, vus)
+	shell.toggle_inventory()
+	check(not shell.is_inventory_open() and not _tree().paused,
+		"fermer l'inventaire rend le monde")
+
 	# 5. RÉSONANCE — chaque verdict, chaque message, posé dans le VRAI label.
 	for verdict: StringName in GameplayShell.RESONANCE_REFUSALS.keys():
 		shell.call("_on_resonance_verdict", &"pulse", verdict, false)
@@ -626,7 +687,7 @@ func test_les_chemins_d_execution_ne_montrent_jamais_une_cle_nue() -> void:
 	check(manquees.is_empty(),
 		"C7bis — chaque clé pilotée doit paraître en français à l'écran ; "
 		+ "manquent : %s" % [manquees])
-	check(attendus.size() >= 55,
+	check(attendus.size() >= 65,
 		"C7bis — bilan : %d clé(s) de la tranche réellement vues à l'écran "
 		% attendus.size() + "(C7 seul n'en atteignait que ~10 sur 76). Un "
 		+ "compte effondré signalerait un test vidé de ses stimuli — le "
