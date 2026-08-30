@@ -1839,3 +1839,88 @@ justifie de la corriger avant d'entériner, dans cet ordre :
 
 Faire l'inverse — entériner puis corriger — laisserait un contrat trop large
 que plus rien n'obligerait à resserrer.
+
+---
+
+## D-062
+
+**L'ambiance appartient à la scène qui l'a demandée — jeton de propriétaire,
+jamais arrêt global.** ISS-086.
+
+D-061 et la fiche ISS-086 proposaient toutes deux la correction évidente : un
+`AudioManager.stop_ambience()` appelé depuis `ValleyWorld._exit_tree()`. Ce
+n'est pas ce qui a été fait, et la raison est mesurée.
+
+**Sur le chemin de production, l'arrêt global aurait suffi.** La source du
+moteur est présente dans ce conteneur — `/opt/src/godot`, tag `4.7.1-stable`,
+c'est la source primaire que `docs/BUILD_ENVIRONMENT.md` désigne — et elle
+tranche sans qu'on ait à lancer quoi que ce soit :
+`SceneTree::change_scene_to_node` retire la scène courante de l'arbre de façon
+SYNCHRONE, dans la pile d'appel de l'appelant, et `SceneTree::_flush_scene_change`
+— seul site où la nouvelle scène est ajoutée — ne court qu'à la frame de
+traitement suivante, depuis `SceneTree::process`. Le `_exit_tree()` de
+l'ancienne précède donc **toujours** le `_ready()` de la nouvelle. Aucune
+ambiance de scène suivante ne peut exister au moment de l'arrêt.
+
+**Mais ce n'est pas le seul chemin, et l'autre a été MESURÉ.** `queue_free()`
+diffère la sortie d'arbre à la fin de la frame. Ablation B — correctif
+remplacé par un `stop_ambience()` global, une seule variable changée — le cas
+`E5` du contrat rougit : `playing=false, stream=null`. L'ambiance que le
+suivant venait de démarrer est bel et bien coupée. Ce chemin est réel
+**aujourd'hui** dans le harnais (`GateTestCase.restore_root()` restaure la
+racine, puis `_sweep()` libère les restes : un monde oublié voit son
+`_exit_tree()` courir après le `_ready()` de la scène restaurée), et il le sera
+en jeu le jour où un second producteur d'ambiance existera — voir ISS-087, qui
+constate qu'il n'y en a aujourd'hui aucun.
+
+**Ce que coûte chaque option, honnêtement.**
+
+| | arrêt global | jeton de propriétaire |
+|---|---|---|
+| corrige la fuite | oui | oui |
+| dépend de l'ordonnancement du moteur | **oui** | non |
+| tient sur le chemin `queue_free()` | **non, mesuré** | oui |
+| lignes ajoutées | 3 | ~20 |
+| appelants existants cassés | 0 | 0 |
+
+Vingt lignes pour une garantie qui ne repose sur rien d'externe : le prix est
+juste. La propriété est conservée en **référence faible**, parce qu'elle exprime
+la non-propriété : un propriétaire mort cesse de correspondre au lieu de garder
+une prise.
+
+**Rectification.** Ma justification d'origine invoquait la réattribution d'un
+identifiant d'instance. Elle est FAUSSE en Godot 4 : `ObjectDB::add_instance`
+compose l'identifiant d'un emplacement ET d'un compteur de validation monotone,
+dont le bouclage est hors de portée d'un processus de jeu. Le choix reste bon ;
+la raison écrite ne l'était pas, et une raison fausse se recopie.
+
+**Seconde rectification, plus importante.** Le message de commit d'origine
+affirmait que `stop()` seul n'aurait pas suffi. C'est faux.
+`AudioServer::stop_playback_stream` ne libère rien — il pose
+`FADE_OUT_TO_DELETION` — et le `unref` réel vit dans la lambda de
+`AudioServer::_delete_stream_playback_list_node`, déclenchée par un pas de
+mixage puis `AudioServer::_cleanup_lists`. Le porteur qui fuyait était
+`AudioServer::playback_list`, pas le `stream` du lecteur, lequel meurt avec
+l'autoload avant le comptage de fin de processus. Le rapport le disait déjà :
+« Reference count: 1 », et l'autoload absent de la liste des fuites.
+`stream = null` est donc de l'hygiène — il rend l'état lisible par un test en
+cours de processus — et non la moitié porteuse du correctif.
+
+**Troisième correction, elle touche le code.** Le propriétaire était d'abord
+FACULTATIF, au motif qu'« il vaut mieux une ambiance de trop qu'un silence
+tombé sur le dos d'autrui ». La revue adverse a montré que ce défaut permissif
+reconduisait ISS-086 par un chemin non couvert : une ambiance réclamée
+anonymement n'a plus de propriétaire, donc plus personne pour la rendre. Le
+paramètre est désormais obligatoire. Qui démarre doit pouvoir rendre.
+
+**Alternative rejetée : purger `_sfx_streams`.** Le cache de flux de
+`AudioManager` retient lui aussi le WAV, mais il meurt avec l'autoload, en
+temps voulu — le rapport de fuite le prouve, chaque objet y portant
+« Reference count: 1 » et l'autoload n'y figurant pas. Purger le cache aurait
+été un geste sans effet sur le résidu et avec un coût de rechargement réel.
+
+**Ce qui reste vrai et n'est pas corrigé ici** : `AudioManager` est le seul
+porteur de cache de ressources du dépôt sans aucun motif de fin de vie, là où
+`scripts/ui/hud_style.gd` enregistre le sien auprès de `StaticResourceCaches`.
+L'asymétrie est notée, pas refermée : elle ne produit aucun résidu mesuré, et
+une passe de fuite n'élargit pas son périmètre sans rouge préalable.

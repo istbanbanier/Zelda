@@ -38,10 +38,15 @@ var _sfx_pool: Array[AudioStreamPlayer] = []
 var _sfx_next: int = 0
 ## Lecteur unique de la boucle d'ambiance — voir `play_ambience()`.
 var _ambience: AudioStreamPlayer = null
-## ISS-086 — QUI a demandé l'ambiance en cours. Une référence FAIBLE, jamais un
-## identifiant d'instance : un identifiant peut être réattribué après libération,
-## et un propriétaire mort doit cesser de correspondre, pas devenir quelqu'un
-## d'autre. `null` = personne ne la revendique (appel anonyme).
+## ISS-086 — QUI a demandé l'ambiance en cours. Une référence FAIBLE : un
+## propriétaire mort cesse de correspondre au lieu de garder une prise.
+##
+## Ma justification d'origine — « un identifiant d'instance peut être réattribué
+## après libération » — est FAUSSE en Godot 4 : `ObjectDB::add_instance` compose
+## l'identifiant d'un emplacement ET d'un compteur de validation monotone, dont
+## le bouclage est hors de portée d'un processus de jeu. Le `WeakRef` reste le
+## bon choix parce qu'il exprime la non-propriété, pas parce qu'il éviterait une
+## collision. Corrigé après lecture de `core/object/object.cpp`.
 var _ambience_owner: WeakRef = null
 ## Dernier instant de lecture par identifiant. Le tour de rôle du pool est
 ## DESTRUCTIF : sans cette garde, un balayage qui touche trois cibles rejoue
@@ -64,11 +69,14 @@ func _ready() -> void:
 ##
 ## Un seul lecteur, réutilisé : deux ambiances ne se superposent jamais.
 ## ISS-086 — `owner` est la scène qui REVENDIQUE cette ambiance. Elle seule
-## pourra la reprendre en partant (`stop_ambience_owned_by`). Omis, l'appel est
-## anonyme : personne ne pourra l'arrêter par propriété, ce qui est exactement le
-## comportement voulu pour une scène qui ne gère pas sa fin de vie — mieux vaut
-## une ambiance de trop qu'un silence tombé sur le dos d'autrui.
-func play_ambience(sound: StringName, owner: Object = null) -> void:
+## pourra la reprendre en partant (`stop_ambience_owned_by`).
+##
+## LE PARAMÈTRE EST OBLIGATOIRE, ET CE N'EST PAS UN DÉTAIL D'API. Sa première
+## version le rendait facultatif « pour ne pas couper le son d'autrui » ; la
+## revue adverse a montré que cela reconduisait la fuite d'ISS-086 par un chemin
+## non couvert — une ambiance sans propriétaire est une ambiance que PERSONNE ne
+## peut plus rendre. Qui démarre doit pouvoir rendre.
+func play_ambience(sound: StringName, owner: Object) -> void:
 	var stream: AudioStream = _sfx_stream(sound)
 	if stream == null:
 		return
@@ -117,12 +125,24 @@ func stop_ambience_owned_by(owner: Object) -> bool:
 	return true
 
 
-## ISS-086 — LA CAUSE MÉCANIQUE DE LA FUITE TENAIT EN UNE LIGNE MANQUANTE.
+## ISS-086 — CE QUI FERME LA FUITE, ET CE QUI EST DE L'HYGIÈNE.
 ##
-## `stop()` retire la lecture du serveur audio ; il ne rend PAS la ressource.
-## Le lecteur est un enfant de CET autoload : il survit à toutes les scènes, et
-## son `stream` gardait `amb_valley.wav` référencée jusqu'à l'extinction du
-## processus, où le moteur la signalait — « Resource still in use ».
+## Rectification : mon message de commit d'origine disait que `stop()` seul
+## n'aurait pas suffi. C'est FAUX, et la source du moteur le dit.
+## `AudioStreamPlayerInternal::stop_basic` vide `stream_playbacks`, mais
+## `AudioServer::stop_playback_stream` ne libère rien — il pose l'état
+## `FADE_OUT_TO_DELETION`, et le `unref` réel vit dans la lambda de
+## `AudioServer::_delete_stream_playback_list_node`, déclenchée par un pas de
+## mixage puis `AudioServer::_cleanup_lists`. Le porteur qui fuyait était donc
+## `AudioServer::playback_list` → `AudioStreamPlaybackWAV::base`, pas le
+## `stream` du lecteur : ce dernier meurt avec l'autoload, bien avant le
+## comptage de fin de processus (le rapport le prouve — « Reference count: 1 »,
+## et l'autoload absent de la liste).
+##
+## `stop()` FERME la fuite, pourvu qu'il coure assez tôt pour qu'un pas de
+## mixage suive. `stream = null` est de l'hygiène : il rend tout de suite une
+## référence qui serait morte plus tard, et rend l'état lisible par un test en
+## cours de processus. Il est gardé pour cela, pas pour une cause qu'il n'a pas.
 func _release_ambience() -> void:
 	_ambience_owner = null
 	if _ambience == null or not is_instance_valid(_ambience):

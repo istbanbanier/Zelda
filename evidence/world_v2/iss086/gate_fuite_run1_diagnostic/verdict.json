@@ -1,0 +1,21 @@
+{
+  "classes": {
+    "GDScript": 76,
+    "GDScriptNativeClass": 61,
+    "Shader": 3
+  },
+  "motifs_a": [],
+  "motifs_b": [
+    "croissance : GDScript = 76, contrat = 75",
+    "croissance : .gd = 73, contrat = 72",
+    "provenance(s) nouvelle(s) : scripts/localisation"
+  ],
+  "portail_a": "VERT",
+  "ressources_gd": 73,
+  "ressources_gdshader": 3,
+  "ressources_projet": [],
+  "rids": {
+    "DummyShader": 3
+  },
+  "telemetrie_b": "DERIVE"
+}

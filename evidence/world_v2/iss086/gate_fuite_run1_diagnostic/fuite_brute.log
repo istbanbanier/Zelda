@@ -1,0 +1,218 @@
+WARNING: 140 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+ERROR: 3 RID allocations of type 'N13RendererDummy15MaterialStorage11DummyShaderE' were leaked at exit.
+Leaked instance: GDScriptNativeClass:9223372042894573901 - Reference count: 1
+Leaked instance: GDScriptNativeClass:9223372042961682769 - Reference count: 2
+Leaked instance: GDScriptNativeClass:9223372043666325883 - Reference count: 1
+Leaked instance: GDScriptNativeClass:9223372043901206921 - Reference count: 1
+Leaked instance: GDScriptNativeClass:9223372044085756308 - Reference count: 1
+Leaked instance: GDScriptNativeClass:9223372044152865176 - Reference count: 2
+Leaked instance: GDScriptNativeClass:9223372044236751261 - Reference count: 17
+Leaked instance: GDScriptNativeClass:9223372044270305695 - Reference count: 6
+Leaked instance: GDScriptNativeClass:9223372044555518384 - Reference count: 4
+Leaked instance: GDScriptNativeClass:9223372044723290554 - Reference count: 1
+Leaked instance: GDScriptNativeClass:9223372044773622205 - Reference count: 1
+Leaked instance: GDScriptNativeClass:9223372044807176639 - Reference count: 1
+Leaked instance: GDScriptNativeClass:9223372044891062724 - Reference count: 2
+Leaked instance: GDScriptNativeClass:9223372045025280460 - Reference count: 2
+Leaked instance: GDScriptNativeClass:9223372045092389328 - Reference count: 10
+Leaked instance: GDScriptNativeClass:9223372045360824800 - Reference count: 6
+Leaked instance: GDScriptNativeClass:9223372045662814706 - Reference count: 1
+Leaked instance: GDScriptNativeClass:9223372045780255225 - Reference count: 1
+Leaked instance: GDScriptNativeClass:9223372046853997113 - Reference count: 1
+Leaked instance: GDScriptNativeClass:9223372046954660415 - Reference count: 3
+Leaked instance: GDScriptNativeClass:9223372047927739001 - Reference count: 1
+Leaked instance: GDScriptNativeClass:9223372048347169426 - Reference count: 1
+Leaked instance: GDScriptNativeClass:9223372048783377068 - Reference count: 1
+Leaked instance: GDScriptNativeClass:9223372049219584710 - Reference count: 1
+Leaked instance: GDScriptNativeClass:9223372049236361927 - Reference count: 1
+Leaked instance: GDScriptNativeClass:9223372049571906267 - Reference count: 2
+Leaked instance: GDScriptNativeClass:9223372049655792352 - Reference count: 2
+Leaked instance: GDScriptNativeClass:9223372049722901220 - Reference count: 37
+Leaked instance: GDScriptNativeClass:9223372049924227824 - Reference count: 5
+Leaked instance: GDScriptNativeClass:9223372049957782258 - Reference count: 5
+Leaked instance: GDScriptNativeClass:9223372050377212683 - Reference count: 1
+Leaked instance: GDScriptNativeClass:9223372050477875985 - Reference count: 21
+Leaked instance: GDScriptNativeClass:9223372050511430419 - Reference count: 47
+Leaked instance: GDScriptNativeClass:9223372050561762070 - Reference count: 3
+Leaked instance: GDScriptNativeClass:9223372050628870938 - Reference count: 1
+Leaked instance: GDScriptNativeClass:9223372050746311457 - Reference count: 2
+Leaked instance: GDScriptNativeClass:9223372051903939430 - Reference count: 7
+Leaked instance: GDScriptNativeClass:9223372052440810374 - Reference count: 1
+Leaked instance: GDScriptNativeClass:9223372052658914195 - Reference count: 4
+Leaked instance: GDScriptNativeClass:9223372053095121837 - Reference count: 1
+Leaked instance: GDScriptNativeClass:9223372053111899054 - Reference count: 1
+Leaked instance: GDScriptNativeClass:9223372053548106696 - Reference count: 7
+Leaked instance: GDScriptNativeClass:9223372053631992781 - Reference count: 25
+Leaked instance: GDScriptNativeClass:9223372053950759904 - Reference count: 13
+Leaked instance: GDScriptNativeClass:9223372054454076414 - Reference count: 3
+Leaked instance: GDScriptNativeClass:9223372054537962499 - Reference count: 1
+Leaked instance: GDScriptNativeClass:9223372054823175188 - Reference count: 5
+Leaked instance: GDScriptNativeClass:9223372054890284056 - Reference count: 10
+Leaked instance: GDScriptNativeClass:9223372055007724575 - Reference count: 2
+Leaked instance: GDScriptNativeClass:9223372055276160047 - Reference count: 1
+Leaked instance: GDScriptNativeClass:9223372055360046132 - Reference count: 2
+Leaked instance: GDScriptNativeClass:9223372055393600566 - Reference count: 2
+Leaked instance: GDScriptNativeClass:9223372055477486651 - Reference count: 1
+Leaked instance: GDScriptNativeClass:9223372055645258821 - Reference count: 22
+Leaked instance: GDScriptNativeClass:9223372055678813255 - Reference count: 7
+Leaked instance: GDScriptNativeClass:9223372055880139859 - Reference count: 4
+Leaked instance: GDScriptNativeClass:9223372055980803161 - Reference count: 6
+Leaked instance: GDScriptNativeClass:9223372056266015850 - Reference count: 1
+Leaked instance: GDScriptNativeClass:9223372056685446275 - Reference count: 1
+Leaked instance: GDScriptNativeClass:9223372057322980521 - Reference count: 2
+Leaked instance: GDScriptNativeClass:9223372059504018731 - Reference count: 2
+Leaked instance: GDScript:9223372066164573706 - Reference count: 3
+Leaked instance: GDScript:9223372066785330701 - Reference count: 11
+Leaked instance: GDScript:9223372070375654982 - Reference count: 2
+Leaked instance: GDScript:9223372070627313223 - Reference count: 12
+Leaked instance: GDScript:9223372103846201005 - Reference count: 2
+Leaked instance: GDScript:9223372077153650373 - Reference count: 9
+Leaked instance: GDScript:9223372078210614990 - Reference count: 16
+Leaked instance: GDScript:9223372078596490961 - Reference count: 1
+Leaked instance: GDScript:9223372078713931474 - Reference count: 3
+Leaked instance: GDScript:9223372078831371987 - Reference count: 3
+Leaked instance: GDScript:9223372078982366932 - Reference count: 6
+Leaked instance: GDScript:9223372079099807445 - Reference count: 2
+Leaked instance: GDScript:9223372081012410083 - Reference count: 12
+Leaked instance: GDScript:9223372081129850596 - Reference count: 2
+Leaked instance: GDScript:9223372081280845541 - Reference count: 13
+Leaked instance: GDScript:9223372081465394918 - Reference count: 1
+Leaked instance: GDScript:9223372081582835431 - Reference count: 4
+Leaked instance: GDScript:9223372081700275944 - Reference count: 3
+Leaked instance: GDScript:9223372081817716457 - Reference count: 3
+Leaked instance: GDScript:9223372095273043701 - Reference count: 5
+Leaked instance: GDScript:9223372095424038646 - Reference count: 6
+Leaked instance: GDScript:9223372083428329210 - Reference count: 2
+Leaked instance: GDScript:9223372083528992507 - Reference count: 4
+Leaked instance: GDScript:9223372094283187964 - Reference count: 3
+Leaked instance: GDScript:9223372094182524669 - Reference count: 1
+Leaked instance: GDScript:9223372102353028864 - Reference count: 2
+Leaked instance: GDScript:9223372084233635588 - Reference count: 2
+Leaked instance: GDScript:9223372084334298885 - Reference count: 3
+Leaked instance: GDScript:9223372084367853318 - Reference count: 4
+Leaked instance: GDScript:9223372084485293831 - Reference count: 3
+Leaked instance: GDScript:9223372084602734344 - Reference count: 3
+Leaked instance: GDScript:9223372084720174857 - Reference count: 2
+Leaked instance: GDScript:9223372084837615370 - Reference count: 5
+Leaked instance: GDScript:9223372084955055883 - Reference count: 3
+Leaked instance: GDScript:9223372085072496396 - Reference count: 2
+Leaked instance: GDScript:9223372085189936909 - Reference count: 9
+Leaked instance: GDScript:9223372085307377422 - Reference count: 7
+Leaked instance: GDScript:9223372085424817935 - Reference count: 1
+Leaked instance: GDScript:9223372085542258448 - Reference count: 1
+Leaked instance: GDScript:9223372085659698961 - Reference count: 1
+Leaked instance: GDScript:9223372085777139474 - Reference count: 20
+Leaked instance: GDScript:9223372085961688851 - Reference count: 2
+Leaked instance: GDScript:9223372086112683796 - Reference count: 3
+Leaked instance: GDScript:9223372086230124309 - Reference count: 2
+Leaked instance: GDScript:9223372086347564822 - Reference count: 15
+Leaked instance: GDScript:9223372086465005335 - Reference count: 1
+Leaked instance: GDScript:9223372086582445848 - Reference count: 3
+Leaked instance: GDScript:9223372086766995225 - Reference count: ERROR: 76 resources still in use at exit.
+Leaked instance: GDScript:9223372086884435738 - Reference count: 14
+Leaked instance: GDScript:9223372087001876251 - Reference count: 6
+Leaked instance: GDScript:9223372089350686493 - Reference count: 2
+Leaked instance: GDScript:9223372089820448543 - Reference count: 6
+Leaked instance: GDScript:9223372089703008032 - Reference count: 2
+Leaked instance: GDScript:9223372088276944673 - Reference count: 3
+Leaked instance: GDScript:9223372088394385186 - Reference count: 8
+Leaked instance: GDScript:9223372088511825699 - Reference count: 7
+Leaked instance: GDScript:9223372088629266212 - Reference count: 31
+Leaked instance: GDScript:9223372088780261157 - Reference count: 1
+Leaked instance: GDScript:9223372090491537190 - Reference count: 1
+Leaked instance: GDScript:9223372090642532135 - Reference count: 10
+Leaked instance: GDScript:9223372098041284392 - Reference count: 3
+Leaked instance: GDScript:9223372098813036332 - Reference count: 1
+Leaked instance: GDScript:9223372099031140142 - Reference count: 7
+Leaked instance: GDScript:9223380188266498906 - Reference count: 5
+Leaked instance: GDScript:9223380188149058505 - Reference count: 2
+Leaked instance: GDScript:9223380188987919318 - Reference count: 1
+Leaked instance: GDScript:9223380189172468766 - Reference count: 1
+Leaked instance: GDScript:9223380188383939675 - Reference count: 3
+Leaked instance: GDScript:9223380188685929572 - Reference count: 1
+Leaked instance: Shader:9223397496363945349 - Reference count: 2
+Leaked instance: GDScript:9223533559988359376 - Reference count: 4
+Leaked instance: GDScript:9223377441165154065 - Reference count: 1
+Leaked instance: GDScript:9223533561934520529 - Reference count: 4
+Leaked instance: GDScript:9223533560105804669 - Reference count: 2
+Leaked instance: GDScript:9223397496129072000 - Reference count: 2
+Leaked instance: GDScript:9223533561716422760 - Reference count: 6
+Leaked instance: GDScript:9223533560810453296 - Reference count: 6
+Leaked instance: Shader:9223373261692224454 - Reference count: 2
+Leaked instance: Shader:9223373263470609372 - Reference count: 2
+Resource still in use: res://scripts/core/user_settings.gd (GDScript)
+Resource still in use: res://scripts/core/static_resource_caches.gd (GDScript)
+Resource still in use: res://scripts/ui/hud_style.gd (GDScript)
+Resource still in use: res://scripts/localisation/textes.gd (GDScript)
+Resource still in use: res://resources/combat/attack_definition.gd (GDScript)
+Resource still in use: res://resources/weapons/weapon_definition.gd (GDScript)
+Resource still in use: res://scripts/inventory/weapon_instance.gd (GDScript)
+Resource still in use: res://resources/ingredients/ingredient_definition.gd (GDScript)
+Resource still in use: res://scripts/components/inventory_component.gd (GDScript)
+Resource still in use: res://scripts/components/status_effect_component.gd (GDScript)
+Resource still in use: res://scripts/combat/damage_event.gd (GDScript)
+Resource still in use: res://scripts/components/health_component.gd (GDScript)
+Resource still in use: res://resources/tuning/stamina_tuning.gd (GDScript)
+Resource still in use: res://scripts/components/stamina_component.gd (GDScript)
+Resource still in use: res://resources/tuning/locomotion_tuning.gd (GDScript)
+Resource still in use: res://scripts/player/camera_rig.gd (GDScript)
+Resource still in use: res://scripts/components/input_intent.gd (GDScript)
+Resource still in use: res://scripts/core/latency_probe.gd (GDScript)
+Resource still in use: res://scripts/components/player_input_reader.gd (GDScript)
+Resource still in use: res://scripts/electricity/electric_node.gd (GDScript)
+Resource still in use: res://scripts/reaction/resonance_link_node.gd (GDScript)
+Resource still in use: res://scripts/reaction/material_profile.gd (GDScript)
+Resource still in use: res://scripts/reaction/material_state_component.gd (GDScript)
+Resource still in use: res://scripts/reaction/resonance_target_component.gd (GDScript)
+Resource still in use: res://scripts/enemies/noise_events.gd (GDScript)
+Resource still in use: res://scripts/reaction/resonance_controller.gd (GDScript)
+Resource still in use: res://resources/tuning/climb_tuning.gd (GDScript)
+Resource still in use: res://scripts/components/climbing_component.gd (GDScript)
+Resource still in use: res://scripts/components/ledge_detector_component.gd (GDScript)
+Resource still in use: res://scripts/components/action_alignment_component.gd (GDScript)
+Resource still in use: res://scripts/components/hurtbox_component.gd (GDScript)
+Resource still in use: res://scripts/combat/damage_formula.gd (GDScript)
+Resource still in use: res://scripts/components/hitbox_component.gd (GDScript)
+Resource still in use: res://scripts/combat/attack_controller.gd (GDScript)
+Resource still in use: res://scripts/components/lock_on_component.gd (GDScript)
+Resource still in use: res://scripts/combat/arrow_projectile.gd (GDScript)
+Resource still in use: res://resources/combat/bow_tuning.gd (GDScript)
+Resource still in use: res://scripts/combat/bow_component.gd (GDScript)
+Resource still in use: res://resources/combat/dodge_definition.gd (GDScript)
+Resource still in use: res://resources/combat/hurt_tuning.gd (GDScript)
+Resource still in use: res://resources/tuning/guard_tuning.gd (GDScript)
+Resource still in use: res://scripts/components/posture_component.gd (GDScript)
+Resource still in use: res://scripts/components/poise_component.gd (GDScript)
+Resource still in use: res://scripts/characters/character_anim_set.gd (GDScript)
+Resource still in use: res://scripts/core/asset_registry.gd (GDScript)
+Resource still in use: res://scripts/characters/character_visual.gd (GDScript)
+Resource still in use: res://scripts/player/player_controller.gd (GDScript)
+Resource still in use: res://scripts/world/reward_anchor.gd (GDScript)
+Resource still in use: res://scripts/art/painterly_recipe.gd (GDScript)
+Resource still in use: res://scripts/world/storm_cell.gd (GDScript)
+Resource still in use: res://scripts/world/kit_scale.gd (GDScript)
+Resource still in use: res://scripts/world/kit_placement.gd (GDScript)
+Resource still in use: res://scripts/electricity/electric_graph.gd (GDScript)
+Resource still in use: res://scripts/reaction/element_packet.gd (GDScript)
+Resource still in use: res://scripts/reaction/reaction_system.gd (GDScript)
+Resource still in use: res://resources/enemies/enemy_tuning.gd (GDScript)
+Resource still in use: res://scripts/enemies/enemy_base.gd (GDScript)
+Resource still in use: res://scripts/enemies/combat_coordinator.gd (GDScript)
+Resource still in use: res://scripts/save/save_merge_guard.gd (GDScript)
+Resource still in use: res://scripts/interaction/scene_door.gd (GDScript)
+Resource still in use: res://shaders/characters/SH_CharacterPainterlyCutout.gdshader (Shader)
+Resource still in use: res://shaders/characters/SH_CharacterPainterly.gdshader (Shader)
+Resource still in use: res://scripts/player/hero_signs.gd (GDScript)
+Resource still in use: res://scripts/dungeon/pushable_block.gd (GDScript)
+Resource still in use: res://scripts/dungeon/puzzle_hint_tracker.gd (GDScript)
+Resource still in use: res://scripts/dungeon/room_dressing.gd (GDScript)
+Resource still in use: res://scripts/dungeon/reset_button.gd (GDScript)
+Resource still in use: res://scripts/electricity/electric_visual.gd (GDScript)
+Resource still in use: res://scripts/dungeon/dungeon_room.gd (GDScript)
+Resource still in use: res://shaders/foliage/SH_FoliageWindPainterly.gdshader (Shader)
+Resource still in use: res://scripts/lookdev/hero_shot_lab.gd (GDScript)
+Resource still in use: res://scripts/world_v2/world_v2_heightmap.gd (GDScript)
+Resource still in use: res://scripts/world_v2/world_v2_ground_material.gd (GDScript)
+Resource still in use: res://scripts/world_v2/world_v2_terrain_builder.gd (GDScript)
+Resource still in use: res://scripts/world_v2/world_v2_vegetation_builder.gd (GDScript)
+Resource still in use: res://scripts/world_v2/poi/world_v2_place_kit.gd (GDScript)

@@ -3293,7 +3293,7 @@ pas T1.
 
 ---
 
-## ISS-086 — L'ambiance de la vallée V1 survit au processus — S3, OUVERT
+## ISS-086 — L'ambiance de la vallée V1 survit au processus — S3, FERMÉ
 
 **Découvert le 2026-08-29**, par la course de composition exigée avant toute
 entérination d'enveloppe de résidu (passe de durcissement du camp).
@@ -3343,3 +3343,138 @@ ISS-059). Précédé d'un test qui échoue, sinon elle se reperdra.
   serait exactement la dérive que ce dépôt paie d'habitude.
 - **Preuve** : `evidence/world_v2/camp_hardening/composition_residu.log` et
   `fuite_audio_preexistante.log`.
+
+### FERMÉE le 2026-08-30 — par propriété, pas par arrêt global
+
+**Attribution épinglée AU SHA DE BASE, pas déduite d'un arbre postérieur.**
+Rejouée dans un worktree détaché à `2cb48dd60f7255e4f8502e201346f1466c5f4792`,
+aucun fichier modifié : `AudioStreamWAV=1`, `AudioStreamPlaybackWAV=1`,
+`amb_valley.wav` encore utilisée. Journal :
+`evidence/world_v2/iss086/etape1_attribution_2cb48dd6.log`.
+
+**La mécanique, corrigée.** Le lecteur d'ambiance est un enfant de l'autoload
+`AudioManager` : il survit à toutes les scènes. `play_ambience()` prend
+désormais un PROPRIÉTAIRE **obligatoire**, conservé en référence faible.
+`stop_ambience_owned_by(owner)` n'arrête que si l'appelant est bien celui qui a
+demandé, et libère le flux. La vallée revendique dans `_ready()`, reprend dans
+`_exit_tree()`.
+
+**Ce qui ferme réellement la fuite, après lecture de la source du moteur.**
+`AudioServer::stop_playback_stream` ne libère rien : il pose
+`FADE_OUT_TO_DELETION`, et le `unref` réel vit dans la lambda de
+`AudioServer::_delete_stream_playback_list_node`, déclenchée par un pas de
+mixage puis `AudioServer::_cleanup_lists`. Le porteur qui fuyait est donc
+`AudioServer::playback_list` → `AudioStreamPlaybackWAV::base`, et **`stop()`
+seul suffit**. Le rapport le disait déjà : « Reference count: 1 », et l'autoload
+absent de la liste — donc son `stream` et son cache `_sfx_streams` étaient déjà
+morts. `stream = null` est de l'hygiène, pas la cause. Ma première rédaction
+affirmait l'inverse ; elle est corrigée ici et dans D-062 avant d'être recopiée.
+
+**Pourquoi PAS le `stop_ambience()` global que cette fiche proposait.** Sur le
+chemin de production, il aurait suffi : lu dans la source du moteur présente
+dans le conteneur (`/opt/src/godot`, tag `4.7.1-stable`),
+`SceneTree::change_scene_to_node` retire la scène courante de l'arbre de façon
+SYNCHRONE, et `SceneTree::_flush_scene_change` n'ajoute la nouvelle qu'à la
+frame de traitement suivante — le `_exit_tree()` de l'ancienne précède donc
+toujours le `_ready()` de la nouvelle.
+
+Mais ce n'est pas le seul chemin par lequel une scène quitte l'arbre.
+`queue_free()` diffère la sortie à la fin de la frame, et l'ablation B l'a
+MESURÉ : avec un arrêt global, l'ambiance que le suivant venait de démarrer est
+coupée (`E5` rouge, `playing=false, stream=null`). Ce chemin est réel
+aujourd'hui dans le harnais — `GateTestCase.restore_root()` restaure la racine
+puis `_sweep()` libère les restes — et il le sera en jeu le jour où une seconde
+scène démarrera une ambiance. La propriété rend la garantie indépendante de
+l'ordonnancement du moteur ; l'arrêt global la fait reposer dessus.
+
+**Les preuves, dans l'ordre où elles ont été produites** — toutes sous
+`evidence/world_v2/iss086/` :
+
+| # | Ce qui a été mesuré | Résultat |
+|---|---|---|
+| 1 | attribution au SHA de base, worktree intact | les 3 conditions réunies |
+| 2 | contrat AVANT correctif | **12 assertions rouges** |
+| 3 | contrat APRÈS correctif | 3/3, 28 assertions |
+| 4 | ablation A — arrêt retiré | 12 rouges à nouveau |
+| 5 | ablation B — arrêt GLOBAL | `E5` rouge : le son d'autrui coupé |
+| 6 | non-régression ciblée | 27/0 (audio, flux, boot, phase E, menu, victoire) |
+
+**Ce que le contrat mesure, et ce qu'il ne peut pas mesurer.** GDScript ne sait
+pas énumérer l'ObjectDB : la ligne « Leaked instance » n'existe que dans le
+rapport de SORTIE du moteur. Le contrat mesure la chaîne de détention que ce
+rapport nomme — `has_stream_playback()` faux, `stream` nul, lecteur arrêté — à
+l'endroit exact où elle se forme. Le rapport lui-même reste jugé par la course
+de composition. Deux couches, deux prix.
+
+**Correctif** : `tests/integration/test_ambience_ownership_iss086.gd`,
+`scripts/core/audio_manager.gd`, `scripts/world/valley_world.gd`.
+
+
+## ISS-087 — Le monde réellement joué n'a AUCUN fond sonore — S3, OUVERT
+
+**Découvert le 2026-08-30**, en fermant ISS-086 : en cherchant qui d'autre
+démarre une ambiance, la réponse est **personne**.
+
+`play_ambience()` n'a qu'un seul appelant dans tout le dépôt :
+`scripts/world/valley_world.gd::_ready()`. Or la vallée V1 n'est plus le monde
+joué — `scripts/ui/main_menu.gd::WORLD_SCENE` et
+`scripts/ui/victory_screen.gd::VALLEY_SCENE` routent tous deux vers
+`res://scenes/world_v2/WorldV2.tscn`. Aucun `.tscn` du dépôt ne porte de nœud
+`AudioStreamPlayer`, et ni le monde reconstruit, ni les salles du donjon, ni
+l'arène, ni le vestibule, ni le menu ne demandent d'ambiance.
+
+**Conséquence pour le joueur** : hors des sons courts (pas, coups, coffres), le
+jeu livré est silencieux du début à la fin. C'est exactement le défaut que
+`audio_manager.gd` dit vouloir empêcher dans son propre commentaire — « le
+silence total entre deux actions est ce qui fait projet non fini ».
+
+- **Sévérité** : S3 — aucune conséquence mécanique, mais c'est un défaut de
+  finition que le propriétaire entendra dès la première minute de jeu.
+- **Pourquoi ce n'est pas corrigé ici** : ajouter une ambiance à un monde est
+  une modification de CONTENU. La directive de fermeture d'ISS-086 l'interdit
+  explicitement, et une passe de fuite n'est pas le moment de choisir un son.
+- **Ce qu'il faudra** : un producteur d'ambiance dans le monde reconstruit,
+  revendiquant sa propriété comme la vallée le fait désormais
+  (`play_ambience(sound, self)` + `stop_ambience_owned_by(self)`), et un asset
+  d'ambiance qui ne soit pas `amb_valley.wav` réemployé tel quel.
+- **Preuve** : `git grep play_ambience` — deux occurrences hors
+  `audio_manager.gd`, toutes deux dans `valley_world.gd` ;
+  `git grep -l AudioStreamPlayer -- scenes/` — aucun résultat.
+
+## ISS-088 — La boucle d'ambiance est posée sur un compte d'octets faux — S4, OUVERT
+
+**Découvert le 2026-08-30**, en fermant ISS-086, par lecture de la source du
+moteur et du fichier d'import — pas par l'oreille : ce conteneur n'a aucun
+périphérique audio (ISS-004).
+
+`scripts/core/audio_manager.gd::play_ambience` pose la boucle ainsi :
+
+```gdscript
+wav.loop_end = wav.data.size() / 2   # « 16 bits mono : deux octets par échantillon »
+```
+
+Le commentaire décrit le fichier SOURCE. La ressource IMPORTÉE, elle, n'est pas
+du PCM : `assets/audio/sfx/amb_valley.wav.import` porte `compress/mode=2`, et
+l'énumération du moteur est `PCM (Uncompressed), IMA ADPCM, Quite OK Audio`
+(`editor/import/resource_importer_wav.cpp`) — donc **QOA**. `data` contient des
+octets QOA encodés, et le moteur compte ses trames par
+`qoa.desc.samples * qoa.desc.channels` (`scene/resources/audio_stream_wav.h`),
+pas par `octets / 2`.
+
+`loop_end` est donc posé à une valeur qui n'a aucun rapport avec la durée réelle
+du clip. La boucle existe — c'est ce qui compte pour ISS-086, et c'est mesuré —
+mais elle ne boucle pas là où le code croit.
+
+- **Sévérité** : S4 — le fond sonore n'est aujourd'hui joué par aucun monde
+  réellement atteignable (ISS-087), donc personne ne l'entend.
+- **Ce qu'il faudra** : calculer la borne depuis la ressource
+  (`wav.get_length() * wav.mix_rate`, ou l'API que la version installée
+  expose) au lieu d'un compte d'octets, et poser la boucle sur une COPIE plutôt
+  que sur l'exemplaire partagé du cache — `play_ambience` mute aujourd'hui la
+  ressource rendue par `load()`, donc celle que `play_sfx` réutilisera.
+- **Statut de l'effet audible** : `À VÉRIFIER` — aucun périphérique ici.
+- **Preuve** : `assets/audio/sfx/amb_valley.wav.import` (`compress/mode=2`) ;
+  `/opt/src/godot/editor/import/resource_importer_wav.cpp` ;
+  `/opt/src/godot/scene/resources/audio_stream_wav.h`.
+
+

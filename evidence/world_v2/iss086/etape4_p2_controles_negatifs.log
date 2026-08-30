@@ -1,28 +1,35 @@
---- ÉTAPE 4, PORTAIL 2 : LES DEUX CONTRÔLES NÉGATIFS ---
-branche : claude/world-v2-iss086-ambiance ; correctif présent, puis ablé, puis restauré.
+--- CONTRÔLES NÉGATIFS — TROIS ABLATIONS, UNE VARIABLE CHACUNE ---
 
-ABLATION A — on RETIRE l'arrêt de ValleyWorld._exit_tree().
-  attendu : le contrat redevient rouge exactement comme avant le correctif.
-  mesuré  : 12 assertions rouges, cas E toujours vert.
+ABLATION A — l'arrêt est RETIRÉ de ValleyWorld._exit_tree().
+  attendu : le contrat redevient rouge.
     46:=== RÉSULTAT: 1 réussi(s), 12 échoué(s) ===
+    -> 12 assertions rouges. Le contrat corrigé rougit toujours d'abord.
 
-ABLATION B — on remplace l'arrêt par PROPRIÉTÉ par un stop_ambience() GLOBAL.
-  attendu : A/B/C/D redeviennent verts — et le cas E doit rougir, car la
-            sortie tardive volerait l'ambiance de la scène suivante.
-  mesuré  :
+ABLATION B — l'arrêt par PROPRIÉTÉ est remplacé par un stop_ambience() GLOBAL.
+  attendu : A/B/C/D verts, et le cas de sortie tardive ROUGE.
     36:=== RÉSULTAT: 2 réussi(s), 1 échoué(s) ===
       ÉCHEC: test_ambience_ownership_iss086.gd::test_une_sortie_tardive_ne_coupe_pas_lambiance_suivante — E5 — la sortie tardive de la vallée n'a PAS coupé l'ambiance de la scène suivante (playing=false, stream=null, playback=false)
+  (mesuré sur la première version du contrat, où ce cas s'appelait E5 ;
+   il s'appelle E4 depuis la correction, même prédicat.)
 
-CE QUE L'ABLATION B PROUVE, ET QU'AUCUNE LECTURE DE CODE NE POUVAIT DONNER :
-la source du moteur est absente de ce conteneur, donc je ne pouvais pas
-vérifier si _exit_tree() court avant ou après que la scène suivante réclame
-l'ambiance. La mesure tranche : sur le chemin queue_free(), elle court APRÈS.
-Un arrêt global aveugle coupe donc réellement le son d'autrui — le jeton de
-propriétaire n'est pas une précaution décorative.
+ABLATION C — le « stream = null » est retiré, « stop() » reste seul.
+  question : mon message de commit d'origine affirmait que stop() seul
+             n'aurait pas suffi. Est-ce vrai ?
+  méthode  : le contrôle apparié, --filter=phase_e_chain --verbose.
+    === RÉSULTAT: 2 réussi(s), 0 échoué(s) ===
+    -> AUCUNE ligne de fuite. **stop() SEUL SUFFIT.**
 
-=== ABLATION A, journal intégral ===
+  MON AFFIRMATION ÉTAIT DONC FAUSSE, et elle est corrigée partout :
+  audio_manager.gd, KNOWN_ISSUES ISS-086, DECISIONS D-062. La source du
+  moteur disait déjà pourquoi — AudioServer::stop_playback_stream ne libère
+  rien, il pose FADE_OUT_TO_DELETION, et le unref vit dans la lambda de
+  _delete_stream_playback_list_node — mais je ne l'avais pas lue.
+  « stream = null » est gardé pour l'HYGIÈNE : il rend l'état lisible par
+  un test en cours de processus. Pas pour une cause qu'il n'a pas.
+
+=== ABLATION A, journal ===
 LANCER_GODOT: VERROU=/home/user/Zelda/.git/heavy_tools.lock
-LANCER_GODOT: XDG_DATA_HOME=/tmp/lancer_godot_ud_anVsUzeD
+LANCER_GODOT: XDG_DATA_HOME=/tmp/lancer_godot_ud_QL18btPv
 LANCER_GODOT: CWD=/home/user/wt-iss086
 LANCER_GODOT: CMD=/usr/local/bin/godot --headless --path . --script tools/godot/test_runner.gd -- --filter=ambience_ownership
 Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
@@ -63,7 +70,7 @@ filtre: ambience_ownership
   ÉCHEC test_ambience_ownership_iss086.gd::test_trois_cycles_ne_laissent_aucune_ambiance_derriere — D3.4 — cycle 3 : zéro ressource survivante (playing=true, stream=res://assets/audio/sfx/amb_valley.wav, playback=true)
 [art] vallée peinte : 4469 surfaces
 [monde] lieux habités : 8 chemins, 14 objets de vie
-  ok   test_ambience_ownership_iss086.gd::test_une_sortie_tardive_ne_coupe_pas_lambiance_suivante (6 assertions)
+  ok   test_ambience_ownership_iss086.gd::test_une_sortie_tardive_ne_coupe_pas_lambiance_suivante (5 assertions)
 erreurs de script dans le journal : 0
 
 === RÉSULTAT: 1 réussi(s), 12 échoué(s) ===
@@ -79,9 +86,13 @@ erreurs de script dans le journal : 0
   ÉCHEC: test_ambience_ownership_iss086.gd::test_trois_cycles_ne_laissent_aucune_ambiance_derriere — D3.2 — cycle 3 : plus aucune ambiance ne joue (playing=true, stream=res://assets/audio/sfx/amb_valley.wav, playback=true)
   ÉCHEC: test_ambience_ownership_iss086.gd::test_trois_cycles_ne_laissent_aucune_ambiance_derriere — D3.3 — cycle 3 : zéro lecture survivante (playing=true, stream=res://assets/audio/sfx/amb_valley.wav, playback=true)
   ÉCHEC: test_ambience_ownership_iss086.gd::test_trois_cycles_ne_laissent_aucune_ambiance_derriere — D3.4 — cycle 3 : zéro ressource survivante (playing=true, stream=res://assets/audio/sfx/amb_valley.wav, playback=true)
+WARNING: 2 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 1 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)
 LANCER_GODOT: RC_GODOT=1
 
-=== ABLATION B, journal intégral ===
+=== ABLATION B, journal ===
 LANCER_GODOT: VERROU=/home/user/Zelda/.git/heavy_tools.lock
 LANCER_GODOT: XDG_DATA_HOME=/tmp/lancer_godot_ud_sZCoObc1
 LANCER_GODOT: CWD=/home/user/wt-iss086
@@ -120,3 +131,45 @@ erreurs de script dans le journal : 0
 === RÉSULTAT: 2 réussi(s), 1 échoué(s) ===
   ÉCHEC: test_ambience_ownership_iss086.gd::test_une_sortie_tardive_ne_coupe_pas_lambiance_suivante — E5 — la sortie tardive de la vallée n'a PAS coupé l'ambiance de la scène suivante (playing=false, stream=null, playback=false)
 LANCER_GODOT: RC_GODOT=1
+
+=== ABLATION C, journal (extrait de fin) ===
+Orphan StringName: Vector2 (static: 0, total: 1)
+Orphan StringName: Vector3 (static: 0, total: 1)
+Orphan StringName: Vector4 (static: 0, total: 1)
+Orphan StringName: PackedVector4Array (static: 0, total: 1)
+Orphan StringName: RID (static: 0, total: 1)
+Orphan StringName: Color (static: 0, total: 1)
+Orphan StringName: PackedByteArray (static: 0, total: 1)
+Orphan StringName: Vector2i (static: 0, total: 1)
+Orphan StringName: Callable (static: 0, total: 1)
+Orphan StringName: Vector3i (static: 0, total: 1)
+Orphan StringName: Vector4i (static: 0, total: 1)
+Orphan StringName: PackedStringArray (static: 0, total: 1)
+Orphan StringName: Basis (static: 0, total: 1)
+Orphan StringName: int (static: 0, total: 1)
+Orphan StringName: PackedFloat32Array (static: 0, total: 1)
+Orphan StringName: Plane (static: 0, total: 1)
+Orphan StringName: PackedFloat64Array (static: 0, total: 1)
+Orphan StringName: NodePath (static: 0, total: 1)
+Orphan StringName: Signal (static: 0, total: 1)
+Orphan StringName: StringName (static: 0, total: 1)
+Orphan StringName: String (static: 0, total: 1)
+Orphan StringName: Transform2D (static: 0, total: 1)
+Orphan StringName: Transform3D (static: 0, total: 1)
+Orphan StringName: Array (static: 1, total: 2)
+Orphan StringName: Quaternion (static: 0, total: 1)
+Orphan StringName: bool (static: 0, total: 1)
+Orphan StringName: PackedColorArray (static: 0, total: 1)
+Orphan StringName: PackedVector2Array (static: 0, total: 1)
+Orphan StringName: Object (static: 1, total: 2)
+Orphan StringName: AABB (static: 0, total: 1)
+Orphan StringName: float (static: 0, total: 1)
+Orphan StringName: Dictionary (static: 1, total: 2)
+Orphan StringName: Projection (static: 0, total: 1)
+Orphan StringName: Rect2 (static: 0, total: 1)
+Orphan StringName: PackedVector3Array (static: 0, total: 1)
+Orphan StringName: PackedInt32Array (static: 0, total: 1)
+Orphan StringName: Rect2i (static: 0, total: 1)
+Orphan StringName: PackedInt64Array (static: 0, total: 1)
+StringName: 38 unclaimed string names at exit.
+LANCER_GODOT: RC_GODOT=0
