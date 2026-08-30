@@ -1,0 +1,24 @@
+=== import préalable (régénère le cache de classes globales) ===
+  import : code 0
+=== suite complète en --verbose (comptez ~20 min) ===
+  suite : code 0 en 4318s, vidage 158967281 octets
+  === RÉSULTAT: 1045 réussi(s), 0 échoué(s) ===
+  218 ligne(s) de rapport de fuite conservées : evidence/world_v2/iss086/gate_fuite/fuite_brute.log
+=== RÉSIDU DE FIN DE PROCESSUS — DÉCOMPOSITION BRUTE ===
+  objets annoncés     : 140
+  objets énumérés     : 140
+      GDScript                 76
+      GDScriptNativeClass      61
+      Shader                   3
+  ressources annoncées: 76
+  ressources énumérées: 76  (73 .gd + 3 .gdshader + 0 autres)
+  RID DummyShader          3
+  shader justifié     : res://shaders/characters/SH_CharacterPainterlyCutout.gdshader  <- preload de res://scripts/lookdev/hero_shot_lab.gd
+  shader justifié     : res://shaders/characters/SH_CharacterPainterly.gdshader  <- preload de res://scripts/lookdev/hero_shot_lab.gd
+  shader justifié     : res://shaders/foliage/SH_FoliageWindPainterly.gdshader  <- preload de res://scripts/lookdev/hero_shot_lab.gd
+
+PROJECT_RESOURCE_LEAK_GATE : VERT — aucune ressource du projet ne survit
+ENGINE_SCRIPT_CACHE_TELEMETRY : DÉRIVE — redevient BLOQUANTE
+    * croissance : GDScript = 76, contrat = 75
+    * croissance : .gd = 73, contrat = 72
+    * provenance(s) nouvelle(s) : scripts/localisation

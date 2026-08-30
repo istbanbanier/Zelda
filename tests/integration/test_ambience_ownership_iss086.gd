@@ -402,3 +402,56 @@ func test_une_sortie_tardive_ne_coupe_pas_lambiance_suivante() -> void:
 		% restore_root_reason())
 	await _rendre_le_silence()
 	restore_saves()
+
+
+## ---------------------------------------------------------------------------
+## F — UNE AMBIANCE SANS PROPRIÉTAIRE EST INTERDITE
+## ---------------------------------------------------------------------------
+##
+## D-062 déclare que « qui démarre doit pouvoir rendre ». La contre-revue à
+## contexte frais a montré que cette déclaration était vraie dans la SIGNATURE
+## et fausse dans le CODE : `play_ambience` acceptait encore un propriétaire nul
+## et fabriquait alors exactement l'ambiance que personne ne peut plus rendre —
+## la fuite d'ISS-086 par un chemin non couvert. Une divergence entre un
+## document de décision et le code est précisément ce que ce dépôt paie le plus
+## cher.
+##
+## Aucun appelant ne passe `null` aujourd'hui. Ce cas garde le chemin fermé pour
+## le jour où ISS-087 ajoutera un second producteur d'ambiance.
+##
+## Le refus est signalé par `push_warning`, jamais par `push_error` : l'étape 2b
+## de `validate_fast` traite tout `ERROR:` du journal comme un échec, et elle a
+## raison — un test ne doit pas apprendre au harnais à ignorer les erreurs.
+## C'est le motif que `scripts/core/scene_flow.gd` a déjà établi.
+func test_une_ambiance_sans_proprietaire_est_refusee() -> void:
+	var audio: Node = _audio()
+	if audio == null:
+		check(false, "F0 — AudioManager absent")
+		return
+
+	# Point de départ propre, sans passer par le monde : ce cas ne juge que
+	# l'entrée de l'API.
+	await _rendre_le_silence()
+	check(not _ambiance_de_la_vallee_joue(),
+		"F1 — état de départ : aucune ambiance ne joue (%s)" % _etat())
+
+	audio.call("play_ambience", &"amb_valley", null)
+	await _settle(2)
+	check(not _ambiance_de_la_vallee_joue(),
+		"F2 — une demande SANS propriétaire ne démarre rien : personne ne "
+		+ "pourrait la rendre (%s)" % _etat())
+
+	# NON-VACUITÉ : la même demande AVEC propriétaire doit, elle, démarrer —
+	# sans quoi F2 serait vrai parce que rien ne marche.
+	var proprietaire: Node = Node.new()
+	proprietaire.name = "ProprietaireF"
+	_tree().root.add_child(proprietaire)
+	audio.call("play_ambience", &"amb_valley", proprietaire)
+	await _attendre_lecture()
+	check(_ambiance_de_la_vallee_joue(),
+		"F3 — la MÊME demande, avec un propriétaire, démarre bien (%s)" % _etat())
+	check(bool(audio.call("stop_ambience_owned_by", proprietaire)),
+		"F4 — et son propriétaire peut la rendre")
+
+	proprietaire.queue_free()
+	await _rendre_le_silence()

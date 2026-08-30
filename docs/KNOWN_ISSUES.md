@@ -3389,7 +3389,7 @@ toujours le `_ready()` de la nouvelle.
 Mais ce n'est pas le seul chemin par lequel une scène quitte l'arbre.
 `queue_free()` diffère la sortie à la fin de la frame, et l'ablation B l'a
 MESURÉ : avec un arrêt global, l'ambiance que le suivant venait de démarrer est
-coupée (`E5` rouge, `playing=false, stream=null`). Ce chemin est réel
+coupée (`E4` rouge, `playing=false, stream=null`). Ce chemin est réel
 aujourd'hui dans le harnais — `GateTestCase.restore_root()` restaure la racine
 puis `_sweep()` libère les restes — et il le sera en jeu le jour où une seconde
 scène démarrera une ambiance. La propriété rend la garantie indépendante de
@@ -3402,13 +3402,14 @@ l'ordonnancement du moteur ; l'arrêt global la fait reposer dessus.
 |---|---|---|
 | 1 | attribution au SHA de base, worktree intact | les 3 conditions réunies |
 | 2 | contrat AVANT correctif (1re version du contrat) | **12 assertions rouges** |
-| 3 | contrat APRÈS correctif, en `--verbose` | 3/3, **26** assertions, 0 ligne de fuite |
+| 3 | contrat APRÈS correctif, en `--verbose` | 4/4, **30** assertions, 0 ligne de fuite |
 | 4 | ablation A — arrêt retiré, sur le contrat LIVRÉ | 12 rouges à nouveau |
 | 5 | ablation B — arrêt GLOBAL | `E4` rouge : le son d'autrui coupé |
 | 6 | ablation C — `stream = null` retiré | 0 ligne de fuite : **`stop()` seul suffit** |
 | 7 | contrôle apparié, le reproducteur EXACT de l'étape 1 | 0 ligne de fuite sur l'arbre corrigé |
 | 8 | non-régression ciblée | 27/0 (audio, flux, boot, phase E, menu, victoire) |
-| 9 | course de composition sur l'arbre committé `8254e0b0` | suite 1045/0 ; `PROJECT_RESOURCE_LEAK_GATE` **VERT** ; **zéro** ressource du projet ne survit |
+| 9 | une demande d'ambiance SANS propriétaire | refusée — le cas F rougissait avant, D-062 le déclarait déjà interdit |
+| 10 | course de composition sur l'arbre committé `8254e0b0` | suite 1045/0 ; `PROJECT_RESOURCE_LEAK_GATE` **VERT** ; **zéro** ressource du projet ne survit |
 
 **Ce que le contrat mesure, et ce qu'il ne peut pas mesurer.** GDScript ne sait
 pas énumérer l'ObjectDB : la ligne « Leaked instance » n'existe que dans le

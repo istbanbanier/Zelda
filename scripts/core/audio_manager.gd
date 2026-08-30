@@ -77,7 +77,22 @@ func _ready() -> void:
 ## non couvert — une ambiance sans propriétaire est une ambiance que PERSONNE ne
 ## peut plus rendre. Qui démarre doit pouvoir rendre.
 func play_ambience(sound: StringName, owner: Object) -> void:
+	# LA SIGNATURE NE SUFFIT PAS. Le seul appelant de production passe par
+	# `Object.call()`, où le typage ne protège rien : un `null` y entrerait sans
+	# broncher et fabriquerait l'ambiance que personne ne peut plus rendre —
+	# ISS-086 par un chemin non couvert. La contre-revue à contexte frais l'a
+	# nommé, et elle avait raison : D-062 déclarait la règle, le code la
+	# tolérait. Un `push_warning`, jamais un `push_error` : l'étape 2b de
+	# `validate_fast` traite tout `ERROR:` du journal comme un échec.
+	if owner == null:
+		push_warning("[audio] play_ambience(%s) sans propriétaire : refusé. "
+			% String(sound) + "Qui démarre une ambiance doit pouvoir la rendre.")
+		return
 	var stream: AudioStream = _sfx_stream(sound)
+	# Son introuvable : rien ne démarre, donc rien à revendiquer, et le
+	# propriétaire PRÉCÉDENT garde sa prise — c'est voulu, il est le seul à
+	# pouvoir encore rendre ce qui joue. L'appelant, lui, n'apprend rien : c'est
+	# la même discrétion que `play_sfx`, et elle se voit dans les tests.
 	if stream == null:
 		return
 	# Les WAV générés ne portent pas de boucle : on la pose ici, sur la

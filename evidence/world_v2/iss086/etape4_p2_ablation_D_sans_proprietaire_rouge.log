@@ -1,0 +1,54 @@
+arbre    : /home/user/wt-iss086
+SHA      : 2fdb22aec398870f5efa677086ed50076ffb3c8a
+état     : SALE — 4 fichier(s) suivi(s) modifié(s) :
+              M docs/DECISIONS.md
+              M docs/KNOWN_ISSUES.md
+              M evidence/world_v2/iss086/README.md
+              M tests/integration/test_ambience_ownership_iss086.gd
+commande : tools/lancer_godot.sh --headless --path . --script tools/godot/test_runner.gd -- --filter=ambience_ownership
+RC       : 1
+date     : 2026-08-30T10:56:42Z
+
+LIGNES DE FUITE DU RAPPORT DE SORTIE :
+    (aucune)
+
+=== SORTIE BRUTE INTÉGRALE ===
+LANCER_GODOT: VERROU=/home/user/Zelda/.git/heavy_tools.lock
+LANCER_GODOT: XDG_DATA_HOME=/tmp/lancer_godot_ud_2ThwjTh5
+LANCER_GODOT: CWD=/home/user/wt-iss086
+LANCER_GODOT: CMD=/usr/local/bin/godot --headless --path . --script tools/godot/test_runner.gd -- --filter=ambience_ownership
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+
+=== TEST RUNNER — Godot 4.7.1-stable (custom_build) ===
+filtre: ambience_ownership
+[boot] Godot            : 4.7.1-stable (custom_build)
+[boot] renderer         : forward_plus
+[boot] physique 3D      : Jolt Physics
+[boot] tick physique    : 60 Hz
+[boot] pilote de rendu  : headless
+[boot] autoloads        : GameState, EventBus, SaveSystem, AudioManager, SceneFlow
+[boot] flux             : BOOT
+[boot] fondation vérifiée — Phase A.
+[boot] transition vers le menu principal.
+[flow] transition vers : res://scenes/ui/MainMenu.tscn
+[flow] transition vers : res://scenes/world/valley/ValleyWorld.tscn
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+[flow] transition vers : res://scenes/ui/MainMenu.tscn
+  ok   test_ambience_ownership_iss086.gd::test_quitter_la_vallee_arrete_et_libere_son_ambiance (8 assertions)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ok   test_ambience_ownership_iss086.gd::test_trois_cycles_ne_laissent_aucune_ambiance_derriere (13 assertions)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ok   test_ambience_ownership_iss086.gd::test_une_sortie_tardive_ne_coupe_pas_lambiance_suivante (5 assertions)
+  ÉCHEC test_ambience_ownership_iss086.gd::test_une_ambiance_sans_proprietaire_est_refusee — F2 — une demande SANS propriétaire ne démarre rien : personne ne pourrait la rendre (playing=true, stream=res://assets/audio/sfx/amb_valley.wav, playback=true)
+erreurs de script dans le journal : 0
+
+=== RÉSULTAT: 3 réussi(s), 1 échoué(s) ===
+  ÉCHEC: test_ambience_ownership_iss086.gd::test_une_ambiance_sans_proprietaire_est_refusee — F2 — une demande SANS propriétaire ne démarre rien : personne ne pourrait la rendre (playing=true, stream=res://assets/audio/sfx/amb_valley.wav, playback=true)
+LANCER_GODOT: RC_GODOT=1

@@ -1865,7 +1865,7 @@ ambiance de scène suivante ne peut exister au moment de l'arrêt.
 **Mais ce n'est pas le seul chemin, et l'autre a été MESURÉ.** `queue_free()`
 diffère la sortie d'arbre à la fin de la frame. Ablation B — correctif
 remplacé par un `stop_ambience()` global, une seule variable changée — le cas
-`E5` du contrat rougit : `playing=false, stream=null`. L'ambiance que le
+`E4` du contrat rougit : `playing=false, stream=null`. L'ambiance que le
 suivant venait de démarrer est bel et bien coupée. Ce chemin est réel
 **aujourd'hui** dans le harnais (`GateTestCase.restore_root()` restaure la
 racine, puis `_sweep()` libère les restes : un monde oublié voit son
@@ -1957,7 +1957,7 @@ mécanisme de D-059 : `Textes` est appelé par NOM DE CLASSE, donc épinglé par
 moteur.
 
 **Mesure** : suite complète en `--verbose` sur l'arbre committé `8254e0b0`,
-1045 tests réussis, 0 échoué, 4 317 s, vidage de 158 967 281 octets ; objets
+1045 tests réussis, 0 échoué, **4 318 s**, vidage de 158 967 281 octets ; objets
 annoncés = objets énumérés = 140. Décomposition et log brut dans
 `evidence/world_v2/iss086/gate_fuite/`. Une première course, gardée comme
 diagnostic sous `gate_fuite_run1_diagnostic/`, avait donné les mêmes chiffres

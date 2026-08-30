@@ -1,8 +1,13 @@
 # ISS-086 — l'ambiance de la vallée survivait à la vallée
 
-Tous les journaux de ce dossier portent en tête un bloc de provenance produit
+Les journaux que J'AI produits portent en tête un bloc de provenance produit
 par la machine : arbre, SHA, état propre ou sale, commande exacte, code retour,
-date. Les gros journaux sont **compressés mais INTÉGRAUX** (`gunzip -c` pour les
+date. **Ceux que produit `tools/gate_fuite_composition.sh` n'en ont pas** — cet
+outil n'en émet aucun, et je ne l'ai pas modifié pour cette passe. Leur
+rattachement à l'arbre `8254e0b0` repose sur le journal de course
+(`gate_fuite/course.log`, conservé) et sur le message du commit, pas sur un
+bloc machine. La revendication d'origine — « tous » — était trop large ; la
+contre-revue à contexte frais a eu raison de la reprendre. Les gros journaux sont **compressés mais INTÉGRAUX** (`gunzip -c` pour les
 lire) : la première version de ce dossier n'en gardait que des extraits rédigés
 à la main, et la revue adverse a eu raison de les refuser — un extrait choisi
 par sa fin ne peut pas démontrer l'absence d'une ligne qui paraît plus tôt.
@@ -13,7 +18,8 @@ par sa fin ne peut pas démontrer l'absence d'une ligne qui paraît plus tôt.
 |---|---|---|
 | `etape1_attribution_2cb48dd6.log` | la fuite est PRÉEXISTANTE, mesurée au SHA de base dans un worktree détaché où aucun fichier n'a été modifié | `AudioStreamWAV=1`, `AudioStreamPlaybackWAV=1`, `amb_valley.wav` encore utilisée |
 | `etape2_rouge_avant_correctif.log` | rouge d'abord, **sur la PREMIÈRE version du contrat** (le cas de sortie tardive y porte 6 assertions ; il en porte 5 depuis la revue) | 12 assertions rouges |
-| `etape4_p1_contrat_vert.log.gz` | le contrat passe sur l'arbre corrigé, et le rapport de sortie est propre | 3/3, 26 assertions, **0 ligne de fuite** |
+| `etape4_p1_contrat_vert.log.gz` | le contrat passe sur l'arbre corrigé, et le rapport de sortie est propre | 4/4, 30 assertions, **0 ligne de fuite** |
+| `etape4_p2_ablation_D_sans_proprietaire_rouge.log` | rouge d'abord du cas F : avant le correctif, une demande SANS propriétaire démarrait quand même | `F2` rouge |
 | `etape4_p2_ablation_A_arret_retire.log` | rouge d'abord du contrat **LIVRÉ** : on retire l'arrêt, il rougit | 12 assertions rouges |
 | `etape4_p2_ablation_B_arret_global.log` | l'arrêt global aveugle vole le son de la scène suivante | `E4` rouge : `playing=false, stream=null` |
 | `etape4_p2_ablation_C_sans_liberation.log.gz` | `stop()` SEUL suffit : on retire `stream = null`, le rapport reste propre | **0 ligne de fuite** |
