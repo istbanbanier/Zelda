@@ -1,0 +1,37 @@
+LANCER_GODOT: VERROU=/home/user/Zelda/.git/heavy_tools.lock
+LANCER_GODOT: XDG_DATA_HOME=/tmp/lancer_godot_ud_BIuJvmBc
+LANCER_GODOT: CWD=/home/user/wt-iss086
+LANCER_GODOT: CMD=/usr/local/bin/godot --headless --path . --script tools/godot/test_runner.gd -- --filter=ambience_ownership
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+
+=== TEST RUNNER — Godot 4.7.1-stable (custom_build) ===
+filtre: ambience_ownership
+[boot] Godot            : 4.7.1-stable (custom_build)
+[boot] renderer         : forward_plus
+[boot] physique 3D      : Jolt Physics
+[boot] tick physique    : 60 Hz
+[boot] pilote de rendu  : headless
+[boot] autoloads        : GameState, EventBus, SaveSystem, AudioManager, SceneFlow
+[boot] flux             : BOOT
+[boot] fondation vérifiée — Phase A.
+[boot] transition vers le menu principal.
+[flow] transition vers : res://scenes/ui/MainMenu.tscn
+[flow] transition vers : res://scenes/world/valley/ValleyWorld.tscn
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+[flow] transition vers : res://scenes/ui/MainMenu.tscn
+  ok   test_ambience_ownership_iss086.gd::test_quitter_la_vallee_arrete_et_libere_son_ambiance (9 assertions)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ok   test_ambience_ownership_iss086.gd::test_trois_cycles_ne_laissent_aucune_ambiance_derriere (13 assertions)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ok   test_ambience_ownership_iss086.gd::test_une_sortie_tardive_ne_coupe_pas_lambiance_suivante (6 assertions)
+erreurs de script dans le journal : 0
+
+=== RÉSULTAT: 3 réussi(s), 0 échoué(s) ===
+LANCER_GODOT: RC_GODOT=0

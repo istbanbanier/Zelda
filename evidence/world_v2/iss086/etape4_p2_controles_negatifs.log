@@ -1,0 +1,122 @@
+--- ÉTAPE 4, PORTAIL 2 : LES DEUX CONTRÔLES NÉGATIFS ---
+branche : claude/world-v2-iss086-ambiance ; correctif présent, puis ablé, puis restauré.
+
+ABLATION A — on RETIRE l'arrêt de ValleyWorld._exit_tree().
+  attendu : le contrat redevient rouge exactement comme avant le correctif.
+  mesuré  : 12 assertions rouges, cas E toujours vert.
+    46:=== RÉSULTAT: 1 réussi(s), 12 échoué(s) ===
+
+ABLATION B — on remplace l'arrêt par PROPRIÉTÉ par un stop_ambience() GLOBAL.
+  attendu : A/B/C/D redeviennent verts — et le cas E doit rougir, car la
+            sortie tardive volerait l'ambiance de la scène suivante.
+  mesuré  :
+    36:=== RÉSULTAT: 2 réussi(s), 1 échoué(s) ===
+      ÉCHEC: test_ambience_ownership_iss086.gd::test_une_sortie_tardive_ne_coupe_pas_lambiance_suivante — E5 — la sortie tardive de la vallée n'a PAS coupé l'ambiance de la scène suivante (playing=false, stream=null, playback=false)
+
+CE QUE L'ABLATION B PROUVE, ET QU'AUCUNE LECTURE DE CODE NE POUVAIT DONNER :
+la source du moteur est absente de ce conteneur, donc je ne pouvais pas
+vérifier si _exit_tree() court avant ou après que la scène suivante réclame
+l'ambiance. La mesure tranche : sur le chemin queue_free(), elle court APRÈS.
+Un arrêt global aveugle coupe donc réellement le son d'autrui — le jeton de
+propriétaire n'est pas une précaution décorative.
+
+=== ABLATION A, journal intégral ===
+LANCER_GODOT: VERROU=/home/user/Zelda/.git/heavy_tools.lock
+LANCER_GODOT: XDG_DATA_HOME=/tmp/lancer_godot_ud_anVsUzeD
+LANCER_GODOT: CWD=/home/user/wt-iss086
+LANCER_GODOT: CMD=/usr/local/bin/godot --headless --path . --script tools/godot/test_runner.gd -- --filter=ambience_ownership
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+
+=== TEST RUNNER — Godot 4.7.1-stable (custom_build) ===
+filtre: ambience_ownership
+[boot] Godot            : 4.7.1-stable (custom_build)
+[boot] renderer         : forward_plus
+[boot] physique 3D      : Jolt Physics
+[boot] tick physique    : 60 Hz
+[boot] pilote de rendu  : headless
+[boot] autoloads        : GameState, EventBus, SaveSystem, AudioManager, SceneFlow
+[boot] flux             : BOOT
+[boot] fondation vérifiée — Phase A.
+[boot] transition vers le menu principal.
+[flow] transition vers : res://scenes/ui/MainMenu.tscn
+[flow] transition vers : res://scenes/world/valley/ValleyWorld.tscn
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+[flow] transition vers : res://scenes/ui/MainMenu.tscn
+  ÉCHEC test_ambience_ownership_iss086.gd::test_quitter_la_vallee_arrete_et_libere_son_ambiance — B — la vallée partie, plus aucune ambiance ne joue (playing=true, stream=res://assets/audio/sfx/amb_valley.wav, playback=true)
+  ÉCHEC test_ambience_ownership_iss086.gd::test_quitter_la_vallee_arrete_et_libere_son_ambiance — C1 — zéro lecture survivante : has_stream_playback() est faux (playing=true, stream=res://assets/audio/sfx/amb_valley.wav, playback=true)
+  ÉCHEC test_ambience_ownership_iss086.gd::test_quitter_la_vallee_arrete_et_libere_son_ambiance — C2 — zéro amb_valley.wav survivante : le graphe audio ne la référence plus (playing=true, stream=res://assets/audio/sfx/amb_valley.wav, playback=true)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ÉCHEC test_ambience_ownership_iss086.gd::test_trois_cycles_ne_laissent_aucune_ambiance_derriere — D1.2 — cycle 1 : plus aucune ambiance ne joue (playing=true, stream=res://assets/audio/sfx/amb_valley.wav, playback=true)
+  ÉCHEC test_ambience_ownership_iss086.gd::test_trois_cycles_ne_laissent_aucune_ambiance_derriere — D1.3 — cycle 1 : zéro lecture survivante (playing=true, stream=res://assets/audio/sfx/amb_valley.wav, playback=true)
+  ÉCHEC test_ambience_ownership_iss086.gd::test_trois_cycles_ne_laissent_aucune_ambiance_derriere — D1.4 — cycle 1 : zéro ressource survivante (playing=true, stream=res://assets/audio/sfx/amb_valley.wav, playback=true)
+  ÉCHEC test_ambience_ownership_iss086.gd::test_trois_cycles_ne_laissent_aucune_ambiance_derriere — D2.2 — cycle 2 : plus aucune ambiance ne joue (playing=true, stream=res://assets/audio/sfx/amb_valley.wav, playback=true)
+  ÉCHEC test_ambience_ownership_iss086.gd::test_trois_cycles_ne_laissent_aucune_ambiance_derriere — D2.3 — cycle 2 : zéro lecture survivante (playing=true, stream=res://assets/audio/sfx/amb_valley.wav, playback=true)
+  ÉCHEC test_ambience_ownership_iss086.gd::test_trois_cycles_ne_laissent_aucune_ambiance_derriere — D2.4 — cycle 2 : zéro ressource survivante (playing=true, stream=res://assets/audio/sfx/amb_valley.wav, playback=true)
+  ÉCHEC test_ambience_ownership_iss086.gd::test_trois_cycles_ne_laissent_aucune_ambiance_derriere — D3.2 — cycle 3 : plus aucune ambiance ne joue (playing=true, stream=res://assets/audio/sfx/amb_valley.wav, playback=true)
+  ÉCHEC test_ambience_ownership_iss086.gd::test_trois_cycles_ne_laissent_aucune_ambiance_derriere — D3.3 — cycle 3 : zéro lecture survivante (playing=true, stream=res://assets/audio/sfx/amb_valley.wav, playback=true)
+  ÉCHEC test_ambience_ownership_iss086.gd::test_trois_cycles_ne_laissent_aucune_ambiance_derriere — D3.4 — cycle 3 : zéro ressource survivante (playing=true, stream=res://assets/audio/sfx/amb_valley.wav, playback=true)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ok   test_ambience_ownership_iss086.gd::test_une_sortie_tardive_ne_coupe_pas_lambiance_suivante (6 assertions)
+erreurs de script dans le journal : 0
+
+=== RÉSULTAT: 1 réussi(s), 12 échoué(s) ===
+  ÉCHEC: test_ambience_ownership_iss086.gd::test_quitter_la_vallee_arrete_et_libere_son_ambiance — B — la vallée partie, plus aucune ambiance ne joue (playing=true, stream=res://assets/audio/sfx/amb_valley.wav, playback=true)
+  ÉCHEC: test_ambience_ownership_iss086.gd::test_quitter_la_vallee_arrete_et_libere_son_ambiance — C1 — zéro lecture survivante : has_stream_playback() est faux (playing=true, stream=res://assets/audio/sfx/amb_valley.wav, playback=true)
+  ÉCHEC: test_ambience_ownership_iss086.gd::test_quitter_la_vallee_arrete_et_libere_son_ambiance — C2 — zéro amb_valley.wav survivante : le graphe audio ne la référence plus (playing=true, stream=res://assets/audio/sfx/amb_valley.wav, playback=true)
+  ÉCHEC: test_ambience_ownership_iss086.gd::test_trois_cycles_ne_laissent_aucune_ambiance_derriere — D1.2 — cycle 1 : plus aucune ambiance ne joue (playing=true, stream=res://assets/audio/sfx/amb_valley.wav, playback=true)
+  ÉCHEC: test_ambience_ownership_iss086.gd::test_trois_cycles_ne_laissent_aucune_ambiance_derriere — D1.3 — cycle 1 : zéro lecture survivante (playing=true, stream=res://assets/audio/sfx/amb_valley.wav, playback=true)
+  ÉCHEC: test_ambience_ownership_iss086.gd::test_trois_cycles_ne_laissent_aucune_ambiance_derriere — D1.4 — cycle 1 : zéro ressource survivante (playing=true, stream=res://assets/audio/sfx/amb_valley.wav, playback=true)
+  ÉCHEC: test_ambience_ownership_iss086.gd::test_trois_cycles_ne_laissent_aucune_ambiance_derriere — D2.2 — cycle 2 : plus aucune ambiance ne joue (playing=true, stream=res://assets/audio/sfx/amb_valley.wav, playback=true)
+  ÉCHEC: test_ambience_ownership_iss086.gd::test_trois_cycles_ne_laissent_aucune_ambiance_derriere — D2.3 — cycle 2 : zéro lecture survivante (playing=true, stream=res://assets/audio/sfx/amb_valley.wav, playback=true)
+  ÉCHEC: test_ambience_ownership_iss086.gd::test_trois_cycles_ne_laissent_aucune_ambiance_derriere — D2.4 — cycle 2 : zéro ressource survivante (playing=true, stream=res://assets/audio/sfx/amb_valley.wav, playback=true)
+  ÉCHEC: test_ambience_ownership_iss086.gd::test_trois_cycles_ne_laissent_aucune_ambiance_derriere — D3.2 — cycle 3 : plus aucune ambiance ne joue (playing=true, stream=res://assets/audio/sfx/amb_valley.wav, playback=true)
+  ÉCHEC: test_ambience_ownership_iss086.gd::test_trois_cycles_ne_laissent_aucune_ambiance_derriere — D3.3 — cycle 3 : zéro lecture survivante (playing=true, stream=res://assets/audio/sfx/amb_valley.wav, playback=true)
+  ÉCHEC: test_ambience_ownership_iss086.gd::test_trois_cycles_ne_laissent_aucune_ambiance_derriere — D3.4 — cycle 3 : zéro ressource survivante (playing=true, stream=res://assets/audio/sfx/amb_valley.wav, playback=true)
+LANCER_GODOT: RC_GODOT=1
+
+=== ABLATION B, journal intégral ===
+LANCER_GODOT: VERROU=/home/user/Zelda/.git/heavy_tools.lock
+LANCER_GODOT: XDG_DATA_HOME=/tmp/lancer_godot_ud_sZCoObc1
+LANCER_GODOT: CWD=/home/user/wt-iss086
+LANCER_GODOT: CMD=/usr/local/bin/godot --headless --path . --script tools/godot/test_runner.gd -- --filter=ambience_ownership
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+
+=== TEST RUNNER — Godot 4.7.1-stable (custom_build) ===
+filtre: ambience_ownership
+[boot] Godot            : 4.7.1-stable (custom_build)
+[boot] renderer         : forward_plus
+[boot] physique 3D      : Jolt Physics
+[boot] tick physique    : 60 Hz
+[boot] pilote de rendu  : headless
+[boot] autoloads        : GameState, EventBus, SaveSystem, AudioManager, SceneFlow
+[boot] flux             : BOOT
+[boot] fondation vérifiée — Phase A.
+[boot] transition vers le menu principal.
+[flow] transition vers : res://scenes/ui/MainMenu.tscn
+[flow] transition vers : res://scenes/world/valley/ValleyWorld.tscn
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+[flow] transition vers : res://scenes/ui/MainMenu.tscn
+  ok   test_ambience_ownership_iss086.gd::test_quitter_la_vallee_arrete_et_libere_son_ambiance (9 assertions)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ok   test_ambience_ownership_iss086.gd::test_trois_cycles_ne_laissent_aucune_ambiance_derriere (13 assertions)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ÉCHEC test_ambience_ownership_iss086.gd::test_une_sortie_tardive_ne_coupe_pas_lambiance_suivante — E5 — la sortie tardive de la vallée n'a PAS coupé l'ambiance de la scène suivante (playing=false, stream=null, playback=false)
+erreurs de script dans le journal : 0
+
+=== RÉSULTAT: 2 réussi(s), 1 échoué(s) ===
+  ÉCHEC: test_ambience_ownership_iss086.gd::test_une_sortie_tardive_ne_coupe_pas_lambiance_suivante — E5 — la sortie tardive de la vallée n'a PAS coupé l'ambiance de la scène suivante (playing=false, stream=null, playback=false)
+LANCER_GODOT: RC_GODOT=1

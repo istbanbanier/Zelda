@@ -38,6 +38,11 @@ var _sfx_pool: Array[AudioStreamPlayer] = []
 var _sfx_next: int = 0
 ## Lecteur unique de la boucle d'ambiance — voir `play_ambience()`.
 var _ambience: AudioStreamPlayer = null
+## ISS-086 — QUI a demandé l'ambiance en cours. Une référence FAIBLE, jamais un
+## identifiant d'instance : un identifiant peut être réattribué après libération,
+## et un propriétaire mort doit cesser de correspondre, pas devenir quelqu'un
+## d'autre. `null` = personne ne la revendique (appel anonyme).
+var _ambience_owner: WeakRef = null
 ## Dernier instant de lecture par identifiant. Le tour de rôle du pool est
 ## DESTRUCTIF : sans cette garde, un balayage qui touche trois cibles rejoue
 ## le même son trois fois dans la même frame, et huit pas coupent la mort.
@@ -58,7 +63,12 @@ func _ready() -> void:
 ## plus sûrement que n'importe quel placeholder visuel.
 ##
 ## Un seul lecteur, réutilisé : deux ambiances ne se superposent jamais.
-func play_ambience(sound: StringName) -> void:
+## ISS-086 — `owner` est la scène qui REVENDIQUE cette ambiance. Elle seule
+## pourra la reprendre en partant (`stop_ambience_owned_by`). Omis, l'appel est
+## anonyme : personne ne pourra l'arrêter par propriété, ce qui est exactement le
+## comportement voulu pour une scène qui ne gère pas sa fin de vie — mieux vaut
+## une ambiance de trop qu'un silence tombé sur le dos d'autrui.
+func play_ambience(sound: StringName, owner: Object = null) -> void:
 	var stream: AudioStream = _sfx_stream(sound)
 	if stream == null:
 		return
@@ -78,11 +88,47 @@ func play_ambience(sound: StringName) -> void:
 		add_child(_ambience)
 	_ambience.stream = stream
 	_ambience.play()
+	# APRÈS `play()`, et sur la dernière demande reçue : deux ambiances ne se
+	# superposent jamais, donc la dernière voix est la seule propriétaire.
+	_ambience_owner = weakref(owner) if owner != null else null
 
 
+## Arrêt GLOBAL, sans condition de propriétaire. Réservé aux appelants qui savent
+## qu'ils parlent pour tout le monde : un nettoyage de test, une fin de partie.
+## Une SCÈNE qui part ne doit PAS l'appeler — voir `stop_ambience_owned_by()`.
 func stop_ambience() -> void:
-	if _ambience != null and is_instance_valid(_ambience):
-		_ambience.stop()
+	_release_ambience()
+
+
+## ISS-086 — arrête et LIBÈRE l'ambiance, mais seulement si `owner` est bien
+## celui qui l'a demandée. Rend vrai si l'arrêt a eu lieu.
+##
+## Sans cette condition de propriété, une scène qui sort TARD — `queue_free()`
+## diffère la sortie d'arbre à la fin de la frame — couperait l'ambiance que la
+## scène suivante vient de démarrer. Le contrat
+## `tests/integration/test_ambience_ownership_iss086.gd` construit ce cas
+## exact et l'interdit.
+func stop_ambience_owned_by(owner: Object) -> bool:
+	if owner == null or _ambience_owner == null:
+		return false
+	if _ambience_owner.get_ref() != owner:
+		return false
+	_release_ambience()
+	return true
+
+
+## ISS-086 — LA CAUSE MÉCANIQUE DE LA FUITE TENAIT EN UNE LIGNE MANQUANTE.
+##
+## `stop()` retire la lecture du serveur audio ; il ne rend PAS la ressource.
+## Le lecteur est un enfant de CET autoload : il survit à toutes les scènes, et
+## son `stream` gardait `amb_valley.wav` référencée jusqu'à l'extinction du
+## processus, où le moteur la signalait — « Resource still in use ».
+func _release_ambience() -> void:
+	_ambience_owner = null
+	if _ambience == null or not is_instance_valid(_ambience):
+		return
+	_ambience.stop()
+	_ambience.stream = null
 
 
 func is_ambience_playing() -> bool:

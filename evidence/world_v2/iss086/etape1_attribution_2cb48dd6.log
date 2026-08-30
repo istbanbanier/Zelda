@@ -1,0 +1,24 @@
+=== RÉSULTAT: 2 réussi(s), 0 échoué(s) ===
+WARNING: 2 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+Leaked instance: AudioStreamPlaybackWAV:9223374296812896497 - Reference count: 1
+Leaked instance: AudioStreamWAV:9223373250753479235 - Reference count: 1
+Resource still in use: res://assets/audio/sfx/amb_valley.wav (AudioStreamWAV)
+RUN_RC=0
+
+--- PROVENANCE, ÉTAPE 1 DE LA DIRECTIVE ---
+worktree DÉTACHÉ, aucun fichier modifié : /home/user/wt-iss086-base
+SHA         : 2cb48dd60f7255e4f8502e201346f1466c5f4792
+commande    : tools/lancer_godot.sh --headless --path . --verbose \
+                --script tools/godot/test_runner.gd -- --filter=phase_e_chain
+import préalable : code 0 (obligatoire dans un arbre neuf — sans lui, les
+                   classes globales ne sont pas enregistrées et le runner ne
+                   parse même pas. Piège documenté, et j'y suis tombé au
+                   premier essai.)
+
+LES TROIS CONDITIONS EXIGÉES PAR LA DIRECTIVE, TOUTES RÉUNIES :
+  AudioStreamWAV          = 1   OUI
+  AudioStreamPlaybackWAV  = 1   OUI
+  amb_valley.wav encore utilisée OUI
+
+La qualification « PRÉEXISTANTE » est donc autorisée, et épinglée à ce SHA —
+non plus déduite d'un arbre postérieur.

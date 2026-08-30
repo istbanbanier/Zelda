@@ -146,9 +146,13 @@ func _ready() -> void:
 				bus.call("notify", "vallee.premiere.fumee"))
 	# La vallée a un fond sonore. Sans lui, le jeu est littéralement muet
 	# entre deux actions — le défaut le plus cité du playtest en aveugle.
+	# ISS-086 : la vallée REVENDIQUE cette ambiance en la demandant, et la
+	# reprend en partant (`_exit_tree`). Sans ce propriétaire, le lecteur —
+	# enfant de l'autoload, donc immortel — continuait de jouer et de tenir
+	# `amb_valley.wav` bien après la disparition du monde.
 	var audio: Node = get_node_or_null("/root/AudioManager")
 	if audio != null and audio.has_method("play_ambience"):
-		audio.call("play_ambience", &"amb_valley")
+		audio.call("play_ambience", &"amb_valley", self)
 	# E.2b : le feu de cuisine — un interactable posé SUR le foyer réel du
 	# camp (§13.3). L'atelier vit dans la coquille ; le feu n'est que la
 	# porte, comme la collision reste celle du foyer existant.
@@ -700,6 +704,14 @@ func _exit_tree() -> void:
 	if _large_navigation_map.is_valid():
 		NavigationServer3D.free_rid(_large_navigation_map)
 		_large_navigation_map = RID()
+	# ISS-086 — RENDRE CE QU'ON A DEMANDÉ. Par PROPRIÉTÉ, jamais par un arrêt
+	# global : `queue_free()` diffère cette sortie à la fin de la frame, donc la
+	# scène suivante a pu démarrer SON ambiance entre-temps. Couper aveuglément
+	# lui volerait son son. `stop_ambience_owned_by` ne fait rien si quelqu'un
+	# d'autre a repris la main depuis.
+	var audio: Node = get_node_or_null("/root/AudioManager")
+	if audio != null and audio.has_method("stop_ambience_owned_by"):
+		audio.call("stop_ambience_owned_by", self)
 
 
 func _on_transition_started(_target: String) -> void:
