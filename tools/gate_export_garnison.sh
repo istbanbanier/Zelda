@@ -195,7 +195,12 @@ balayer_ressources() {  # $1 = journal  $2 = ce que ce journal a chargé
     return
   fi
   local n
-  n="$(grep -cE "modèle inconnu|modèle végétal introuvable|Failed loading resource|No loader found|Resource file not found|Cannot open file" "$1" || true)"
+  # `\[textes\]` et `\[audio\]` : la localisation (Textes.t, exercée par
+  # main_menu._refresh à CHAQUE lancement) et l'audio échouent en
+  # push_error/push_warning préfixés — sans ces motifs, le portail resterait
+  # VERT sur une localisation entièrement morte dans le PCK (audit export
+  # post-ISS-086 : aucun des six motifs historiques ne les attrape).
+  n="$(grep -cE "modèle inconnu|modèle végétal introuvable|Failed loading resource|No loader found|Resource file not found|Cannot open file|\[textes\]|\[audio\]" "$1" || true)"
   [ "${n:-0}" -eq 0 ] \
     && ok "aucun modèle ni ressource manquant dans le PCK — $2" \
     || ko "$n ligne(s) de ressource manquante dans le PCK — $2"
