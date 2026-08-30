@@ -2623,3 +2623,113 @@ sur un écran, en jugeant surtout les braises, qui sortent en carrés émissifs 
 rendu logiciel ; (2) corriger ISS-086 puis entériner l'enveloppe de résidu,
 dans cet ordre et pas l'inverse (D-061) ; (3) la tranche ISS-075 suivante,
 `gameplay_shell.gd` (39 littéraux, dont quatre tables déjà en donnée).
+
+---
+
+## 2026-08-30 — ISS-086 fermée : l'ambiance appartient à qui l'a demandée
+
+**Branche** `claude/world-v2-iss086-ambiance`, depuis `1c5374c8`. Cinq commits.
+La candidate de lundi et la prérelease `2cb48dd6` n'ont pas été touchées.
+
+### Ce qui était cassé, et comment on l'a prouvé plutôt que supposé
+
+Le lecteur d'ambiance est un enfant de l'autoload `AudioManager` : il survit à
+toutes les scènes. `ValleyWorld._ready()` démarrait `amb_valley` et **rien** ne
+la reprenait. En fin de processus, le moteur le disait :
+
+```
+Leaked instance: AudioStreamPlaybackWAV — Reference count: 1
+Leaked instance: AudioStreamWAV — Reference count: 1
+Resource still in use: res://assets/audio/sfx/amb_valley.wav
+```
+
+**L'attribution est épinglée au SHA de base**, pas déduite d'un arbre
+postérieur : rejouée dans un worktree DÉTACHÉ à `2cb48dd6`, aucun fichier
+modifié, les trois conditions réunies.
+
+### Le correctif : propriété, pas arrêt global
+
+`play_ambience(sound, owner)` — le propriétaire est **obligatoire** — enregistre
+une référence faible. `stop_ambience_owned_by(owner)` n'arrête que si l'appelant
+est bien celui qui a demandé. La vallée revendique en entrant, reprend en
+sortant.
+
+**Pourquoi pas le `stop_ambience()` global que la fiche proposait.** Sur le
+chemin de production il aurait suffi — la source du moteur, présente dans ce
+conteneur, le dit. Mais `queue_free()` diffère la sortie d'arbre à la fin de la
+frame, et l'ablation B le MESURE : avec un arrêt global, l'ambiance que le
+suivant vient de démarrer est coupée.
+
+### Neuf mesures, dans l'ordre où elles ont été produites
+
+| Ce qui a été mesuré | Résultat |
+|---|---|
+| attribution au SHA de base, worktree intact | les 3 conditions réunies |
+| contrat AVANT correctif | **12 assertions rouges** |
+| contrat APRÈS correctif, en `--verbose` | 3/3, 26 assertions, 0 fuite |
+| ablation A — arrêt retiré | 12 rouges à nouveau |
+| ablation B — arrêt GLOBAL | le son d'autrui coupé |
+| ablation C — `stream = null` retiré | 0 fuite : `stop()` seul suffit |
+| contrôle apparié, reproducteur EXACT de l'étape 1 | **0 fuite** |
+| non-régression ciblée | 27/0 |
+| composition sur l'arbre committé | 1045/0 · `PROJECT_RESOURCE_LEAK_GATE` **VERT** |
+
+Puis l'entérinement du SEUL terme légitime (139/75 → 140/76, D-063), le gel
+régénéré ENSUITE (46 intacts, deux lignes de diff), et **`VALIDATE_FAST : VERT`**
+sur `2d318931` — la première validation entièrement verte de cette ligne de
+travail. L'agrégat rend exactement 140 contre un contrat de 140.
+
+### Trois fois où je me suis trompé, et ce que ça a coûté
+
+1. **J'ai écrit que la source du moteur était absente de ce conteneur.** Elle est
+   à `/opt/src/godot`, au tag 4.7.1-stable. Elle tranchait d'ailleurs la question
+   que je croyais indécidable.
+2. **J'ai écrit que `stop()` seul n'aurait pas suffi.** L'ablation C mesure le
+   contraire. `stream = null` est de l'hygiène, pas la cause.
+3. **J'ai livré un journal nommé « contrat vert » qui portait la signature du
+   défaut.** La cause n'était pas dans le jeu : le recyclage d'une lecture audio
+   est asynchrone, et une course FILTRÉE se termine avant que le fil de mixage
+   n'ait eu son tour. Le contrat laisse désormais cette fenêtre.
+
+Les trois ont été trouvées par des revues à contexte frais, pas par moi. Les
+deux premières étaient déjà commitées : corrigées dans le code et dans les
+fiches avant d'être recopiées.
+
+### Deux défauts trouvés en chemin, consignés et NON corrigés
+
+- **ISS-087** — le monde réellement joué n'a **aucun** fond sonore.
+  `play_ambience` n'a qu'un appelant, la vallée V1, qui n'est plus le monde
+  qu'on atteint en jouant. Le jeu livré est silencieux de bout en bout.
+- **ISS-088** — `loop_end` est calculé en « octets / 2 » alors que la ressource
+  importée est en QOA. La boucle existe, mais pas là où le code le croit.
+
+Les fermer serait modifier du contenu, ce que la directive interdisait ici.
+
+### Un piège de portail, payé une fois
+
+J'ai committé un journal de preuve ENTRE le portail d'export qui exporte et
+celui qui mesure. Le second a refusé, à juste titre : « la build vient de
+`2d318931`, le dépôt est à `28015db2` ». Les deux se rejouent en chaîne, jamais
+avec un commit au milieu.
+
+### Travaux parallèles, sur branches indépendantes, non intégrés
+
+Conformément à la directive, rien de ceci n'est entré dans la branche ISS-086,
+pour garder une attribution causale propre. Les dossiers sont dans les rapports
+de session :
+
+- **portails d'export** — trois de leurs quatre dépendances manquaient encore et
+  chacune faisait accuser le JEU au lieu de l'outil ; `xdotool`, ImageMagick et
+  le module Python `Xlib` réinstallés, le template d'export reconstruit. Un
+  pré-vol qui nomme l'outil manquant reste à écrire ;
+- **ISS-075, tranche `gameplay_shell.gd`** — plan complet, et un défaut de mon
+  propre outil de comptage : son jeu de caractères accentués ignore le tiret
+  cadratin et l'apostrophe droite, donc il annonce 39 littéraux là où il y en a
+  ~62 ;
+- **variante visuelle du camp** — audit `PARTIAL` : rien de gelé touché, A/B
+  neutre, mais aucun document de continuité ne pointe vers cette branche et
+  `actif` vaut `true` par défaut.
+
+**Prochaine action exacte** : lire le verdict des deux portails d'export rejoués
+sur `28015db2`, puis lancer la contre-revue à contexte frais avec Fable 5. Rien
+d'autre n'est en vol.
