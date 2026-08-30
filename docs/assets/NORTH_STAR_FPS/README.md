@@ -5,12 +5,15 @@ modifie aucun asset de jeu et n'autorise aucun achat.
 
 ## À lire dans cet ordre
 
-1. `DIRECTIVE_ASSET_FACTORY_V0_ECLATS_D_ORAGE.md`
-2. `ASSET_RESEARCH_NORTH_STAR_FPS_20260830.md`
-3. `ASSET_SOURCE_CANDIDATES_NORTH_STAR_FPS.csv`
-4. `ATTRIBUTIONS.md`
-5. `asset_library/README.md`
-6. `docs/assets/IMPORT_RULES.md`
+1. `docs/assets/NORTH_STAR_FPS/RESEARCH_20260830.md`
+2. `docs/assets/NORTH_STAR_FPS/SOURCE_CANDIDATES.csv`
+3. `ATTRIBUTIONS.md`
+4. `asset_library/README.md`
+5. `docs/assets/IMPORT_RULES.md`
+
+La directive maître complète et l'image North Star ne sont pas publiées dans ce
+dépôt public sans autorisation explicite du propriétaire. Elles doivent être
+jointes à la session de production ou ajoutées ici après cette autorisation.
 
 ## Branche et intégration
 
@@ -29,4 +32,3 @@ minimal (bras/Bracelet/épée) et non un nouveau POI.
 
 - production : **Fable 5, ultracode** ;
 - contre-revue séparée : **Opus 5, effort maximal**.
-
