@@ -3453,13 +3453,64 @@ silence total entre deux actions est ce qui fait projet non fini ».
   `audio_manager.gd`, toutes deux dans `valley_world.gd` ;
   `git grep -l AudioStreamPlayer -- scenes/` — aucun résultat.
 
-## ISS-088 — La boucle d'ambiance est posée sur un compte d'octets faux — S4, OUVERT
+## ISS-089 — Quarante erreurs d'arêtes de navigation, imprimées à chaque course et lues par personne — S3, OUVERT
+
+**En clair** : à chaque lancement, le moteur signale que la carte de déplacement
+des adversaires a des défauts de raccord. Ça n'empêche rien de fonctionner
+aujourd'hui, mais un adversaire peut s'y coincer ou prendre un chemin absurde.
+Ça s'imprime depuis au moins le 26 août sans que personne l'ait noté.
+
+**Découvert le 2026-08-30**, en inventoriant ce que les portails ne lisent pas.
+
+Le moteur émet, à chaque course, deux avertissements
+(`nav_region_builder_3d.cpp::_build_step_find_edge_connection_pairs`) :
+
+```
+WARNING: Navigation region synchronization had 2 edge error(s).
+WARNING: Navigation region synchronization had 38 edge error(s).
+```
+
+**Les deux compteurs sont parfaitement déterministes** : `2` et `38`, sans
+exception, dans 1798 journaux archivés sous `evidence/`, sur plusieurs SHA et
+plusieurs jours. Ils ne figurent ni dans `STATUS.md`, ni dans `TEST_REPORT.md`,
+ni dans `DECISIONS.md`, et le réglage
+`navigation/3d/warnings/navmesh_edge_merge_errors` est absent de `project.godot`.
+
+**Pourquoi personne ne les voit.** `push_warning` sort en `WARNING:`, et **aucun
+filtre de portail du dépôt ne contient le mot `WARNING`**. Les portails d'export
+ne lisent même pas un `ERROR:` nu : ils cherchent six chaînes littérales de
+ressource manquante. La couverture par gravité n'existe qu'en éditeur.
+
+**Contournement** : aucun nécessaire — rien n'est cassé aujourd'hui.
+
+**Ce qu'il faudrait** : épingler les deux compteurs **au chiffre près** dans un
+balayage de portail, pas par `[0-9]+`. C'est ce qui transforme une tolérance en
+télémétrie : le jour où le navmesh se dégrade, le nombre bouge et le portail
+rougit. Même forme que l'enveloppe de résidu de l'étape 2b.
+
+## ISS-088 — La boucle d'ambiance était posée sur un compte d'octets — S4, FERMÉE le 2026-08-30
 
 **En clair** : le code croit que le son de fond dure une certaine durée, alors
 qu'il en dure une autre. Le jour où un fond sonore sera réellement joué, il se
 relancera au mauvais moment — un hoquet audible, pas un plantage. Aujourd'hui
 personne ne l'entend, parce qu'aucun monde jouable ne demande de fond sonore
 (ISS-087). Rien à décider tout de suite ; à corriger en même temps qu'ISS-087.
+
+**FERMÉE.** La borne se calcule désormais en trames, sur une copie, et le défaut
+est mesuré des deux côtés. Détail complet : `docs/handoff/ISS-088.md`.
+
+| Ce qui a été prouvé | Preuve |
+|---|---|
+| le contrat rougit SANS le correctif | `evidence/world_v2/iss088/rouge_sans_correctif.log` — 0 réussi, 8 échoué |
+| et verdit AVEC | `evidence/world_v2/iss088/vert_avec_correctif.log` — 3 réussi, 0 échoué, 23 assertions |
+| la borne fautive valait bien 35704 pour 176400 trames | `B6 : attendu 176399, obtenu 35704` |
+| l'exemplaire PARTAGÉ du cache était bien muté | `B8 : attendu 0, obtenu 1` |
+| la lecture rebouclait bien trop tôt, MESURÉ et non lu | `C4 : vue 0,7459 s` — le pilote muet mixe réellement |
+| l'acquis ISS-086 tient | `evidence/world_v2/iss088/controle_iss086.log` — 4 réussi, 0 échoué |
+
+**`NON VÉRIFIÉ` — personne n'a écouté.** Aucun périphérique audio ici (ISS-004).
+Le contrat prouve la borne, pas que le raccord de boucle soit propre à l'oreille.
+Et il ne rend aucune ambiance audible au joueur : c'est ISS-087, toujours ouverte.
 
 **Découvert le 2026-08-30**, en fermant ISS-086, par lecture de la source du
 moteur et du fichier d'import — pas par l'oreille : ce conteneur n'a aucun

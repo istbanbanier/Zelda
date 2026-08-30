@@ -34,6 +34,15 @@ const SFX_PLAYERS: int = 8
 const PITCH_JITTER: float = 0.07
 
 var _sfx_streams: Dictionary = {}
+## ISS-088 — les copies BOUCLÉES, par nom de son. Dictionnaire SÉPARÉ de
+## `_sfx_streams` à dessein : `play_sfx` ne doit jamais tomber sur un exemplaire
+## bouclé, c'est précisément le second défaut qu'ISS-088 supprime.
+##
+## Variable d'INSTANCE, jamais `static var` : elle meurt avec l'autoload, comme
+## `_sfx_streams`, et n'a donc pas à s'inscrire à `StaticResourceCaches` —
+## `tests/unit/test_invariants.gd::test_tout_cache_statique_de_ressources_est_liberable`
+## prendrait un cache statique.
+var _ambience_streams: Dictionary = {}
 var _sfx_pool: Array[AudioStreamPlayer] = []
 var _sfx_next: int = 0
 ## Lecteur unique de la boucle d'ambiance — voir `play_ambience()`.
@@ -95,25 +104,127 @@ func play_ambience(sound: StringName, owner: Object) -> void:
 	# la même discrétion que `play_sfx`, et elle se voit dans les tests.
 	if stream == null:
 		return
-	# Les WAV générés ne portent pas de boucle : on la pose ici, sur la
-	# ressource chargée. `loop_end` DOIT être renseigné — laissé à 0, le
-	# moteur arrête la lecture immédiatement (audio_stream_wav.cpp:249).
-	var wav: AudioStreamWAV = stream as AudioStreamWAV
-	if wav != null and wav.loop_mode == AudioStreamWAV.LOOP_DISABLED:
-		wav.loop_mode = AudioStreamWAV.LOOP_FORWARD
-		wav.loop_begin = 0
-		# 16 bits mono : deux octets par échantillon.
-		wav.loop_end = wav.data.size() / 2
+	# ISS-088 — la boucle se pose sur une COPIE, et sa borne se compte en
+	# TRAMES. Détail et preuves dans `loop_end_frame()` et `_ambience_bouclee()`.
+	var jouable: AudioStream = _ambience_bouclee(sound, stream)
 	if _ambience == null or not is_instance_valid(_ambience):
 		_ambience = AudioStreamPlayer.new()
 		_ambience.name = "Ambience"
 		_ambience.bus = "Ambience"
 		add_child(_ambience)
-	_ambience.stream = stream
+	_ambience.stream = jouable
 	_ambience.play()
 	# APRÈS `play()`, et sur la dernière demande reçue : deux ambiances ne se
 	# superposent jamais, donc la dernière voix est la seule propriétaire.
 	_ambience_owner = weakref(owner) if owner != null else null
+
+
+## ISS-088 — LA BORNE DE BOUCLE SE COMPTE EN TRAMES DÉCODÉES, PAS EN OCTETS.
+##
+## La ligne d'origine était `wav.loop_end = wav.data.size() / 2`, sous le
+## commentaire « 16 bits mono : deux octets par échantillon ». Ce commentaire
+## décrit le fichier SOURCE ; il ne décrit pas la ressource IMPORTÉE.
+## `amb_valley.wav.import` porte `compress/mode=2`, et l'énumération de
+## `resource_importer_wav.cpp` est « PCM (Uncompressed), IMA ADPCM, Quite OK
+## Audio » : `data` contient des octets QOA, à débit variable. Mesuré :
+## `data.size()` vaut 71408 octets pour 176400 trames — la borne tombait à
+## 35704, et l'ambiance rebouclait sur ses 0,81 premières secondes d'un fichier
+## de 4,00 s.
+##
+## `AudioStreamWAV::set_loop_end(int p_frame)` prend un INDICE DE TRAME :
+## `AudioStreamPlaybackWAV::get_playback_position` rend `double(offset) /
+## base->mix_rate`. `AudioStreamWAV::get_length` porte exactement le même
+## `switch` sur `format` et la même division par `stereo` que le `len` de
+## `_mix_internal`, terminé par `/ mix_rate` — passer par lui n'est donc pas un
+## contournement, c'est employer la conversion que le moteur emploiera.
+##
+## Le `- 1` est portant. `_mix_internal` calcule `aux = (limit - offset) /
+## increment + 1`, qui INCLUT l'indice `limit` : poser le NOMBRE de trames
+## ferait lire `decode_samples` une trame au-delà du tampon, et `set_loop_end`
+## n'a ni clamp ni validation. C'est aussi la borne que le moteur produit
+## lui-même : `edit/loop_end = -1` devient `CLAMP(loop_end + frames, 0,
+## frames - 1)` dans `AudioStreamWAV::load_from_buffer`, et le `end_limit` de la
+## branche NON bouclée vaut `len - 1`.
+##
+## Trois régimes, dont celui du milieu est le défaut d'ISS-088 :
+## `loop_end <= loop_begin` → le garde `target <= 0` de `_mix_internal` arrête
+## la lecture, c'est BRUYANT ; `loop_begin < loop_end < trames` → aucun garde,
+## boucle courte et SILENCIEUSE ; `loop_end >= trames` → lecture hors tampon.
+func loop_end_frame(wav: AudioStreamWAV) -> int:
+	if wav == null or wav.mix_rate <= 0:
+		return 0
+	return maxi(roundi(wav.get_length() * float(wav.mix_rate)) - 1, 0)
+
+
+## ISS-088 — L'AMBIANCE BOUCLE SUR SA PROPRE COPIE, JAMAIS SUR CELLE DU CACHE.
+##
+## `_sfx_stream` mémorise ce que rend `load()`, c'est-à-dire l'exemplaire du
+## `ResourceCache`, et `play_sfx` réutilise le même. Poser `loop_mode` dessus
+## ferait boucler à l'infini tout usage ultérieur du son. Honnêteté sur la
+## portée : `amb_valley` n'a qu'un consommateur aujourd'hui, donc cette
+## contamination est vraie par construction et SANS VICTIME constatée. On la
+## supprime parce qu'elle est fausse, pas parce qu'un joueur la subit.
+##
+## `duplicate(false)` suffit : `Resource::_duplicate` retient les propriétés
+## portant `PROPERTY_USAGE_STORAGE`, et `core/object/property_info.h` pose
+## `PROPERTY_USAGE_NO_EDITOR = PROPERTY_USAGE_STORAGE` — `data` passe, avec
+## `format`, `mix_rate`, `stereo`, `tags` et les bornes. Il n'y a aucune
+## sous-ressource, `duplicate(true)` n'apporterait rien.
+##
+## `resource_path` porte `PROPERTY_USAGE_EDITOR` SEUL : la copie naît donc sans
+## chemin. On le lui rend par `set_path_cache()`, dont le corps est la seule
+## affectation `path_cache = p_path` — `ResourceCache::resources` n'est pas
+## touché, aucun signal n'est émis, et `Resource::~Resource` n'efface une entrée
+## que si `E->value == this`. C'est l'idiome du moteur lui-même : la branche
+## `CACHE_MODE_IGNORE` de `ResourceLoader::_load_start` fait exactement cela.
+## Surtout PAS `set_path()`, qui sur un chemin déjà pris pose
+## `ERR_FAIL_MSG("Another resource is loaded from path …")` — une ligne `ERROR:`
+## que l'étape 2b de `validate_fast` compte comme un échec — ET laisse la copie
+## anonyme, puisque `path_cache` a déjà été vidé avant le `ERR_FAIL_MSG`.
+##
+## Le chemin n'est pas cosmétique : le contrat ISS-086
+## (`tests/integration/test_ambience_ownership_iss086.gd`) identifie l'ambiance
+## par `joueur.stream.resource_path`. Une copie anonyme l'aurait rendu rouge.
+##
+## DANGER LATENT, à ne pas perdre. `Resource::is_built_in()` rend FAUX dès que
+## `path_cache` est un `res://…` sans `::`. Si l'arbre d'ambiance était un jour
+## empaqueté ou sauvegardé, `resource_format_{text,binary}` écriraient la copie
+## en `ExtResource`, et le rechargement rendrait l'exemplaire PARTAGÉ sans
+## boucle : les deux défauts d'ISS-088 reviendraient ensemble, en silence. Non
+## atteignable aujourd'hui — les seuls `ResourceSaver.save` du dépôt sont des
+## outils de cuisson hors-ligne, et `save_system.gd` ne sérialise aucun nœud.
+##
+## UNE SEULE DUPLICATION PAR SON. `AudioStreamWAV::data` est un
+## `TightLocalVector`, PAS un `Vector` à copie sur écriture : `operator=` fait
+## `resize()` puis copie élément par élément, et `get_data()` rend lui aussi une
+## copie. Une duplication touche donc ~143 ko pour 71 ko résidents. La suite
+## instancie `ValleyWorld` des dizaines de fois : mémoriser remplace ce
+## va-et-vient par 71 ko résidents, une fois.
+##
+## CE QUI ARRIVE SI LA COPIE SURVIT — et le détecteur exact, corrigé après
+## contre-revue. Elle n'apparaîtrait PAS dans `Resource still in use:` :
+## `ResourceCache::clear()` n'énumère que `ResourceCache::resources`, où la
+## copie n'est jamais entrée. Elle est prise par l'autre détecteur, `ObjectDB::
+## cleanup()`, qui imprime `Leaked instance: AudioStreamWAV:<id>` — et
+## `tools/gate_fuite_ressources.py` classe `AudioStreamWAV` hors de
+## `CLASSES_MOTEUR`, donc portail A rouge, ISS-086 rouverte. Le `resource_path`
+## ne change rien à cette classification.
+func _ambience_bouclee(sound: StringName, stream: AudioStream) -> AudioStream:
+	var partage: AudioStreamWAV = stream as AudioStreamWAV
+	if partage == null:
+		return stream
+	if _ambience_streams.has(sound):
+		return _ambience_streams[sound] as AudioStream
+	var copie: AudioStreamWAV = partage.duplicate(false) as AudioStreamWAV
+	if copie == null:
+		return stream
+	copie.set_path_cache(partage.resource_path)
+	if copie.loop_mode == AudioStreamWAV.LOOP_DISABLED:
+		copie.loop_mode = AudioStreamWAV.LOOP_FORWARD
+		copie.loop_begin = 0
+		copie.loop_end = loop_end_frame(copie)
+	_ambience_streams[sound] = copie
+	return copie
 
 
 ## Arrêt GLOBAL, sans condition de propriétaire. Réservé aux appelants qui savent
