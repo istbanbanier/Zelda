@@ -1,6 +1,6 @@
 
 == G1. l'artefact mesuré est-il CELUI du commit courant ? ==
-  PASS  build liée au commit courant (7e98b497f612dc98d56f408f93276b0aaf07854e), arbre propre à l'export
+  PASS  build liée au commit courant (da0b3e8320c0161f8160f47af9e88984f11e09f0), arbre propre à l'export
 
 == G2/G3. arrivée réelle au camp, et zéro ressource manquante ==
         [peuplement] garnison : 4 posé(s), 0 déjà tombé(s)
@@ -23,15 +23,15 @@ WM_DELETE_WINDOW envoyé à 2097155
         [peuplement] garnison : 2 posé(s), 2 déjà tombé(s)
   PASS  deux gardes seulement : les deux morts du slot ne reviennent pas
 WM_DELETE_WINDOW envoyé à 2097155
-        (fermeture honorée en 20 s)
+        (fermeture honorée en 22 s)
         enemies_slain après la croix : ['garrison.ember_camp.blue.01', 'garrison.ember_camp.red.01']
   PASS  les deux morts SURVIVENT à la réécriture de fermeture
 
 == G6. l'inventaire de l'antichambre survit à la reprise ==
   PASS  « Continuer » route vers l'antichambre
 WM_DELETE_WINDOW envoyé à 2097155
-        (fermeture honorée en 2 s)
-  PASS  une écriture a RÉELLEMENT eu lieu (horodatage : 2026-08-30 10:39:51)
+        (fermeture honorée en 1 s)
+  PASS  une écriture a RÉELLEMENT eu lieu (horodatage : 2026-08-30 12:17:36)
         armes=3 flèches=37 storm_berry=3 plats=1
   PASS  l'inventaire est INTACT après la reprise dans l'antichambre (ISS-080)
 

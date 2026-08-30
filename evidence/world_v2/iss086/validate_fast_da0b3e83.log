@@ -1,6 +1,6 @@
 
 === 0a. Provenance de cette exécution ===
-  commit          : 2d318931faa55f05d9ff5067bdc7221f6ca69027
+  commit          : da0b3e8320c0161f8160f47af9e88984f11e09f0
   fichiers sales  : 0
   branche         : claude/world-v2-iss086-ambiance
 
@@ -22,6 +22,7 @@
     ok   test_ambience_ownership_iss086.gd::test_quitter_la_vallee_arrete_et_libere_son_ambiance (8 assertions)
     ok   test_ambience_ownership_iss086.gd::test_trois_cycles_ne_laissent_aucune_ambiance_derriere (13 assertions)
     ok   test_ambience_ownership_iss086.gd::test_une_sortie_tardive_ne_coupe_pas_lambiance_suivante (5 assertions)
+    ok   test_ambience_ownership_iss086.gd::test_une_ambiance_sans_proprietaire_est_refusee (4 assertions)
     ok   test_asset_pipeline.gd::test_the_registry_resolves_delivered_assets_and_declines_missing_ones (54 assertions)
     ok   test_asset_pipeline.gd::test_the_q0_delivered_assets_resolve_with_real_meshes (36 assertions)
     ok   test_asset_pipeline.gd::test_the_hero_candidate_keeps_its_rig_through_the_godot_import (4 assertions)
@@ -1064,7 +1065,7 @@
     ok   test_world_v2_waterways_contract.gd::test_aucun_lieu_dans_l_eau (2 assertions)
     ok   test_world_v2_waterways_contract.gd::test_les_checkpoints_et_ancres_sont_hors_d_eau (2 assertions)
     ok   test_world_v2_waterways_contract.gd::test_le_cours_n_a_pas_de_longue_ligne_droite (2 assertions)
-  === RÉSULTAT: 1045 réussi(s), 0 échoué(s) ===
+  === RÉSULTAT: 1046 réussi(s), 0 échoué(s) ===
   [OK]   suite unitaire verte
   [OK]   aucune erreur signalée dans le journal des tests (le résidu de sortie est jugé en 2b)
 
@@ -1123,7 +1124,7 @@
   [OK]   6 personnage(s) : un seul corps solidaire, aucune pièce détachée
 
 === 4. Plancher de couverture ===
-  [OK]   1045 test(s) exécuté(s), plancher 586 respecté
+  [OK]   1046 test(s) exécuté(s), plancher 586 respecté
 
 APPAREIL DE MESURE — autotests des harnais
   [OK]   verdict.py — autotest vert
@@ -1132,3 +1133,4 @@ APPAREIL DE MESURE — autotests des harnais
 
 === VALIDATE_FAST : VERT ===
 logs: evidence/validate_fast
+VF_RC=0

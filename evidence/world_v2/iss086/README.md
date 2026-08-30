@@ -82,3 +82,18 @@ Contrat seul : 62 s en mode normal, ~110 s en `--verbose` (5 montages réels de
 partagé du dépôt pendant tout ce temps — `tools/lancer_godot.sh` calcule son
 verrou depuis `git rev-parse --git-common-dir`, donc TOUS les worktrees le
 partagent.
+
+## Les trois portails finaux, sur l'arbre livré
+
+Les journaux des courses intermédiaires (`2d318931`, `7e98b497`) ont été
+REMPLACÉS, pas conservés : garder des preuves qui ne décrivent plus l'arbre
+livré est le moyen le plus court de faire croire l'inverse de ce qu'on mesure.
+
+| Fichier | Verdict, sur `da0b3e83` |
+|---|---|
+| `validate_fast_da0b3e83.log` | **VERT** — gel 46/46, 472 scripts, suite **1046/0**, contrôles négatifs 12/12, résidu agrégé **140 contre un contrat de 140**, `PROJECT_RESOURCE_LEAK_GATE` vert |
+| `export_parite_da0b3e83.log` | ISS-071 **VERT**, code 0 — 32 contrôles, 0 rouge, 0 bloqué, 0 non vérifié |
+| `export_garnison_da0b3e83.log` | ISS-074 **VERT**, 0 échec — build liée au commit courant, arbre propre à l'export |
+
+La suite passe de 1045 à 1046 : c'est le cas F, qui interdit une ambiance sans
+propriétaire.

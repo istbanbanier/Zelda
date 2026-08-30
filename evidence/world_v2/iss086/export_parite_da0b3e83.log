@@ -2,11 +2,11 @@
 PORTAIL D'EXPORT ISS-071 — parité de résolution éditeur / build exportée
 arbre   : /home/user/wt-iss086
 sortie  : /home/user/wt-a-out   (HORS de l'arbre : un export dans l'arbre le salirait)
-date    : 2026-08-30T10:35:51+00:00
+date    : 2026-08-30T12:13:35+00:00
 ==============================================================================
 
 ### 0. état du dépôt — une preuve vient d'un arbre COMMITTÉ
-    SHA testé      : 7e98b497f612dc98d56f408f93276b0aaf07854e
+    SHA testé      : da0b3e8320c0161f8160f47af9e88984f11e09f0
     fichiers sales : 0
 
 ### 1. verrou canonique et cloison user://
@@ -25,13 +25,13 @@ date    : 2026-08-30T10:35:51+00:00
     templates : linux_release.x86_64 
     code retour export : 0 (1578 lignes)
     binaire : /home/user/wt-a-out/build/EclatsDOrage.x86_64
-    octets  : 411508272
-    sha256  : 71641543b13c09533ecc4c23aee8ab71976616b365ef0e39ee50f985d20cd321
+    octets  : 411508432
+    sha256  : 64d978613333bb1b04f69537c733fcea1131d85f7c20ac0b5084dca06eb1d4e7
 
 ### 5. lancement de la build AUTONOME, user:// VIERGE
     profil vierge : /home/user/wt-a-out/profil_vierge (0 entrée(s) — 0 attendu)
-    Xvfb PID 2889 sur :91
-    jeu PID 2900 ; journal /home/user/wt-a-out/journaux/jeu_exporte_stdout.log
+    Xvfb PID 12362 sur :91
+    jeu PID 12367 ; journal /home/user/wt-a-out/journaux/jeu_exporte_stdout.log
     drapeaux après « -- » : --iss071-dump=/home/user/wt-a-out/manifeste_export.json --iss071-chargeabilite=1
 
 ### 6. pilotage par le FOCUS X
@@ -40,7 +40,7 @@ date    : 2026-08-30T10:35:51+00:00
 
 ### 7. attente du jalon de montage, PUIS de l'effacement du chargement
     jalon atteint : [world_v2] fondation V2 vérifiée — vallée whitebox prête.
-    luminance moyenne mesurée : 0.514552 (seuil 0.02 ; chargement 0.0027)
+    luminance moyenne mesurée : 0.294375 (seuil 0.02 ; chargement 0.0027)
     monde affiché — capture /home/user/wt-a-out/02_monde.png
 
 ### 8. manifeste EXPORT écrit par le jeu lui-même
