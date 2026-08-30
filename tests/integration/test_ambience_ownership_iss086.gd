@@ -172,6 +172,29 @@ func _remettre_le_flux_a_zero() -> void:
 ## UN TEST REND LE PROCESSUS TEL QU'IL L'A TROUVÉ. Sans ce nettoyage, ce
 ## fichier-ci fabriquerait exactement la fuite qu'il dénonce. L'écriture directe
 ## de `stream = null` est un geste de TEST, pas la correction.
+##
+## ET IL FAUT LAISSER AU SERVEUR AUDIO SA FENÊTRE DE RECYCLAGE.
+## `AudioServer::stop_playback_stream` ne libère rien : il pose
+## `FADE_OUT_TO_DELETION`. La libération demande ensuite UN PAS DE MIXAGE — sur
+## le pilote muet, `AudioDriverDummy` mixe toutes les ~93 ms de temps RÉEL — puis
+## un `AudioServer::update()` côté fil principal. Une course FILTRÉE se termine
+## quelques millisecondes après le dernier arrêt : le recyclage n'a pas le temps
+## d'avoir lieu, et le rapport de sortie affiche deux objets fuités que rien dans
+## le jeu ne retient. Mesuré : la course filtrée les affichait, la course
+## `--filter=phase_e_chain` et la suite complète — où des centaines de tests
+## suivent — n'affichent rien.
+##
+## C'est donc un artefact de HARNAIS, pas un défaut, et le corriger ici évite
+## qu'un journal nommé « contrat vert » porte la signature du défaut sans
+## explication. La revue adverse à contexte frais l'a désigné, et elle avait
+## raison de refuser une preuve qui se contredit elle-même.
+##
+## L'horloge employée est le temps RÉEL, et c'est délibéré : le fil de mixage
+## n'avance pas au rythme du jeu. C'est la seule attente de ce fichier qui ne
+## soit pas en temps de jeu, et elle est bornée.
+const RECYCLAGE_AUDIO_MS: int = 400
+
+
 func _rendre_le_silence() -> void:
 	var audio: Node = _audio()
 	if audio != null and audio.has_method("stop_ambience"):
@@ -180,6 +203,9 @@ func _rendre_le_silence() -> void:
 	if joueur != null:
 		joueur.stream = null
 	await _settle(2)
+	var depart: int = Time.get_ticks_msec()
+	while Time.get_ticks_msec() - depart < RECYCLAGE_AUDIO_MS:
+		await _tree().process_frame
 
 
 func _cloturer() -> void:
