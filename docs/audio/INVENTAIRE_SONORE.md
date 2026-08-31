@@ -174,7 +174,7 @@ d'échappement : **c'est la bande des pas sur l'herbe.**
 | Ce que fait un Nyquist à 11 025 Hz | Mesure |
 |---|---|
 | La zone creuse 707-2 828 Hz survit-elle ? | **Oui, entièrement** — elle s'arrête à 25,7 % du Nyquist réduit |
-| Que perd l'ambiance elle-même ? | **2,04 %** de l'énergie d'`amb_valley` |
+| Que perd l'ambiance elle-même ? | **1,97 %** de l'énergie d'`amb_valley` |
 | Qu'est-ce qui devient **inatteignable** par l'ambiance ? | tout ce qui est au-dessus de 11 025 Hz |
 
 Et c'est ce dernier point qui renverse. Un flux à 22,05 kHz ne porte **aucune**
@@ -186,8 +186,8 @@ Et c'est ce dernier point qui renverse. Un flux à 22,05 kHz ne porte **aucune**
 | `step_grass_a` | 22,57 % | **6,79 %** |
 | `step_grass_b` | 19,22 % | **5,61 %** |
 | `step_grass_c` | 26,11 % | **8,13 %** |
-| `step_stone_a` | 1,98 % | — |
-| `hit_taken` | 0,17 % | — |
+| `step_stone_a` | 1,99 % | 2,01 % |
+| `hit_taken` | 0,16 % | 1,06 % |
 
 **Le mot « mécaniquement à l'abri » a été retiré le 2026-08-31, et deux
 réserves ont été posées à sa place.**

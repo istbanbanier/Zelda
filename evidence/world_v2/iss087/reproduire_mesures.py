@@ -52,11 +52,52 @@ print("=" * 72)
 print("MESURE 2 — CE QUE 22,05 kHz MET HORS D'ATTEINTE DU MASQUAGE")
 print("=" * 72)
 print("Un flux à 22,05 kHz ne porte aucune énergie au-dessus de 11 025 Hz.")
-print("  %-18s %14s" % ("son", "> 11 025 Hz"))
+print()
+print("  ESTIMATEUR : FFT PLEIN CLIP, pas le périodogramme de Welch de")
+print("  band_profile. Welch redistribue au prorata par-dessus la frontière")
+print("  d'octave 8k/16k, qui tombe à 11 314 Hz et non à 11 025 : il rendait")
+print("  0,7 point de plus, et le document publiait l'autre chiffre. Les deux")
+print("  estimateurs ne peuvent pas cohabiter dans le dossier de preuve.")
+print("  La colonne pondérée A applique la courbe d'IEC 61672 — une fonction")
+print("  normalisée, qui n'est TOUJOURS PAS un verdict d'écoute (ISS-004).")
+print()
+
+def _poids_a(f):
+    if f <= 0.0:
+        return 0.0
+    f2 = f * f
+    num = (12194.0 ** 2) * (f2 ** 2)
+    den = ((f2 + 20.6 ** 2)
+           * math.sqrt((f2 + 107.7 ** 2) * (f2 + 737.9 ** 2))
+           * (f2 + 12194.0 ** 2))
+    return (10.0 ** ((20.0 * math.log10(num / den) + 2.00) / 20.0)) ** 2
+
+def part_exacte(ech, rate, seuil):
+    """Intégrale exacte, sans fenêtre : FFT du clip entier zéro-paddé."""
+    n = 1
+    while n < len(ech):
+        n *= 2
+    spec = bp.fft([complex(v, 0.0) for v in ech] + [0j] * (n - len(ech)))
+    df = rate / float(n)
+    haut = haut_a = tot = tot_a = 0.0
+    for k in range(n // 2 + 1):
+        p = abs(spec[k]) ** 2 * (2.0 if 0 < k < n // 2 else 1.0)
+        f = k * df
+        w = _poids_a(f)
+        tot += p
+        tot_a += p * w
+        if f > seuil:
+            haut += p
+            haut_a += p * w
+    return (100.0 * haut / tot if tot else 0.0,
+            100.0 * haut_a / tot_a if tot_a else 0.0)
+
+print("  %-18s %14s %16s" % ("son", "> 11 025 Hz", "pondérée A"))
 for f in ("amb_valley","step_grass_a","step_grass_b","step_grass_c",
           "step_stone_a","hit_taken","death"):
     e, r = bp.lire_wav("assets/audio/sfx/%s.wav" % f)
-    print("  %-18s %13.2f %%" % (f, part_au_dessus(bp.profil(e, r), 11025.0)))
+    ex, ea = part_exacte(e, r, 11025.0)
+    print("  %-18s %13.2f %% %15.2f %%" % (f, ex, ea))
 
 print()
 print("=" * 72)
@@ -69,8 +110,12 @@ bp.main(["--csv"] + ["assets/audio/sfx/%s" % n for n in sorted(__import__("os").
 sys.stdout = old
 rows = list(csv.DictReader(io.StringIO(buf.getvalue())))
 for b in [k for k in rows[0] if k.startswith("b_")]:
+    # `r[b]` peut être VIDE depuis le 2026-08-31 : une bande au-dessus du
+    # Nyquist du fichier n'a pas de valeur. Aucun des 21 assets n'est concerné
+    # aujourd'hui — tous sont à 44,1 kHz — mais le premier fichier à 22,05 kHz
+    # ferait lever un ValueError ici. Le garde coûte une condition.
     occ = [r["fichier"].replace(".wav","") for r in rows
-           if r["fichier"] != "amb_valley.wav" and float(r[b]) >= 20.0]
+           if r["fichier"] != "amb_valley.wav" and r[b] and float(r[b]) >= 20.0]
     print("  %-6s %2d   %s" % (b[2:], len(occ), ", ".join(occ) or "— libre —"))
 lourds = [r for r in rows if r["fichier"] != "amb_valley.wav"
           and float(r["masquage_125_500"]) >= 75.0]
