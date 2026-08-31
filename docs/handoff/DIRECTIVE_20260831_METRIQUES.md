@@ -166,8 +166,15 @@ reproduire ce qu'une contre-revue allègue au lieu de le croire.
 |---|---|---|---|
 | A (ISS-088) | `tools/validate_fast.sh` ×2 | ~20 min chacune | **VERT** 1049/0, gel 46/46 |
 | B (ISS-075) | `tools/validate_fast.sh` | ~20 min | **VERT** 1058/0 |
-| B — arbre corrigé `53e1bd01` | `tools/validate_fast.sh` | **en cours** au moment d'écrire | `NON VÉRIFIÉ` |
+| B — arbre corrigé `53e1bd01` | `tools/validate_fast.sh` | **75 min** (03:32 → 04:47) | **VERT**, `VF_RC=0`, 1059/586 |
 | C (ISS-087) | — | — | **aucune exécution moteur, et c'est délibéré** |
+
+**Les 75 minutes de la dernière exécution ne sont pas une régression de la
+suite.** Les exécutions précédentes tenaient en ~20 min. Celle-ci a partagé la
+machine avec les FFT en Python pur de la vérification d'ISS-087 — la
+reproduction du défaut d'instrument tournait pendant ce temps-là, sur le même
+processeur. C'est le coût de reproduire un défaut allégué au lieu de le croire,
+et il se paie en temps de mur, pas en fiabilité : le verdict est identique.
 
 **Pourquoi la voie C ne relance pas la suite.** Elle ne touche aucun `.gd`,
 aucune `.tscn`, aucune ressource : un outil Python autonome, sept documents,
