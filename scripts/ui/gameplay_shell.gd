@@ -276,7 +276,7 @@ func _apply_v4_style() -> void:
 	# 7. Inventaire (réf. 04) : grille 2 × 4 de cartes + panneau de détail aux
 	# données RÉELLES (définition + instance). Pas d'onglet OBJETS : il
 	# n'existe pas encore — on n'affiche pas un système absent (§0.2).
-	(_inventory_panel.get_node("Centerer/Plate/Column/Title") as Label).text = "INVENTAIRE"
+	(_inventory_panel.get_node("Centerer/Plate/Column/Title") as Label).text = Textes.t("hud.inventaire.titre")
 	var body: HBoxContainer = HBoxContainer.new()
 	body.name = "Body"
 	body.add_theme_constant_override(&"separation", 18)
@@ -304,7 +304,7 @@ func _apply_v4_style() -> void:
 	_detail_stats.add_theme_color_override(&"font_color", HudStyle.IVORY)
 	detail_column.add_child(_detail_stats)
 	var conductivity_title: Label = Label.new()
-	conductivity_title.text = "Conductivité"
+	conductivity_title.text = Textes.t("hud.inventaire.conductivite")
 	conductivity_title.add_theme_color_override(&"font_color", HudStyle.IVORY)
 	detail_column.add_child(conductivity_title)
 	_detail_conductivity = ProgressBar.new()
@@ -323,7 +323,7 @@ func _apply_v4_style() -> void:
 	_slot_list.add_child(body)
 	var hint: Label = Label.new()
 	hint.name = "Hints"
-	hint.text = "Tab / Échap — Fermer"
+	hint.text = Textes.t("hud.inventaire.fermer")
 	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	hint.add_theme_color_override(&"font_color",
 		Color(HudStyle.IVORY.r, HudStyle.IVORY.g, HudStyle.IVORY.b, 0.6))
@@ -527,7 +527,7 @@ func _build_controls_button() -> void:
 		return
 	_controls_button = Button.new()
 	_controls_button.name = "ControlsButton"
-	_controls_button.text = "Commandes"
+	_controls_button.text = Textes.t("menu.pause.commandes")
 	_controls_button.custom_minimum_size = Vector2(320, 44)
 	# Même livrée que ses voisins de colonne — il était le seul bouton gris.
 	HudStyle.style_button(_controls_button)
@@ -695,7 +695,7 @@ func _refresh_detail() -> void:
 	_detail_icon.texture = definition.icon
 	_detail_icon.visible = definition.icon != null
 	_detail_name.text = definition.display_name.to_upper()
-	_detail_stats.text = "Dégâts  %.0f\nPortée  %.1f m\nDurabilité  %d / %d" % [
+	_detail_stats.text = Textes.t("hud.arme.detail") % [
 		definition.base_damage, definition.reach_m,
 		weapon.current_durability, definition.max_durability]
 	_detail_conductivity.value = definition.conductivity
@@ -748,7 +748,7 @@ func _on_stamina_changed(current: float, maximum: float) -> void:
 
 
 func _on_arrows_changed(count: int) -> void:
-	_arrows_label.text = "Flèches : %d" % count
+	_arrows_label.text = Textes.t("hud.fleches.compte") % count
 
 
 ## Réserve de plats. Elle n'était affichée NULLE PART : on pouvait cuisiner,
@@ -759,7 +759,7 @@ func _on_arrows_changed(count: int) -> void:
 func _on_meals_changed(count: int) -> void:
 	if _meals_label == null or not is_instance_valid(_meals_label):
 		return
-	_meals_label.text = "Plats : %d  (F)" % count
+	_meals_label.text = Textes.t("hud.plats.compte") % count
 	_meals_label.visible = count > 0
 
 
@@ -774,12 +774,12 @@ func _refresh_weapon_text() -> void:
 		return
 	var weapon: WeaponInstance = _player.inventory().equipped()
 	if weapon == null or weapon.definition == null:
-		_weapon_label.text = "Mains nues"
+		_set_label(_weapon_label, Textes.t("hud.arme.mains_nues"))
 		for segment: ProgressBar in _durability_segments:
 			segment.value = 0.0
 		return
-	_weapon_label.text = "%s  %d/%d" % [weapon.definition.display_name,
-		weapon.current_durability, weapon.definition.max_durability]
+	_set_label(_weapon_label, "%s  %d/%d" % [weapon.definition.display_name,
+		weapon.current_durability, weapon.definition.max_durability])
 	# Durabilité SEGMENTÉE (réf. 03) : fraction réelle répartie sur 4 crans.
 	var fraction: float = float(weapon.current_durability) \
 		/ float(weapon.definition.max_durability) * float(DURABILITY_SEGMENTS)
@@ -793,7 +793,7 @@ func _on_interact_focus_changed(target: Node3D) -> void:
 		_prompt_panel.visible = false
 		return
 	var verb: String = String(target.call("prompt_verb"))
-	_prompt_label.text = "" if verb == "" else "E — %s" % verb
+	_prompt_label.text = "" if verb == "" else Textes.t("hud.invite.gabarit") % verb
 	_prompt_panel.visible = _prompt_label.text != ""
 
 
@@ -842,6 +842,19 @@ func notification_texts() -> Array[String]:
 
 func prompt_text() -> String:
 	return _prompt_label.text
+
+
+## ISS-075 — `_arrows_label` n'avait AUCUN accesseur de test. La chaîne
+## « Flèches : 8 » n'apparaissait que dans un commentaire d'en-tête de
+## `test_bow_fires_on_left_click.gd`, ce qui ressemble à un pin sans en être
+## un : rien ne rougissait si le libellé changeait. Le seam existe maintenant,
+## et `test_textes_iss075.gd` l'épingle.
+func arrows_text() -> String:
+	return _arrows_label.text if _arrows_label != null else ""
+
+
+func meals_text() -> String:
+	return _meals_label.text if _meals_label != null else ""
 
 
 ## Somme des éclats de rubis : le seam mesure ce qui est réellement AFFICHÉ
@@ -1020,10 +1033,10 @@ func set_sensitivity(value: float) -> void:
 
 const COOKING_MAX_SELECTION: int = 5
 const BUFF_LABELS: Dictionary = {
-	&"attack": "Attaque",
-	&"defense": "Défense",
-	&"stamina": "Endurance",
-	&"elec_resist": "Résist. élec.",
+	&"attack": "buff.attaque.nom",
+	&"defense": "buff.defense.nom",
+	&"stamina": "buff.endurance.nom",
+	&"elec_resist": "buff.resistance_elec.nom",
 }
 
 var _cooking_panel: PanelContainer = null
@@ -1046,7 +1059,7 @@ func _build_cooking_panel() -> void:
 	column.add_theme_constant_override(&"separation", 10)
 	_cooking_panel.add_child(column)
 	var title: Label = Label.new()
-	title.text = "CUISINE"
+	title.text = Textes.t("cuisine.titre")
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.add_theme_color_override(&"font_color", HudStyle.GOLD)
 	title.add_theme_font_size_override(&"font_size", 26)
@@ -1064,20 +1077,20 @@ func _build_cooking_panel() -> void:
 	column.add_child(row)
 	_cooking_confirm = Button.new()
 	_cooking_confirm.name = "CookingConfirm"
-	_cooking_confirm.text = "Cuisiner"
+	_cooking_confirm.text = Textes.t("cuisine.action.cuisiner")
 	HudStyle.style_button(_cooking_confirm)
 	_cooking_confirm.pressed.connect(cooking_confirm)
 	row.add_child(_cooking_confirm)
 	var remove_button: Button = Button.new()
 	remove_button.name = "CookingRemoveLast"
-	remove_button.text = "Retirer le dernier"
+	remove_button.text = Textes.t("cuisine.action.retirer_dernier")
 	HudStyle.style_button(remove_button)
 	HudStyle.wire_button_feedback(remove_button, _ui_audio)
 	remove_button.pressed.connect(cooking_remove_last)
 	row.add_child(remove_button)
 	var cancel: Button = Button.new()
 	cancel.name = "CookingCancel"
-	cancel.text = "Reprendre"
+	cancel.text = Textes.t("cuisine.action.reprendre")
 	HudStyle.style_button(cancel)
 	cancel.pressed.connect(close_cooking)
 	row.add_child(cancel)
@@ -1150,7 +1163,7 @@ func cooking_confirm() -> void:
 		return
 	var inventory: InventoryComponent = _player.inventory()
 	if inventory.meal_count() >= InventoryComponent.MAX_MEALS:
-		_on_notification("Réserve de plats pleine")
+		_on_notification("cuisine.reserve_pleine")
 		HudStyle.play_ui(_ui_audio, &"error")
 		return
 	var needed: Dictionary = {}
@@ -1166,7 +1179,12 @@ func cooking_confirm() -> void:
 	for id: StringName in needed:
 		inventory.consume_ingredients(id, int(needed[id]))
 	inventory.add_meal(result)
-	_on_notification("Cuisiné : %s" % String(result.get("name", "Plat")))
+	# `"Plat"` reste un LITTÉRAL, et c'est délibéré : c'est la valeur par défaut
+	# d'un `get` sur une donnée déjà cassée, donc un texte qui ne doit jamais
+	# s'afficher. L'inventaire le range dans `A_ARBITRER` plutôt que de le
+	# migrer ou de l'absoudre — voir docs/localisation/.
+	_on_notification(Textes.t("cuisine.plat_cuisine")
+		% String(result.get("name", "Plat")))
 	_close_cooking(&"confirm")
 
 
@@ -1194,13 +1212,13 @@ func _ingredient_display_name(id: StringName) -> String:
 func _effect_display_name(effect: String) -> String:
 	match effect:
 		"attack":
-			return "Attaque renforcée"
+			return Textes.t("buff.attaque.renforce")
 		"defense":
-			return "Défense renforcée"
+			return Textes.t("buff.defense.renforce")
 		"stamina":
-			return "Endurance renforcée"
+			return Textes.t("buff.endurance.renforce")
 		"elec_resist":
-			return "Résistance à la foudre"
+			return Textes.t("buff.resistance_elec.renforce")
 		_:
 			return effect
 
@@ -1223,7 +1241,7 @@ func _rebuild_cooking_panel() -> void:
 		stock_row.pressed.connect(cooking_add.bind(id))
 		_cooking_stock.add_child(stock_row)
 	if _cooking_selection.is_empty():
-		_cooking_selection_label.text = "Choisis 1 à 5 ingrédients"
+		_cooking_selection_label.text = Textes.t("cuisine.choisir.vide")
 	else:
 		var names: Array[String] = []
 		for id: StringName in _cooking_selection:
@@ -1232,7 +1250,7 @@ func _rebuild_cooking_panel() -> void:
 			# sélection disait `storm_berry`. Deux vocabulaires pour un même
 			# objet, dans le même panneau.
 			names.append(_ingredient_display_name(id))
-		_cooking_selection_label.text = "Choisis (%d/5) : %s" % [
+		_cooking_selection_label.text = Textes.t("cuisine.choisir.en_cours") % [
 			_cooking_selection.size(), ", ".join(names)]
 	var result: Dictionary = RecipeRules.cook(_cooking_definitions())
 	if bool(result.get("valid", false)):
@@ -1241,15 +1259,15 @@ func _rebuild_cooking_panel() -> void:
 		# concluait que cuisiner ne sert à rien, et n'apprenait jamais que ce
 		# plat est ce qui le protège de la foudre du boss. §13.3 demande la
 		# CATÉGORIE de résultat avant confirmation : la voici.
-		var line: String = "%s — soigne %d PV" % [
+		var line: String = Textes.t("cuisine.apercu.soin") % [
 			String(result.get("name", "")), int(result.get("heal", 0.0))]
 		var effect: String = String(result.get("effect", ""))
 		var duration: float = float(result.get("duration", 0.0))
 		if not effect.is_empty() and duration > 0.0:
-			line += "\n%s pendant %d s" % [
+			line += Textes.t("cuisine.apercu.effet") % [
 				_effect_display_name(effect), int(round(duration))]
 		if bool(result.get("unstable", false)):
-			line += "\n(mélange instable : le soin est fortement réduit)"
+			line += Textes.t("cuisine.apercu.instable")
 		_cooking_preview.text = line
 	else:
 		_cooking_preview.text = "—"
@@ -1272,16 +1290,39 @@ func _build_buff_label() -> void:
 	_buff_label.offset_top = 46.0
 
 
+## ISS-075 / D-065 — UNE TABLE `const` PORTE DES CLÉS, PAS DU TEXTE.
+##
+## La résolution se fait ICI, au site d'usage, et jamais à la déclaration. Deux
+## raisons, et la seconde est la vraie.
+##
+## 1. Une table `const` est évaluée une fois, au chargement du script — donc
+##    AVANT que `definir_locale()` ait pu être appelée. Y mettre du français
+##    résolu figerait la langue au démarrage.
+## 2. Surtout : c'est le SITE D'USAGE qui sait s'il est légitime d'appeler
+##    `Textes.t()`. `RESONANCE_ACTIONS` est indexée depuis `_resonance_action_line`,
+##    qui court à CHAQUE FRAME ; `BUFF_LABELS` depuis `_refresh_buff_label`, qui
+##    court dix fois par seconde. Résoudre à la déclaration effacerait cette
+##    différence et rendrait l'interdiction invérifiable. Elle reste vérifiable
+##    parce qu'elle est LOCALE : `test_textes_iss075.gd` lit la clôture d'appel
+##    de `_refresh_resonance_hud` et exige qu'aucun `Textes.t` n'y figure.
+##
+## Le repli est CONSERVÉ à l'identique : une entrée absente rend l'identifiant
+## brut. `test_resonance_hud.gd` épingle ce comportement sur un verdict inédit,
+## et le perdre afficherait une plaque vide au lieu d'un diagnostic.
+func _libelle(table: Dictionary, id: StringName) -> String:
+	return Textes.t(String(table[id])) if table.has(id) else String(id)
+
+
 func _refresh_buff_label() -> void:
 	if _buff_label == null or _player == null or _player.status() == null:
 		return
 	var effect: StringName = _player.status().active_effect()
 	if effect == &"":
-		_buff_label.text = ""
+		_set_label(_buff_label, "")
 		return
-	_buff_label.text = "%s — %d s" % [
-		String(BUFF_LABELS.get(effect, String(effect))),
-		int(ceilf(_player.status().remaining()))]
+	_set_label(_buff_label, Textes.t("hud.buff.gabarit") % [
+		_libelle(BUFF_LABELS, effect),
+		int(ceilf(_player.status().remaining()))])
 
 
 func buff_label_text() -> String:
@@ -1298,16 +1339,16 @@ func buff_label_text() -> String:
 ## scène : ailleurs, elle ne prend pas un pixel.
 
 const BOSS_PHASE_LABELS: Dictionary[StringName, String] = {
-	&"intro": "Le Gardien s'éveille",
-	&"phase1": "Armure chargée",
-	&"grounded_stun": "Mis à la terre — le noyau est nu",
-	&"transition12": "L'armure se fend",
-	&"phase2": "Surcharge",
-	&"overload": "SURCHARGE — le métal renvoie",
-	&"transition23": "La tempête monte",
-	&"phase3": "Tempête",
-	&"stagger": "Chancelant",
-	&"dead": "Silence",
+	&"intro": "boss.phase.intro",
+	&"phase1": "boss.phase.phase1",
+	&"grounded_stun": "boss.phase.grounded_stun",
+	&"transition12": "boss.phase.transition12",
+	&"phase2": "boss.phase.phase2",
+	&"overload": "boss.phase.overload",
+	&"transition23": "boss.phase.transition23",
+	&"phase3": "boss.phase.phase3",
+	&"stagger": "boss.phase.stagger",
+	&"dead": "boss.phase.dead",
 }
 
 var _boss_panel: PanelContainer = null
@@ -1323,7 +1364,7 @@ func _build_boss_bar() -> void:
 	var column: VBoxContainer = VBoxContainer.new()
 	var title: Label = Label.new()
 	title.name = "BossName"
-	title.text = "GARDIEN DE L'ORAGE"
+	title.text = Textes.t("boss.nom")
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.add_theme_color_override(&"font_color", HudStyle.GOLD)
 	title.add_theme_font_size_override(&"font_size", 18)
@@ -1383,7 +1424,7 @@ func _refresh_boss_bar() -> void:
 	_boss_panel.visible = phase != &"intro"
 	_boss_bar.max_value = health.maximum()
 	_boss_bar.value = health.current()
-	_boss_phase_label.text = BOSS_PHASE_LABELS.get(phase, String(phase))
+	_set_label(_boss_phase_label, _libelle(BOSS_PHASE_LABELS, phase))
 
 
 ## Seams de test : ce que la barre affiche RÉELLEMENT.
@@ -1418,6 +1459,17 @@ func boss_phase_text() -> String:
 
 ## Ce que le clic gauche déclenchera, par nature de cible — la seule chose que
 ## le joueur ne peut pas deviner puisque la même touche sert les quatre.
+## LA SEULE TABLE DE LIBELLÉS QUI PORTE ENCORE DU FRANÇAIS, et ce n'est pas un
+## oubli. Les trois autres (`BUFF_LABELS`, `BOSS_PHASE_LABELS`,
+## `RESONANCE_REFUSALS`) portent des CLÉS depuis ISS-075 ; celle-ci non, parce
+## qu'elle est indexée depuis `_resonance_action_line`, atteinte à CHAQUE FRAME.
+## La migrer mettrait un `Textes.t()` sur ce chemin — soixante résolutions par
+## seconde pour un texte qui ne change qu'au changement de cible.
+##
+## Si vous venez « uniformiser » les quatre tables : le geste est légitime, mais
+## il demande d'abord un cache invalidé au changement d'état, pas un `t()` de
+## plus. `test_textes_iss075.gd::B4` calcule la clôture d'appel de
+## `_refresh_resonance_hud` et rougira — c'est voulu, et c'est votre signal.
 const RESONANCE_ACTIONS: Dictionary[StringName, String] = {
 	&"port": "Arc Link",
 	&"polarity": "Polarité (Maj : repousser)",
@@ -1429,23 +1481,23 @@ const RESONANCE_ACTIONS: Dictionary[StringName, String] = {
 ## absent de cette table s'affiche tel quel : mieux vaut un mot brut qu'un
 ## silence — c'est le silence qui a coûté le playtest.
 const RESONANCE_REFUSALS: Dictionary[StringName, String] = {
-	&"cooldown": "Bracelet en recharge",
-	&"aucune_cible": "Aucune cible",
-	&"invalide": "Cible invalide",
-	&"hors_portee": "Trop loin",
-	&"trop_loin": "Les deux ports sont trop écartés",
-	&"pas_de_vue": "Un obstacle coupe le trajet",
-	&"pas_metal": "Ce n'est pas du métal",
-	&"pas_charge": "Cet objet n'est pas chargé",
-	&"trop_lourd": "Trop lourd pour la Polarité",
-	&"pas_de_charge": "Rien à mettre à la terre",
-	&"pas_au_sol": "Il faut les pieds au sol",
-	&"occupe": "Mise à la terre déjà en cours",
-	&"obstacle": "Le trajet est barré",
-	&"pas_de_sol": "Pas de sol à l'arrivée",
-	&"endurance": "Endurance insuffisante",
-	&"cible_perdue": "Cible perdue",
-	&"interrompu": "Interrompu",
+	&"cooldown": "resonance.refus.cooldown",
+	&"aucune_cible": "resonance.refus.aucune_cible",
+	&"invalide": "resonance.refus.invalide",
+	&"hors_portee": "resonance.refus.hors_portee",
+	&"trop_loin": "resonance.refus.trop_loin",
+	&"pas_de_vue": "resonance.refus.pas_de_vue",
+	&"pas_metal": "resonance.refus.pas_metal",
+	&"pas_charge": "resonance.refus.pas_charge",
+	&"trop_lourd": "resonance.refus.trop_lourd",
+	&"pas_de_charge": "resonance.refus.pas_de_charge",
+	&"pas_au_sol": "resonance.refus.pas_au_sol",
+	&"occupe": "resonance.refus.occupe",
+	&"obstacle": "resonance.refus.obstacle",
+	&"pas_de_sol": "resonance.refus.pas_de_sol",
+	&"endurance": "resonance.refus.endurance",
+	&"cible_perdue": "resonance.refus.cible_perdue",
+	&"interrompu": "resonance.refus.interrompu",
 }
 
 ## Durée d'affichage d'un message de verdict. Assez long pour être lu en
@@ -1523,46 +1575,41 @@ func _announce_resonance(message: String, refused: bool) -> void:
 func _on_resonance_verdict(_action: StringName, verdict: StringName,
 		executed: bool) -> void:
 	if not executed:
-		var reason: String = String(verdict)
-		if RESONANCE_REFUSALS.has(verdict):
-			reason = RESONANCE_REFUSALS[verdict]
-		_announce_resonance(reason, true)
+		_announce_resonance(_libelle(RESONANCE_REFUSALS, verdict), true)
 		return
 	# `port_a` est une ÉTAPE, pas une fin : l'état permanent est porté par la
 	# plaque (`link_pending`), pas par un message qui s'efface.
 	match verdict:
 		&"linked":
-			_announce_resonance("Lien établi", false)
+			_announce_resonance(Textes.t("resonance.verdict.lien_etabli"), false)
 		&"engaged":
-			_announce_resonance("Polarité engagée", false)
+			_announce_resonance(Textes.t("resonance.verdict.polarite_engagee"), false)
 		&"step":
-			_announce_resonance("Arc Step", false)
+			_announce_resonance(Textes.t("resonance.verdict.arc_step"), false)
 
 
 ## Le Pulse ne montrait rien du tout hors du laboratoire : au moins dire
 ## combien de cibles il a réellement révélées.
 func _on_resonance_pulse(revealed_count: int) -> void:
 	if revealed_count <= 0:
-		_announce_resonance("Impulsion — aucune cible à portée", false)
+		_announce_resonance(Textes.t("resonance.pulse.aucune_cible"), false)
 		return
-	_announce_resonance("Impulsion — %d cible%s révélée%s" % [revealed_count,
+	_announce_resonance(Textes.t("resonance.pulse.revelees") % [revealed_count,
 		"s" if revealed_count > 1 else "", "s" if revealed_count > 1 else ""],
 		false)
 
 
 func _on_resonance_link_dissolved() -> void:
-	_announce_resonance("Lien rompu", false)
+	_announce_resonance(Textes.t("resonance.verdict.lien_rompu"), false)
 
 
 func _on_resonance_grounded(_target: Node) -> void:
-	_announce_resonance("Mise à la terre effectuée", false)
+	_announce_resonance(Textes.t("resonance.verdict.terre_effectuee"), false)
 
 
 func _on_resonance_ground_cancelled(reason: StringName) -> void:
-	var text: String = String(reason)
-	if RESONANCE_REFUSALS.has(reason):
-		text = RESONANCE_REFUSALS[reason]
-	_announce_resonance("Mise à la terre annulée — %s" % text, true)
+	_announce_resonance(Textes.t("resonance.verdict.terre_annulee")
+		% _libelle(RESONANCE_REFUSALS, reason), true)
 
 
 ## Caméra du joueur de CETTE coquille (même règle que `_find_boss`) : deux
@@ -1604,8 +1651,16 @@ func _refresh_resonance_hud(delta: float) -> void:
 		_resonance_state_line(focus, target, pending, showing_message))
 
 
-## Écrire un `Label` seulement quand le texte change : le HUD se rafraîchit à
-## chaque frame, pas la mise en page.
+## Écrire un `Label` seulement quand le texte change.
+##
+## Le bloc Résonance se recalcule à CHAQUE FRAME, et l'arme et le buff dix fois
+## par seconde (`HUD_TEXT_REFRESH`) — dans les trois cas la valeur est presque
+## toujours la même que la précédente. Écrire `Label.text` n'est pas gratuit :
+## l'affectation invalide la mise en forme du texte et redemande un rendu,
+## qu'il ait changé ou non. La garde est donc portée ICI, une fois, plutôt que
+## répétée dans chaque appelant — et un appelant qui écrirait `label.text`
+## directement contournerait la garde sans qu'on le voie. C'est ce que
+## `test_textes_iss075.gd` épingle.
 func _set_label(label: Label, text: String) -> void:
 	if label != null and label.text != text:
 		label.text = text
