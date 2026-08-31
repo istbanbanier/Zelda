@@ -1979,3 +1979,252 @@ décret : l'étape 2b juge en mode AGRÉGAT, sur une suite lancée SANS `--verbo
 et compare au chiffre près. Si ce régime rendait 139 ou 141, le portail
 rougirait sur un contrat pourtant juste. C'est la situation que D-059 a nommée,
 et la seule à ne pas « corriger » au jugé.
+
+## D-064
+
+**L'identité de l'ambiance jouée se lit sur l'INTENTION du gestionnaire
+(`ambience_id()`), jamais sur une propriété de la ressource.** ISS-088, clôt une
+fragilité posée par D-062.
+
+Le contrat ISS-086 demandait « est-ce bien l'ambiance de la vallée qui joue ? » et
+le seul moyen dont il disposait était de lire `resource_path` sur le flux du
+lecteur. C'est un proxy : il interroge une propriété de l'OBJET-RESSOURCE pour
+répondre à une question sur le SON. Tant que le gestionnaire donnait au lecteur
+l'exemplaire du cache, le proxy tenait. ISS-088 a dû cesser de le faire — la boucle
+se pose désormais sur une copie, faute de quoi `play_sfx` hérite d'un son bouclé —
+et le proxy a cassé.
+
+**Le coût du couplage est mesuré, pas supposé.** Un `duplicate()` nu perd le
+chemin : `resource_path` est déclarée `PROPERTY_USAGE_EDITOR`, donc sans `STORAGE`,
+et `Resource::_duplicate` ne recopie que les propriétés `STORAGE`
+(`core/io/resource.cpp`). Retirer la seule ligne qui replaçait le chemin faisait
+rougir **cinq assertions, dont quatre dans un fichier qui n'avait pas bougé**, avec
+partout le même libellé « ressource sans chemin ». Une correction interne à
+`AudioManager` cassait un contrat voisin qu'elle ne touchait pas. C'est la
+définition d'un couplage mal placé, et il aurait coûté à chaque passe tant qu'il
+aurait vécu.
+
+**La décision.** `AudioManager` connaît déjà la réponse : c'est l'argument `sound`
+de `play_ambience`. Il la retient à côté du propriétaire qu'il retient déjà, et
+l'expose.
+
+```gdscript
+var _ambience_id: StringName = &""   # à côté de _ambience_owner
+# play_ambience    : _ambience_id = sound
+# _release_ambience: _ambience_id = &""
+func ambience_id() -> StringName: return _ambience_id
+```
+
+Le contrat assère l'identité au lieu du chemin. Comparaison de `StringName`, zéro
+octet lu, et le flux peut être une copie, une copie sans chemin ou un flux
+procédural sans que le contrat bouge. `_ambience_owner` dit *qui*, `_ambience_id`
+dit *quoi* : même cycle de vie, même point de libération, celui qu'ISS-086 exerce
+déjà.
+
+L'identifiant ne prouve pas les octets, et n'est pas censé le faire. Les
+non-vacuités existantes restent DANS le verdict : le lecteur joue vraiment, il a un
+`playback`, et la borne de boucle du contrat ISS-088 porte sur le flux réellement
+joué. Une intention déclarée sans lecture réelle ne serait pas une ambiance qui
+joue — c'est l'ablation que la contre-revue a mesurée : une identité fausse posée
+dans `_ambience_id` fait rougir quatre assertions d'ISS-086 **en montrant
+`playing=true`**. L'identité accuse ; la lecture n'est pas mise en cause.
+
+**Alternative rejetée 1 — garder le chemin porteur, replacé sur la copie par
+`set_path_cache()`.** C'était la première version, et elle FONCTIONNAIT : le geste
+est légitime, c'est celui du moteur pour `CACHE_MODE_IGNORE`
+(`core/io/resource_loader.cpp`), déclaré « *Set raw path without involving resource
+cache* » (`core/io/resource.h`), et il est sûr — le destructeur ne désinscrit du
+cache que si l'entrée pointe CE MÊME objet, avec un commentaire qui nomme
+explicitement l'aliasing ainsi créé :
+
+```cpp
+// Only unregister from the cache if this is the actual resource listed there.
+// (Other resources can have the same value in `path_cache` if loaded with `CACHE_IGNORE`.)
+if (likely(E && E->value == this)) { ResourceCache::resources.remove(E); }
+                                          // core/io/resource.cpp
+```
+
+Rejetée non pour un défaut technique — l'innocuité de la repose a été mesurée —
+mais parce qu'elle laisse le couplage en place : une propriété de production
+n'existerait plus que pour qu'un test puisse la lire, et la prochaine évolution de
+la copie la casserait de nouveau, dans un fichier qui n'aurait pas bougé.
+
+**Conséquence sur le code : la copie est délibérément SANS chemin.** L'absence de
+chemin est sans effet — la copie vit hors du `ResourceCache`, et le destructeur ci-
+dessus ne la concerne pas — et elle est honnête : plus aucun contrat ne dépend
+d'une propriété reposée à la main. Le contrat ISS-088 épingle ce chemin vide, de
+sorte qu'une réapparition de `set_path_cache()` rougisse et force une décision
+consciente plutôt qu'un retour silencieux au couplage.
+
+**Alternative rejetée 2 — égalité d'octets (identité par contenu).** Plus mauvais
+proxy que le chemin, **dans les deux sens**, et les deux cas existent dans le dépôt :
+
+- *même son, octets différents* — les deux fixtures d'ISS-088 ont le même sha256 en
+  source ; après import, leurs `data` diffèrent d'un facteur cinq. Une comparaison
+  des octets encodés répondrait « ce n'est pas le même son » alors que si. Le seul
+  paramètre qui a changé est `compress/mode` dans le `.import` ;
+- *mêmes octets, sons différents* — ces deux fixtures sont **deux `sound` distincts
+  dont les fichiers source sont identiques au bit près**. Importées de la même
+  façon, aucune comparaison d'octets ne les distinguerait, alors que le jeu, lui,
+  les distingue par leur nom.
+
+(Le second cas est démontré au niveau de la SOURCE, pas de l'audio décodé : QOA
+étant destructif, deux encodages du même son ne redonnent pas les mêmes
+échantillons. C'est une raison de plus de ne pas comparer du décodé — il faudrait
+une tolérance, donc un seuil, donc un réglage à défendre.)
+
+S'y ajoute le prix : des dizaines de milliers d'octets comparés par assertion, là
+où un `StringName` coûte un pointeur. Une identité qui se trompe dans les deux sens
+et coûte ce prix n'est pas une amélioration du chemin, c'est une régression.
+L'égalité d'octets survit à **un seul endroit** du contrat ISS-088, celui où elle
+teste le mécanisme de copie lui-même — donc où les octets sont bien le sujet.
+
+**Alternative rejetée 3 — poser une méta-donnée sur la copie.** Elle déplace le
+problème sans le résoudre : c'est encore une propriété de la RESSOURCE, portée par
+la production, dont le seul lecteur serait un test — la même fragilité que
+l'alternative 1, avec en plus une clé inventée là où le moteur offre déjà un
+porteur de chemin de première classe. Rejetée comme état de test embarqué dans le
+build.
+
+**Ce que cette décision ne change pas.** La correction d'ISS-088 elle-même reste
+entière : l'exemplaire partagé du cache n'est jamais muté, et la borne de boucle se
+compte en **trames décodées moins une** — `loop_end` est un dernier indice inclus,
+pas un compte, et il ne se déduit jamais des octets de `data`, qui sont compressés
+dès lors que l'import le demande.
+
+**Condition de réévaluation.** Si un jour un contrat doit vérifier que ce sont bien
+les bons ÉCHANTILLONS qui jouent — et non le bon son au sens du gestionnaire —,
+l'identifiant ne suffira pas : il faudra une assertion distincte, là où les deux
+références sont en main (le contrat ISS-088), et jamais dans ISS-086, qui n'a que
+le lecteur.
+
+## D-065
+
+**Le test qui rougit et le correctif qui le rend vert partent dans le MÊME commit,
+avec la preuve du rouge.** Réaffirmation, sur le motif de `ba829625`.
+
+La règle n'est pas nouvelle — `PROMPT4_METHOD` §2 la pose, et
+`.claude/rules/evidence.md` en fait la preuve minimale d'un « bug corrigé » : un
+test qui échouait avant et réussit après. Elle est réaffirmée ici parce que la
+passe post-ISS-086 l'a appliquée quatre fois de suite et que le bénéfice est
+désormais mesuré, pas postulé.
+
+**Le motif, tel que `ba829625` l'a établi** : un seul commit porte l'attribution du
+défaut sur un arbre de base intact, le journal du contrat ROUGE avant correctif, le
+correctif, le contrat, et les contrôles négatifs. On peut relire la causalité entière
+sans quitter le commit, et sans dépendre d'un arbre qui a bougé depuis.
+
+**Pourquoi séparer coûte plus que grouper.** Un test livré seul est un test dont
+personne ne peut plus démontrer qu'il rougissait — et un test dont on ne sait pas
+s'il rougirait est exactement le mode de panne que `PROMPT4_METHOD` §2 nomme. Un
+correctif livré seul est un correctif dont la portée n'est bornée par rien. Les
+deux séparés, dans cet ordre ou dans l'autre, laissent une fenêtre où l'arbre est
+faux et où personne ne le voit.
+
+**Ce que la passe a mesuré.** Les quatre livraisons de la passe portent chacune leur
+rouge d'origine :
+
+| Voie | Rouge d'abord | Ce qu'il prouve |
+|---|---|---|
+| ISS-086 | contrat rouge sur l'arbre de base | la fuite était réelle, et attribuée |
+| ISS-075 tranche | contrat rouge avant migration | les clés manquaient vraiment |
+| ISS-075 delta 4 | le dé-enrobage que la contre-revue avait fait passer inaperçu | la garde ferme bien ce trou-là |
+| ISS-088 | défaut d'origine, puis la borne isolée | deux défauts distincts, deux rouges distincts |
+
+Dans les quatre cas, le rouge a servi **après coup** : c'est lui qui a permis à une
+contre-revue à contexte frais de rejouer le sabotage et de vérifier que l'assertion
+mordait toujours. Un contrat sans son rouge archivé n'aurait pas supporté cette
+vérification.
+
+**Ce que la règle n'exige pas.** Elle n'impose pas un commit géant. Un correctif
+qui traverse plusieurs systèmes se découpe en tranches — chacune portant son propre
+rouge. C'est ce qu'a fait la voie ISS-075, en quatre commits dont chacun est
+relisable seul.
+
+**Ce qu'elle interdit.** Committer un correctif en promettant le test « à la passe
+suivante », et committer un test vert dont on affirme qu'il rougissait sans en
+produire le journal.
+
+## D-066
+
+**Le masque de collision des points d'intérêt est un défaut RÉEL et MESURÉ ; sa
+correction est DIFFÉRÉE hors de cette passe.** ISS-089.
+
+Le défaut est établi sans ambiguïté : les treize volumes de découverte de la vallée
+gardent le masque par défaut du moteur, qui ne recouvre pas la couche du joueur.
+Aucun ne s'est jamais déclenché. La mesure est une sonde exécutée, pas une lecture :
+cinq contrôles, dont une contre-épreuve qui prouve que la sonde sait détecter quand
+le masque est juste.
+
+**Le correctif tient en une ligne, et il n'est pas gelé.** Une affectation de masque
+dans `PointOfInterest::_ready()` corrige les treize lieux V2 et tous les POI V1 d'un
+coup ; le fichier est absent du manifeste de gel, donc aucun entérinement n'est
+requis. Le coût est donc **minimal**, et c'est précisément ce qui rend la décision
+de différer intéressante à écrire.
+
+**Pourquoi différer malgré ce coût.**
+
+1. **La passe en cours est sous gel de contenu.** Elle avait un périmètre annoncé —
+   ISS-086, ISS-088, la tranche ISS-075, le dossier ISS-087 — et un correctif à une
+   ligne reste un changement de comportement du monde : treize volumes qui se
+   mettent à émettre là où rien n'émettait.
+2. **Le correctif seul serait insuffisant, et le savoir change son coût.** Appliquer
+   la ligne sans réparer le test qui a laissé passer le défaut laisserait en place
+   un contrat vert **par accident** : son marcheur est sur la couche du décor, donc
+   il aurait continué de passer avec ou sans correctif. La séquence juste est
+   inverse — réparer d'abord le test pour qu'il rougisse (mesuré : ce seul
+   changement le fait rougir), puis appliquer la ligne. Cela ne tient plus en une
+   ligne, et cela relève de D-065.
+3. **Rien ne consomme le signal aujourd'hui.** Vérifié : ni UI, ni sauvegarde, ni
+   récompense ne lisent la première visite. Le joueur ne perd rien de visible. La
+   sévérité est S3 latente, pas S2.
+4. **Le premier consommateur est identifié, et il n'existe pas encore.** C'est
+   l'ambiance de lieu d'ISS-087. Corriger le masque au moment où ce consommateur
+   arrive garantit qu'il sera exercé par un usage réel plutôt que par un test seul.
+
+**Ce qui déclenche la reprise, écrit pour ne pas dépendre d'une mémoire** : la
+sévérité passe à S2 dès que **quoi que ce soit** lit la première visite d'un lieu —
+journal, carte, récompense conditionnelle, ou l'ambiance d'ISS-087. Le correctif
+devient alors prioritaire et doit partir avec sa réparation de test.
+
+**Alternative rejetée — corriger lieu par lieu.** Elle toucherait dix fichiers gelés
+sur treize. **Alternative rejetée — corriger dans le bâtisseur V2.** Elle ne
+corrigerait que V2 et mettrait la règle au mauvais endroit : un point d'intérêt doit
+savoir qui il écoute, ce n'est pas au constructeur de le lui dire.
+
+**Ce que la décision met au jour, et qui la dépasse.** La table des quatorze couches
+nommées existe bien dans `project.godot` — contrairement à ce qu'affirmait une
+première rédaction — mais **aucun test ne s'y réfère**. Un nœud qui ne règle rien
+retombe silencieusement sur « World Static », et rien ne le signale. C'est
+l'amplificateur qui a rendu ce défaut invisible pendant toute la vie du système :
+ISS-096.
+
+## D-067
+
+**Les fixtures audio des tests sont GÉNÉRÉES, vivent dans `tests/fixtures/`, et
+n'entrent pas dans `ATTRIBUTIONS.md`.** ISS-088.
+
+`.claude/rules/assets.md` impose qu'un asset **externe** soit inscrit dans
+`ATTRIBUTIONS.md` avant d'entrer dans le build. Les deux fixtures d'ISS-088 ne sont
+ni externes ni dans le build : elles sont produites par le projet, elles vivent sous
+`tests/`, et rien ne les exporte. Aucune fixture de test n'y figure ; la règle n'est
+pas enfreinte, elle ne s'applique pas. La politique est la même que pour les sons de
+remplacement générés, à ceci près que ceux-là entrent, eux, dans le build — et sont
+donc bien attribués.
+
+**Ce qui doit accompagner une fixture générée, en revanche, et qui manque
+aujourd'hui** : la **recette**. Le contrat ISS-088 déclare que son littéral de
+trames « vient de la GÉNÉRATION, pas d'une API du moteur » — c'est la bonne
+propriété, celle qui évite qu'un test compare une valeur à elle-même — mais aucune
+procédure de régénération ne vit dans le dépôt. La revendication est vraie et
+invérifiable en l'état.
+
+**Décision** : toute fixture binaire générée porte sa recette, soit dans l'en-tête
+du test qui la consomme, soit dans un script de `tools/`. Le critère est qu'un
+lecteur puisse **reconstruire la valeur épinglée sans faire confiance à la fixture**.
+Pour ISS-088 le coût est nul : le compte de trames se relit dans l'en-tête du
+fichier WAV, et la contre-revue l'a fait — quatre lignes suffiront à l'écrire.
+
+**Ce que la décision n'autorise pas** : substituer une lecture d'API du moteur au
+littéral de génération. Le contrat deviendrait une auto-comparaison, et il cesserait
+de pouvoir rougir.

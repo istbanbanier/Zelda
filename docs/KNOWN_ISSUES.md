@@ -2830,58 +2830,93 @@ Conséquence de second ordre relevée par l'audit : aucun respawn, aucun
 `LootComponent`, aucune `LootTableDefinition`. Tuer ne rapporte rien, et le
 contenu de combat d'une partie est fini et consommable une fois.
 
-## ISS-075 — Zéro localisation, et la dette croît à chaque phrase écrite — S3, PARTIEL le 2026-08-29
+## ISS-075 — Zéro localisation, et la dette croît à chaque phrase écrite — S3, PARTIEL le 2026-08-31
 
-Mesuré : **zéro appel `tr(` réel** dans `scripts/` (le motif `tr(` seul matche
-`str(` — vérifié avec une limite de mot), **aucun** fichier de traduction,
-**aucune** section d'internationalisation dans `project.godot`.
+**En clair** : tout le texte affiché au joueur est écrit en français dans le code.
+La première tranche est traitée — l'écran de jeu ne porte plus un seul texte en
+dur — et un détecteur empêche désormais la dette de remonter. Le reste du dépôt
+attend.
 
-Toute la fiction du jeu tient aujourd'hui dans quatre fragments de deux phrases
-codés en dur dans `DiscoveryRewards.PLAN`.
+**Vu** : 2026-08-16. **Première tranche livrée** le 2026-08-29 (neuf clés).
+**Tranche `gameplay_shell` livrée** le 2026-08-31 par quatre commits chaînés :
+`a386001c` (migration), `9a39ce85` (détecteur et compteur refondus), `f8abd674`
+(chemins d'exécution pilotés), `1c35d359` (les trois clés hors boss pilotées).
 
-**Pourquoi c'est urgent alors que le volume est minuscule.** C'est précisément
-parce qu'il est minuscule. Externaliser quatre fragments coûte une heure ;
-externaliser les 30 000 à 80 000 mots qu'exigerait une campagne de 30-50 h
-coûte plusieurs fois le prix de leur écriture. **La localisation ne se rattrape
-pas** : elle se pose avant d'écrire, ou elle se paie deux fois.
+**LE COMPTE ANNONCÉ ÉTAIT UN SOUS-ENSEMBLE STRICT, et la cause est nommée.**
+`docs/LOCALISATION.md` annonçait « `gameplay_shell.gd` (39) » et présentait ce
+chiffre comme le compte exact. Il ne comptait que les littéraux **accentués** :
+l'outil rejetait toute chaîne ne portant aucun caractère de son jeu accentué.
+Trois défauts de ce jeu, tous mesurés :
 
----
+- le tiret cadratin `—` en était **absent**, alors que le dépôt en met partout —
+  d'où l'invisibilité de `"E — %s"`, `"Arc Link — relier"`, `"%s — soigne %d PV"` ;
+- **tout français sans accent était invisible** : `INVENTAIRE`, `Commandes`,
+  `Mains nues`, `Cuisiner`, `Reprendre`, `Attaque`, `Endurance`, `Aucune cible`,
+  `Trop loin`, `Lien rompu`, `Arc Step`… ;
+- l'apostrophe typographique `’` y figurait alors que le dépôt n'en contient
+  **aucune** : entrée morte, et piège — « améliorer » la typographie aurait fait
+  MONTER le compte sans qu'un seul texte soit ajouté.
 
-### PARTIEL le 2026-08-29 (`48b079b6`) — la fondation existe, la dette reste
+**Le compte réel a été établi par deux voies indépendantes qui CONCORDENT.**
+L'écrivain, par un miroir Python du détecteur ; la contre-analyse, par un automate
+à états lisant caractère par caractère. Les deux inventaires se réconcilient au
+littéral près, **zéro vrai manqué de part et d'autre** ; l'écart résiduel d'une
+unité se décompose exactement en deux marques de pluriel supprimées par
+restructuration et un gabarit classé différemment. Appliquer l'ancien filtre
+accentué à l'inventaire complet redonne **exactement** le chiffre annoncé : la
+démonstration du sous-ensemble est faite, pas estimée. Le même biais faisait
+compter six textes à `scenes/ui/GameplayShell.tscn`, qui en porte quinze.
 
-Ce qui est fait, et c'est le mécanisme entier : `Textes` (statique,
-`scripts/localisation/`), `fr.json` source, `en.json` locale témoin, **9 clés
-migrées** — le camp braise et les premiers textes d'une partie neuve. Détail,
-raisons et compte exact : `docs/LOCALISATION.md`, décision `D-060`.
+**État de la tranche.** Zéro littéral joueur restant dans
+`scripts/ui/gameplay_shell.gd` — la même commande qui en trouvait des dizaines
+avant extraction en trouve zéro après, et le plafond du détecteur épingle ce zéro.
+Le français est identique octet pour octet ; le trou témoin de la locale anglaise
+est préservé.
 
-Les deux règles diffèrent à dessein : une clé absente de la **source** est une
-FAUTE bruyante (`push_error` + `⟦clé⟧` visible à l'écran) ; une clé absente
-d'une **autre locale** retombe sur le français et se compte. `en.json` porte
-un trou VOLONTAIRE et épinglé, sans quoi ce second chemin ne serait jamais
-parcouru.
+**Trois surfaces restent HORS TRANCHE, et sont documentées plutôt que traitées :**
 
-Pas `TranslationServer` : `tr()` ne peut pas échouer bruyamment, un
-`Translation` est une `Resource` retenue jusqu'à la fin du processus (or le
-résidu est épinglé par un contrat lui-même GELÉ, D-059), et aucun septième
-autoload. `D-060` détaille.
+1. **`scenes/ui/GameplayShell.tscn`** — quinze propriétés `text=` posées en scène.
+   Deux sont des **doublons du code** (`Mains nues`, `Reprendre`) : le même bouton
+   peut donc être français au démarrage puis traduit au premier rafraîchissement,
+   vocabulaire scindé dans un même panneau. Non corrigé, connu.
+2. **Les verbes `prompt_verb()`** de dix interactables — cinq verbes distincts qui
+   remplissent le gabarit `"E — %s"`. Migrer le gabarit sans les verbes laisserait
+   l'invite à moitié française : les deux vont ensemble ou aucun.
+3. **Les replis à clé brute : TRAITÉS**, par décision explicite. Le repli reste le
+   jeton technique BRUT et ne passe jamais par le résolveur — donc jamais de
+   marqueur d'erreur affiché par accident — et toutes les valeurs des quatre
+   tables résolvent dans la langue source, vérifié.
 
-**CE QUI RESTE, mesuré et non deviné** : **200 littéraux de texte joueur**
-écrits en dur, sur 54 fichiers. Les cinq plus gros : `gameplay_shell.gd` (39),
-`training_grounds.gd` (26), `discovery_rewards.gd` (11), `options_panel.gd`
-(9), `reward_anchor_audit.gd` (7). Le texte DIAGNOSTIC (138 littéraux) et ce
-qui ne part pas dans un build joué (68) sont hors périmètre : un journal
-moteur s'adresse à qui lit le code.
+**Le résiduel de couverture, dit exactement.** Le contrat pilote les chemins
+d'exécution réels et non plus seulement les tables. Restent non pilotées les clés
+de phase du boss, qui exigent un Gardien vivant : **leurs valeurs sont vérifiées
+en table, leur affichage au site d'appel ne l'est pas.** Cette formulation est la
+troisième : les deux précédentes disaient « tenues par le contrat », ce que la
+contre-analyse a réfuté par sabotage — deux clés dé-enrobées traversaient le
+portail entier au vert. Les trois clés hors boss ont été pilotées en conséquence
+(`1c35d359`) ; le dé-enrobage qui passait inaperçu rougit désormais.
 
-**La dette ne peut plus croître par une porte** : un nouveau texte joueur en
-dur dans `call("notify", "…")` rend
-`test_localisation_iss075.gd` ROUGE (plafond par fichier, contrôle négatif
-joué). Les autres portes — `prompt_verb`, `text` posé en `.tscn`,
-`display_name` des `.tres` — sont COMPTÉES, pas gardées : un garde-fou qui
-devine produit des faux rouges, et un garde-fou à faux rouges finit désarmé
-(PROMPT4 §1.2).
-
-**Prochaine tranche la plus rentable** : `gameplay_shell.gd`, dont quatre
-tables `StringName -> String` de 35 entrées sont déjà de la donnée.
+- **Sévérité** : S3. Aucun effet mécanique ; c'est de la dette, et elle est
+  désormais bornée par un test au lieu de l'être par la vigilance.
+- **La loi qui empêche la remontée** : le détecteur A9 de
+  `tests/integration/test_localisation_iss075.gd`
+  (`test_aucun_nouveau_texte_joueur_ecrit_en_dur_dans_le_code`) porte un plafond
+  par fichier avec la règle « ça ne monte pas ». Il voit désormais ce que le
+  précédent manquait : texte sans accent, tables `const` **et** `var`, chaînes
+  multilignes, littéral porté par une variable, retour de `prompt_verb`.
+- **Angles morts assumés du détecteur**, mesurés et déclarés : un mot unique en
+  minuscules sans accent hors porte d'affichage ; une valeur de table seule sur sa
+  ligne ; un appel réparti sur deux lignes — ce dernier échappe au scanner
+  historique mais est rattrapé par A9, vérifié par sabotage.
+- **Prochaine tranche** : `scripts/world/training_grounds.gd`, plus gros porteur
+  restant, puis `scripts/ui/options_panel.gd`. Les chiffres vivent dans
+  `evidence/world_v2/iss075/inventaire_officiel_apres.txt`, pas ici.
+- **Preuve** : `evidence/world_v2/iss075/` — `rouge_avant.log` (le contrat rouge
+  avant migration), `rouge_delta4.log` (le dé-enrobage qui passait inaperçu,
+  désormais rouge), `inventaire_officiel_apres.txt` (le compteur officiel daté),
+  `apres_extraction.csv`, quatre sabotages, six journaux verts.
+- **NON VÉRIFIÉ** : `validate_fast` complet, les niveaux 4-7, et l'affichage sur
+  un écran réel.
 
 ## ISS-076 — World V2 fait apparaître le héros DOS À LA VALLÉE — S3, OUVERT
 
@@ -3453,46 +3488,436 @@ silence total entre deux actions est ce qui fait projet non fini ».
   `audio_manager.gd`, toutes deux dans `valley_world.gd` ;
   `git grep -l AudioStreamPlayer -- scenes/` — aucun résultat.
 
-## ISS-088 — La boucle d'ambiance est posée sur un compte d'octets faux — S4, OUVERT
+## ISS-088 — La boucle d'ambiance est posée sur un compte d'octets faux — S4, **FERMÉE le 2026-08-31**
 
-**En clair** : le code croit que le son de fond dure une certaine durée, alors
-qu'il en dure une autre. Le jour où un fond sonore sera réellement joué, il se
-relancera au mauvais moment — un hoquet audible, pas un plantage. Aujourd'hui
-personne ne l'entend, parce qu'aucun monde jouable ne demande de fond sonore
-(ISS-087). Rien à décider tout de suite ; à corriger en même temps qu'ISS-087.
+**En clair** : le code croyait que le son de fond durait une certaine durée alors
+qu'il en durait une autre — l'ambiance livrée rebouclait à 0,81 s d'un clip de
+4,0 s. Corrigé avant que personne ne l'entende : aucun monde jouable ne demande
+encore de fond sonore (ISS-087).
 
-**Découvert le 2026-08-30**, en fermant ISS-086, par lecture de la source du
-moteur et du fichier d'import — pas par l'oreille : ce conteneur n'a aucun
+**Découvert le 2026-08-30** en fermant ISS-086 ; **fermée le 2026-08-31** par
+`8078da9b`, après deux contre-revues à contexte frais qui ont chacune renversé
+une partie de la correction.
+
+**Trois défauts dans le même geste, fermés ensemble.**
+
+1. **L'unité.** `play_ambience` posait `loop_end = data.size() / 2`, sous le
+   commentaire « 16 bits mono : deux octets par échantillon ». Le commentaire
+   décrivait le fichier SOURCE. La ressource IMPORTÉE ne l'est pas : chaque
+   `.wav.import` du projet porte `compress/mode=2`, donc `data` contient des
+   octets **QOA compressés**, tandis que `loop_end` se compte en **trames par
+   canal**. Mesuré sur `amb_valley` : 176 400 trames décodées contre 71 408
+   octets de `data`.
+2. **La borne inclusive.** Trouvée par la contre-analyse, pas par l'auteur. Le
+   moteur lit jusqu'à `loop_end` **compris** — `aux = (limit - offset) /
+   increment + 1` — et la même case reçoit `len - 1` quand la boucle est
+   désactivée. L'importeur du moteur, à qui l'on demande « la fin », écrit
+   lui-même `frames - 1`. Bornée au COMPTE, la lecture débordait d'une trame à
+   chaque tour.
+3. **Le partagé.** La mutation frappait l'exemplaire du cache — celui de
+   `_sfx_streams` ET du `ResourceCache` de `load()` — que `play_sfx` réutilise :
+   un son court hérité d'une boucle posée pour l'ambiance.
+
+**La borne juste** est `roundi(get_length() * mix_rate) - 1`, posée sur une
+**copie**. Elle est exacte pour tous les formats, parce que `get_length()` rend
+trames/mix_rate quel que soit l'encodage — la branche QOA décode l'en-tête au
+lieu de compter les octets. Un flux vide passe tel quel, sans boucle.
+
+**L'identité du flux joué a dû changer de niveau, et c'est le vrai enseignement.**
+Le contrat ISS-086 demandait « est-ce bien l'ambiance de la vallée qui joue ? » et
+n'avait pour l'entendre qu'une propriété de la RESSOURCE, `resource_path`. Une
+copie n'en porte pas : la correction ci-dessus faisait rougir **quatre assertions
+d'un fichier qui n'avait pas bougé**. L'identité est désormais l'INTENTION du
+gestionnaire — `ambience_id()` rend le nom demandé à `play_ambience`, vidé à la
+libération. Détail et alternatives rejetées : `docs/DECISIONS.md`, D-064.
+
+- **Sévérité** : S4 à la découverte — aucun monde atteignable ne joue d'ambiance
+  (ISS-087), donc personne ne l'entendait.
+- **Ce que la contre-revue a changé** : la borne `- 1` (défaut n°2, qu'elle a
+  trouvé et encadré), le cas du flux vide, la dispense stéréo écrite au site de
+  la formule, et l'identité par intention — conception qu'elle a proposée après
+  avoir mesuré que ni le chemin ni les octets ne répondaient à la bonne question.
+- **Contrat** : `tests/unit/test_ambience_loop_iss088.gd`, dix cas, fixtures PCM
+  et QOA au contenu **identique au bit près** (même sha256 en source, seul
+  `compress/mode` diffère) et de poids `data` sans rapport. La borne est encadrée
+  **des deux côtés** : le contrat rougit sur huit assertions à une trame de trop
+  comme à une trame de moins.
+- **E2/E4b** : l'audit de vacuité a mesuré que l'assertion E2 du contrat
+  ISS-086 (« le mauvais propriétaire est refusé ») était à bras unique —
+  `not false` y confondait trois causes distinctes. E4b, ajoutée dans cette
+  passe, porte l'autre bras : au même instant où l'ancien propriétaire est
+  refusé, le NOUVEAU peut rendre. E2 elle-même est inchangée.
+- **Statut de l'effet audible** : `À VÉRIFIER` — aucun périphérique ici
+  (ISS-004). La borne posée est celle que le moteur attend ; que l'ambiance sonne
+  juste n'est pas prouvé, et ne le sera pas dans ce conteneur.
+- **Limites assumées, déclarées dans le contrat** : `roundi` n'est départagé de
+  `floori`/`ceili` par aucune fixture à durée non ronde ; le résidu de fin de
+  processus se juge à l'étape 2b de `validate_fast`, jamais sur une course
+  filtrée.
+- **Preuve** : `evidence/world_v2/iss088/` — `rouge_avant_fix.log` (le défaut
+  d'origine), `rouge_delta_v3.log` (la borne isolée), quatre sabotages ;
+  `assets/audio/sfx/amb_valley.wav.import` (`compress/mode=2`) ;
+  `~/src/godot/scene/resources/audio_stream_wav.cpp` et
+  `~/src/godot/editor/import/resource_importer_wav.cpp`, tag `4.7.1-stable`.
+
+## ISS-089 — Les volumes de découverte ne voient pas le joueur : le masque ne recouvre pas sa couche — S3, OUVERT
+
+**En clair** : chaque lieu de la vallée porte une bulle invisible censée dire « tu
+viens d'arriver ici ». Aucune de ces bulles ne peut voir le héros. Le système de
+découverte des lieux est branché, testé, vert — et entièrement mort à l'exécution.
+
+**Découvert le 2026-08-30**, en cartographiant les zones sonores pour ISS-087 :
+les treize volumes de découverte semblaient être les déclencheurs naturels d'une
+ambiance de lieu. Vérification faite, ils ne se déclenchent jamais.
+
+**La chaîne, en quatre maillons.**
+
+1. `scripts/world/point_of_interest.gd` déclare `class_name PointOfInterest extends
+   Area3D` et ne touche **jamais** `collision_mask`. Les treize lieux le créent
+   par `PointOfInterest.new()` sans le régler non plus.
+2. Le défaut du moteur est `collision_layer = 1`, `collision_mask = 1`
+   (`~/src/godot/scene/3d/physics/collision_object_3d.h`, tag `4.7.1-stable`) ;
+   `Area3D` ne les surcharge pas.
+3. Le joueur réel porte `collision_layer = 2` (`scenes/player/Player.tscn`).
+4. Une `Area3D` n'émet `body_entered` que si son **masque** recouvre la **couche**
+   du corps. `1 & 2 = 0`.
+
+**Mesuré, non déduit.** Sonde exécutée dans un worktree détaché à `8c6955c6`,
+moteur `4.7.1.stable.official.a13da4feb`, **5 réussis / 0 échoué** : les valeurs à
+l'exécution donnent une intersection nulle ; le vrai `Player.tscn` traversant le
+volume n'y arrive jamais ; la contre-épreuve avec le masque corrigé arrive bien
+deux fois — donc la sonde mesure. Le contrôle le plus parlant est involontaire :
+`body_entered` **a** été émis, pour le sol de la sonde posé en couche 1. L'aire est
+vivante et détecte des corps ; elle ne voit simplement pas le joueur.
+
+- **Sévérité** : **S3**, et le mot juste est « latent ». Pas S4 : un sous-système
+  entier ne fonctionne pas. Pas S2 aujourd'hui : mesuré, **rien ne consomme**
+  `first_visit` ni `arrived` hors du script lui-même — aucune UI, aucune
+  sauvegarde, les récompenses étant posées physiquement aux ancres. Le joueur ne
+  perd rien de visible. **Devient S2** dès que quoi que ce soit s'y appuie :
+  journal, carte, récompense de première visite, ou l'ambiance de lieu d'ISS-087.
+- **Pourquoi les tests ne l'ont jamais attrapé** : `tests/integration/test_point_of_interest.gd`
+  construit son marcheur avec un `CharacterBody3D` nu, resté en couche 1 par
+  défaut, qui recouvre le masque **par accident**. Le test passe pour une raison
+  qui n'existe pas dans le jeu — le mode de panne que `PROMPT4_METHOD` §2 nomme.
+- **Le plus petit correctif** : une ligne dans `PointOfInterest::_ready()`,
+  `set_collision_mask_value(2, true)`, avec le commentaire disant pourquoi.
+  Corrige les treize lieux V2 et tous les POI V1 d'un coup, à l'altitude où la
+  règle appartient. Écartées : lieu par lieu toucherait dix fichiers gelés sur
+  treize ; le bâtisseur V2 ne corrigerait que V2 et mettrait la règle au mauvais
+  endroit — un POI doit savoir qui il écoute.
+- **Statut de gel** : `scripts/world/point_of_interest.gd` est **absent du
+  manifeste de gel**. Le correctif relève d'une passe ordinaire, sans entérinement.
+- **Le test qui l'épinglerait**, dans cet ordre : (a) réparer le test qui a laissé
+  passer le défaut — son marcheur doit porter la couche du joueur ; mesuré, ce
+  seul changement fait **rougir** le test tant que le correctif n'est pas
+  appliqué ; (b) ajouter l'invariant, qui lit la couche **depuis `Player.tscn`** et
+  jamais depuis un littéral recopié.
+- **Preuve** : sonde et journal daté dans le dossier de recherche audio
+  (`preuves_poi/`), à verser dans `evidence/` au moment du correctif.
+
+## ISS-090 — L'ambiance se figera à chaque pause ET à chaque transition de scène — S3, OUVERT
+
+**En clair** : le jour où un fond sonore jouera, il se coupera net dès que le
+joueur ouvre son inventaire, sa cuisine ou le menu de pause — et, plus grave, à
+**chaque changement de scène**, là où l'on attend précisément un enchaînement.
+Aujourd'hui personne ne l'entend, parce qu'aucun monde jouable ne demande de fond
+sonore (ISS-087).
+
+**Découvert le 2026-08-30**, en préparant le modèle de transitions d'ISS-087, par
+lecture de la source du moteur — pas à l'oreille : ce conteneur n'a aucun
 périphérique audio (ISS-004).
 
-`scripts/core/audio_manager.gd::play_ambience` pose la boucle ainsi :
+**La chaîne, maillon par maillon.** `scripts/core/audio_manager.gd` **ne pose
+aucun `process_mode`** ; l'autoload reste donc `INHERIT`. Un nœud `INHERIT` sans
+propriétaire de traitement se résout en **`PAUSABLE`** (`Node::_can_process`,
+`~/src/godot/scene/main/node.cpp`). Et un lecteur qui ne peut pas traiter voit son
+flux mis en pause (`NOTIFICATION_PAUSED`,
+`~/src/godot/scene/audio/audio_stream_player_internal.cpp`).
 
-```gdscript
-wav.loop_end = wav.data.size() / 2   # « 16 bits mono : deux octets par échantillon »
-```
+**Quatre chemins lèvent la pause de l'arbre, et le dernier est celui qu'on
+n'attend pas** : le menu de pause, l'inventaire et la cuisine dans
+`scripts/ui/gameplay_shell.gd` — et **toute transition de scène**, `SceneFlow.go_to()`
+mettant l'arbre en pause pendant tout le fondu et le chargement.
 
-Le commentaire décrit le fichier SOURCE. La ressource IMPORTÉE, elle, n'est pas
-du PCM : `assets/audio/sfx/amb_valley.wav.import` porte `compress/mode=2`, et
-l'énumération du moteur est `PCM (Uncompressed), IMA ADPCM, Quite OK Audio`
-(`editor/import/resource_importer_wav.cpp`) — donc **QOA**. `data` contient des
-octets QOA encodés, et le moteur compte ses trames par
-`qoa.desc.samples * qoa.desc.channels` (`scene/resources/audio_stream_wav.h`),
-pas par `octets / 2`.
+Le projet connaît déjà ce mécanisme et l'a traité ailleurs : `scripts/ui/hud_style.gd`
+pose `PROCESS_MODE_ALWAYS` sur le lecteur d'interface précisément pour qu'il sonne
+en pause. L'ambiance n'a pas eu le même soin.
 
-`loop_end` est donc posé à une valeur qui n'a aucun rapport avec la durée réelle
-du clip. La boucle existe — c'est ce qui compte pour ISS-086, et c'est mesuré —
-mais elle ne boucle pas là où le code croit.
+- **Sévérité** : **S3**. Aucun effet aujourd'hui ; mais c'est une coupure franche
+  que le propriétaire entendrait à la première minute, et elle contredit
+  l'exigence « aucune coupure brutale ».
+- **Le plus petit correctif** : `process_mode = Node.PROCESS_MODE_ALWAYS` dans
+  `AudioManager._ready()`. **Une ligne.** Elle appelle cependant une décision de
+  conception qui n'appartient pas au correctif : faut-il que l'ambiance continue
+  en pause, ou seulement s'atténuer ? Recommandation du chercheur : atténuer
+  d'environ 6 dB plutôt que couper — le silence total pendant une pause se lit
+  comme un plantage.
+- **Coordination** : le correctif touche `scripts/core/audio_manager.gd`. À faire
+  **après** la fermeture d'ISS-088 (faite le 2026-08-31), jamais en parallèle.
+- **Le test qui l'épinglerait** : monter l'autoload, mettre l'arbre en pause, et
+  vérifier que le flux du lecteur n'est **pas** en pause — l'assertion rougirait
+  aujourd'hui. Le cas de la **transition de scène** mérite son propre test :
+  c'est le chemin qu'aucune relecture ne soupçonne.
+- **Statut de l'effet audible** : `À VÉRIFIER` — la chaîne est démontrée sur la
+  source du moteur installé, pas écoutée.
 
-- **Sévérité** : S4 — le fond sonore n'est aujourd'hui joué par aucun monde
-  réellement atteignable (ISS-087), donc personne ne l'entend.
-- **Ce qu'il faudra** : calculer la borne depuis la ressource
-  (`wav.get_length() * wav.mix_rate`, ou l'API que la version installée
-  expose) au lieu d'un compte d'octets, et poser la boucle sur une COPIE plutôt
-  que sur l'exemplaire partagé du cache — `play_ambience` mute aujourd'hui la
-  ressource rendue par `load()`, donc celle que `play_sfx` réutilisera.
-- **Statut de l'effet audible** : `À VÉRIFIER` — aucun périphérique ici.
-- **Preuve** : `assets/audio/sfx/amb_valley.wav.import` (`compress/mode=2`) ;
-  `/opt/src/godot/editor/import/resource_importer_wav.cpp` ;
-  `/opt/src/godot/scene/resources/audio_stream_wav.h`.
+## ISS-091 — Le bus `Ambience` n'a ni curseur ni restauration : un fond sonore serait subi — S3, OUVERT
 
+**En clair** : le bus qui portera le fond sonore n'a aucun réglage de volume dans
+les options, et un réglage qu'on lui donnerait par ailleurs ne serait pas rechargé
+au lancement suivant. Un joueur qui voudrait baisser ou couper l'ambiance ne le
+pourrait pas.
 
+**Découvert le 2026-08-30**, en vérifiant que le modèle d'ambiance d'ISS-087
+pouvait respecter les deux exigences « réglages de volume respectés » et
+« désactivation possible ». Il ne le peut pas.
+
+**Deux trous distincts, tous deux vérifiés.** `AudioManager._restore_saved_volumes()`
+ne parcourt que `Master`, `Music` et `SFX` — `Ambience`, `UI` et `Voice` sont
+absents de la boucle alors que les six bus sont bien créés par `_ensure_buses()`.
+Et `scripts/ui/options_panel.gd` ne déclare que trois bus et n'en construit que
+trois lignes ; rien pour l'ambiance.
+
+**C'est exactement le défaut que ce code raconte avoir déjà corrigé une fois.** Le
+commentaire de `_restore_saved_volumes()` décrit le même incident sur la musique :
+un joueur qui coupait la musique la retrouvait à fond au lancement suivant, avec
+un curseur affichant zéro. La correction n'a couvert que les trois bus alors
+utilisés.
+
+- **Sévérité** : **S3**. Sans effet aujourd'hui — aucun son ne passe par ce bus —
+  mais **bloquant pour la livraison d'ISS-087** : livrer une ambiance sans ces deux
+  ajouts, c'est livrer un son que le joueur subit. `MASTER_SPEC` §17.5 exige un
+  volume séparé par famille, `PROMPT2_SPEC` §12.3 le répète.
+- **Le plus petit correctif**, en deux gestes indépendants : ajouter `Ambience` à
+  la boucle de restauration — et, tant qu'à faire, `UI` et `Voice`, qui souffrent
+  du même oubli ; puis ajouter une constante de bus et une ligne au tableau des
+  curseurs du panneau d'options.
+- **Coordination** : le premier geste touche `scripts/core/audio_manager.gd` ; le
+  second est indépendant et peut partir seul.
+- **Le test qui l'épinglerait** : écrire un volume pour `Ambience`, remonter
+  l'autoload, et vérifier que le gestionnaire rend la valeur écrite — aujourd'hui
+  il rendrait la valeur par défaut. Un second, plus durable : vérifier que **tout
+  bus déclaré autre que `Master` possède un curseur**. Il rougirait au prochain bus
+  ajouté sans réglage, ce qui est la vraie régression à empêcher.
+
+## ISS-092 — Le héros marche en silence : cinq sons de pas importés n'ont aucun appelant — S3, OUVERT
+
+**En clair** : le dépôt contient cinq sons de pas, générés, importés, prêts à
+jouer. Aucun code ne les demande. Le héros traverse toute la vallée sans bruit de
+pas — alors que les fichiers sont là depuis le début.
+
+**Découvert le 2026-08-30**, en inventoriant l'audio pour ISS-087 : sept fichiers
+sur vingt et un se sont révélés sans aucun appelant, par recherche du nom nu sur
+`scripts/` et `scenes/`.
+
+Les orphelins : les trois variantes d'herbe et les deux de pierre
+(`assets/audio/sfx/step_grass_*`, `step_stone_*`), plus `weapon_break.wav` et
+`ui_move.wav`. Piège de relecture, vérifié : `ui_move` **apparaît** bien dans
+`scripts/core/audio_manager.gd` — mais seulement dans un commentaire, comme exemple
+de nom passable à `play_sfx`. Une recherche rapide le fait donc paraître branché
+alors qu'aucun code ne le demande. Les cinq premiers sont les plus graves : `MASTER_SPEC` §18.2 ouvre
+sa liste des sons obligatoires par « pas par surface et vitesse », et la variation
+par matière est **déjà préparée** — les variantes ont des empreintes distinctes, ce
+ne sont pas des copies. `weapon_break` est cité par §11.2 et reste muet lui aussi.
+
+- **Sévérité** : **S3**. Aucune conséquence mécanique, mais c'est le défaut de
+  finition le plus immédiatement audible du projet, et il coûte peu : les assets
+  existent, sont attribués, et le gestionnaire sait déjà les jouer.
+- **Le plus petit correctif** : appeler `AudioManager.play_sfx()` au contact du
+  pied, en choisissant la variante selon la surface. Le gestionnaire porte déjà
+  les deux protections nécessaires — la variation de hauteur bornée et la garde
+  anti-rafale, cette dernière née d'un incident de pas dont le commentaire dit
+  « huit pas coupent la mort ».
+- **Le piège à mesurer AVANT de brancher** : le pool d'effets ne compte que huit
+  lecteurs, chacun monophonique, et il est **partagé avec le combat**. Une marche
+  produit un son toutes les ~0,35 s. Il faut vérifier qu'un pas ne coupe pas un
+  impact — c'est exactement l'incident que la garde anti-rafale a déjà corrigé une
+  fois.
+- **Le test qui l'épinglerait** : un test d'intégration qui fait marcher le joueur
+  et vérifie qu'un son de pas a été demandé. Plus durable encore : un invariant qui
+  **échoue si un fichier de `assets/audio/sfx/` n'a aucun appelant** — il aurait
+  attrapé ces sept-là dès leur dépôt, et attrapera le prochain.
+- **Conséquence pour le protocole d'écoute d'ISS-087** : tant que les pas sont
+  muets, l'ambiance sera le **seul** son continu de la séance, et le testeur ne
+  pourra pas distinguer « cette ambiance est trop présente » de « il n'y a rien
+  d'autre ». À trancher **avant** l'envoi des variantes, pas après.
+
+## ISS-093 — L'orage éclaire toutes les onze secondes et ne tonne jamais — S3, OUVERT
+
+**En clair** : au-dessus de la citadelle, un éclair part environ toutes les onze
+secondes. Il est parfaitement silencieux. C'est le moment le plus spectaculaire du
+monde, et le seul canal qui lui manque est celui que les trois cahiers des charges
+réclament nommément.
+
+**Découvert le 2026-08-30**, en cherchant dans World V2 les événements déjà
+cadencés qu'une passe audio pourrait servir sans rien inventer.
+
+**L'événement existe déjà, entièrement.** `scripts/world_v2/world_v2_atmosphere_builder.gd`
+porte le centre du nuage d'orage, la période de l'éclair, le minuteur qui la tient
+et le tracé du trait. Le son, lui, n'existe pas : zéro lecteur audio et zéro appel
+de son dans tout `scripts/world_v2/`.
+
+Ce que les cahiers demandent : `MASTER_SPEC` §18.2 liste « éclairs et tonnerre »
+parmi les sons obligatoires ; §7.6 précise « tonnerre retardé, cadence
+irrégulière » ; `VISUAL_ASSET_BIBLE` §22.4 donne la chronologie complète jusqu'au
+« tonnerre spatial retardé » ; `PROMPT2_SPEC` §12.1 en fait un repère d'échelle.
+
+- **Sévérité** : **S3**. Défaut de finition — mais c'est le meilleur rapport
+  effet/effort de la passe audio : l'événement est cadencé, la géométrie est
+  posée, et la distance nécessaire au retard est calculable depuis le centre du
+  nuage et la position du joueur.
+- **Ce qu'il faudra**, et c'est plus qu'un appel de son : le tonnerre est
+  **retardé**, pas simultané — c'est ce retard qui produit la sensation de
+  distance. Il faut donc un délai proportionnel à la distance apparente, et un son
+  qui **n'existe pas encore dans le dépôt** (aucun candidat de tonnerre à
+  l'inventaire). À produire ou à sourcer, avec la contrainte de licence habituelle :
+  inscription dans `ATTRIBUTIONS.md` **avant** l'entrée dans le build.
+- **La cadence régulière est un second défaut, plus discret.** La période est fixe
+  alors que `MASTER_SPEC` §7.6 demande une cadence irrégulière. Un tonnerre posé
+  sur un métronome rendra la régularité **audible**, donc perceptible, alors
+  qu'elle passe aujourd'hui inaperçue à l'œil. Le son **révélera** ce défaut : à
+  traiter dans la même passe, pas après.
+- **Le test qui l'épinglerait** : monter le constructeur d'atmosphère, avancer le
+  temps d'une période, et vérifier qu'une demande de son a été émise après le flash
+  et **pas en même temps** que lui. C'est le retard qui porte l'intention ; un test
+  qui vérifierait seulement « un son a joué » laisserait passer un tonnerre
+  simultané, c'est-à-dire raté.
+- **Statut de l'effet audible** : `À VÉRIFIER` — aucun périphérique ici (ISS-004).
+
+## ISS-094 — Près d'un cinquième du disque jouable n'appartient à aucune région — S4, OUVERT
+
+**En clair** : la vallée est découpée en onze régions nommées. Une part
+significative de la surface où le joueur peut réellement marcher ne tombe dans
+aucune d'elles. Tout système qui demanderait « dans quelle région suis-je ? » y
+recevrait une réponse vide.
+
+**Découvert le 2026-08-30**, en cherchant sur quoi accrocher les transitions
+d'ambiance d'ISS-087 : les régions sont le meilleur support disponible, et il
+fallait savoir ce qu'elles couvrent vraiment.
+
+**La mesure.** Échantillonnage du disque jouable avec la sémantique exacte du
+moteur — tri des régions par aire croissante, la plus petite gagnant, et bord min
+inclus / bord max exclu. La proportion sans région est **stable au doublement de
+la résolution d'échantillonnage** : ce n'est pas un artefact. Le chiffre exact, sa
+date et le script qui le reproduit vivent dans la preuve, jamais dans cette prose.
+
+Dans ce cas, `WorldV2TerrainBuilder.region_id_at()` rend la **chaîne vide** — un
+retour parfaitement prévu par le code, mais que rien n'oblige un appelant à traiter.
+
+- **Sévérité** : **S4**. Aucun effet aujourd'hui : le seul consommateur en
+  production est la végétation, qui traite déjà le cas vide sans incident. Ce n'est
+  pas un bug — c'est une **caractéristique mesurée du layout** qu'il faut connaître
+  avant de bâtir dessus.
+- **Ce n'est probablement pas à corriger dans le layout.** Étendre les rectangles
+  changerait la carte des biomes, donc la végétation, donc les captures de
+  référence — un coût sans rapport avec le bénéfice. `resources/world_v2/world_v2_layout.json`
+  est par ailleurs **gelé** : toute retouche exigerait un entérinement.
+- **Ce qu'il faut à la place** : que **tout système régional futur déclare son
+  repli**. Pour l'ambiance d'ISS-087, cela signifie une ambiance de base toujours
+  présente plutôt qu'un silence sur une partie de la carte. En une phrase : un
+  appelant de `region_id_at()` qui ne traite pas la chaîne vide est incomplet.
+- **Le test qui l'épinglerait** : un test qui échantillonne le disque jouable et
+  **publie** la proportion sans région, en échouant si elle **change** de plus d'un
+  point. Il ne demanderait pas la perfection ; il empêcherait une dérive
+  silencieuse du layout, et documenterait le chiffre là où on le rencontre.
+- **Note pour tout consommateur** : les onze régions **se chevauchent**. Le
+  départage est déterministe et déjà éprouvé en production (la plus petite gagne) ;
+  un système régional n'a donc pas à réinventer sa priorité, mais il devra prévoir
+  une **hystérésis** aux frontières, sans quoi un joueur qui longe une limite
+  basculerait à chaque pas.
+
+## ISS-095 — Le portail juge un journal que les preuves archivées ne contiennent pas, et une ligne verte reste indécidable — S2, OUVERT
+
+**En clair** : l'étape qui déclare la suite de tests « sans erreur » lit un fichier
+qui n'est jamais commité. Les journaux archivés sous ce nom ne sont pas ce
+fichier-là. Conséquence : une ligne verte citée jusqu'ici comme preuve ne peut
+être ni reproduite ni expliquée, et un portail peut rougir sur un arbre dont
+toutes les preuves publiées sont vertes.
+
+**Découvert le 2026-08-30**, en cherchant pourquoi un test de localisation qui
+émet volontairement une erreur de moteur n'avait jamais fait rougir la validation.
+Tranché par **une mesure**, parce que la lecture seule ne pouvait pas conclure.
+
+**Les deux juges ne mesurent pas la même chose, et un seul a été consulté.** Le
+lanceur de tests ne compte que les erreurs de SCRIPT et ignore les lignes `ERROR:`
+du moteur ; le prédicat de l'étape 2, lui, refuse toute ligne `ERROR:` non exemptée.
+Mesuré sur une même course : **suite verte, prédicat rouge**. Rien ne réconcilie
+les deux verdicts.
+
+**Le trou de preuve, qui est le vrai sujet de cette fiche.** Le prédicat scanne
+`evidence/validate_fast/02_unit.log` — la sortie de la suite **complète et sans
+filtre**, journal **gitignoré**. Les journaux `validate_fast_*.log` archivés dans
+les preuves ne sont pas ce fichier : ils ne peuvent donc ni confirmer ni infirmer
+ce que le prédicat a lu. Six hypothèses ont été éliminées une par une pour
+expliquer une ligne « aucune erreur signalée » d'une validation archivée ; aucune
+ne tient, et le doute restant coûte une exécution complète d'environ quatre-vingt-cinq
+minutes qui n'a pas été faite. **Cette ligne est donc INDÉCIDABLE et ne doit plus
+jamais être invoquée comme preuve.**
+
+- **Sévérité** : **S2**. Ce n'est pas un défaut de jeu, c'est un défaut de
+  l'appareil de preuve, et il touche le portail qui décide qu'un jalon est fini.
+  Une preuve qu'on ne peut pas rejouer n'est pas une preuve.
+- **Ce qu'il faut, et c'est mécanique** : **copier `evidence/validate_fast/02_unit.log`
+  dans les preuves committées de chaque passe**. C'est le journal que le prédicat
+  juge ; tant qu'il reste gitignoré, aucune revue ultérieure ne peut refaire le
+  raisonnement du portail.
+- **Le correctif immédiat du symptôme** est ailleurs et il est déjà appliqué : le
+  test fautif éteint désormais l'impression d'erreur autour de l'appel volontaire
+  (`f8abd674`, voir ISS-075). Il ferme ce cas-là ; il ne ferme pas le trou de
+  preuve, qui est général.
+- **Réserve à transmettre au prochain écrivain de l'audio** : le balayage de la
+  garnison attrape `[audio]` comme sous-chaîne nue, donc aussi les
+  **avertissements** — ce qui annule la précaution délibérée d'`AudioManager`, qui
+  émet volontairement un avertissement et non une erreur. Ce n'est pas un faux
+  rouge aujourd'hui (rien n'appelle `play_ambience` dans le monde joué), mais c'est
+  un couplage à connaître avant d'ajouter la moindre trace `[audio]`.
+- **Le test qui l'épinglerait** : un contrôle qui vérifie que le journal jugé par
+  le prédicat existe **dans l'arbre committé** de la passe. Il rougirait aujourd'hui.
+- **Preuve** : la capture filtrée montrant suite verte et prédicat rouge sur la même
+  course, dans le dossier de recherche audio, à verser dans `evidence/` avec le
+  correctif.
+
+## ISS-096 — Les quatorze couches de collision sont nommées et ne sont reliées à rien : aucun test ne les vérifie — S3, OUVERT
+
+**En clair** : le projet donne un nom à chacune de ses quatorze couches de physique
+— « Player », « Enemy », « Interactable »… — exactement comme le cahier des charges
+l'exige. Ces noms ne sont que de la documentation : rien ne vérifie qu'un nœud
+utilise bien la couche que son rôle lui assigne, et un nœud qui n'en règle aucune
+retombe silencieusement sur « World Static ».
+
+**Écrite le 2026-08-31**, en fermant ISS-089, dont elle est la cause profonde.
+**Rectification importante** : une première rédaction de la fiche ISS-089
+affirmait que `project.godot` « ne nomme aucune couche de physique 3D ». C'est
+**faux, et vérifié faux** — la section `[layer_names]` porte les quatorze noms de
+`MASTER_SPEC` §5.7, à l'identique, et les portait déjà à `8c6955c6`. Le défaut
+réel n'est pas l'absence de la table ; c'est que **rien ne s'y réfère**.
+
+**La chaîne.** Le défaut par défaut du moteur est `layer = 1`, `mask = 1`, soit
+« World Static » selon la table du projet. Une soixantaine de fichiers de
+`scripts/` et `scenes/` règlent une couche à la main, chacun avec ses propres
+nombres. Aucun test du dépôt ne relie un nombre à son nom : `tests/unit/test_invariants.gd`,
+qui porte les invariants d'état du projet, n'en contient aucune mention.
+
+**ISS-089 est la démonstration exacte du coût.** Un `Area3D` de découverte,
+créé sans jamais régler son masque, a donc « écouté » la couche du décor statique
+pendant toute la vie du système — treize volumes, zéro déclenchement, un contrat de
+test vert par accident. Le nom « Player » existait à côté, dans un fichier que rien
+ne lit.
+
+- **Sévérité** : **S3**. Aucun effet mécanique propre ; c'est un **amplificateur**.
+  Il ne casse rien seul, et il rend indétectable une classe entière de défauts
+  silencieux — dont un est déjà mesuré.
+- **Le plus petit correctif utile** : un invariant qui lit la table `[layer_names]`
+  de `project.godot` et vérifie que les couches employées par les nœuds critiques
+  correspondent à leur rôle déclaré — a minima que le joueur est bien sur
+  « Player », et que tout `Area3D` d'interaction ou de découverte a un masque
+  **explicitement réglé** plutôt que laissé au défaut. Un masque laissé au défaut
+  est le signal à attraper : il est indiscernable d'une intention, et c'est
+  précisément ce qui a coûté ISS-089.
+- **Ce qu'il ne faut PAS faire** : recopier les nombres dans le test. Le test doit
+  lire la table et `Player.tscn`, jamais un littéral — sans quoi il vérifierait sa
+  propre copie, le mode de panne que `PROMPT4_METHOD` §2 nomme.
+- **Preuve** : `project.godot`, section `[layer_names]` (quatorze couches nommées) ;
+  `scenes/player/Player.tscn` ; absence de toute assertion de couche dans
+  `tests/unit/test_invariants.gd`, vérifiée le 2026-08-31.

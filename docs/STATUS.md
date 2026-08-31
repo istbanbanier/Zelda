@@ -862,3 +862,28 @@ Commits `d5b4c79`, `9d107a2`.
 | Trois plans dans la vue d'ouverture (§1.3) | **NON CONCLUANT** | crêtes brisées et deux rangs lointains posés, mais la seule mesure produite — l'écart de valeurs sur la bande d'horizon — passe de 25 à 24 points, soit une différence négligeable et **dans le mauvais sens**. Un diff de pixels n'est pas une amélioration esthétique. À trancher par une comparaison visuelle indépendante et des mesures correctement orientées |
 | Citadelle détachée de la montagne (§30.2) | **NON CONCLUANT** | la bordure a été éclaircie et la pierre assombrie, mais aucune mesure ne démontre que le monument se détache. Revendication retirée |
 | Score WOW de la vue d'ouverture (§30.2) | **NON VÉRIFIÉ** | la notation demande un œil humain et un GPU réel (ISS-002). La vallée reste un graybox : citadelle sans terrasses, montagnes en boîtes, sol en aplat |
+
+## Passe post-ISS-086 (2026-08-30 / 08-31) — audio, localisation, portail d'export
+
+Commits `737418b4`, `a386001c`, `9a39ce85`, `f8abd674`, `1c35d359`, `8078da9b`.
+
+Quatre voies menées en parallèle sur worktrees séparés, chacune relue par une
+contre-revue à contexte frais avant intégration. Deux d'entre elles ont vu leur
+conception renversée par cette relecture, et c'est le fait marquant de la passe.
+
+| Fonctionnalité | État | Preuve |
+|---|---|---|
+| Boucle d'ambiance bornée en trames décodées (ISS-088) | **Validé** | `8078da9b`. `tests/unit/test_ambience_loop_iss088.gd`, dix cas ; fixtures PCM et QOA au contenu identique au bit près. La borne est encadrée **des deux côtés** : huit assertions rougissent à une trame de trop comme à une trame de moins |
+| L'exemplaire partagé du cache n'est jamais muté (ISS-088) | **Validé** | même contrat, cas S : les deux portes du partage rendent l'exemplaire vierge après lecture, et le flux joué est un exemplaire distinct qui porte seul la boucle |
+| Identité du flux joué par intention, non par ressource (ISS-088, D-064) | **Validé** | `AudioManager.ambience_id()` ; une identité fausse fait rougir quatre assertions d'ISS-086 **en montrant `playing=true`** — l'identité accuse, la lecture n'est pas mise en cause. Sabotage rejoué par la contre-revue sur l'arbre committé |
+| Aucune régression du contrat de propriété d'ambiance (ISS-086) | **Validé** | `tests/integration/test_ambience_ownership_iss086.gd` : les libellés et conditions historiques sont inchangés, une seule assertion ajoutée (E4b) ; vérifié par diff contre `8c6955c6` |
+| Un asset audio absent laisse une trace dans le journal (ISS-088) | **Fonctionnel** | `AudioManager._sfx_stream` avertit une fois par nom, borné par le cache négatif ; c'est la seule trace qu'un asset manque au PCK d'une build exportée |
+| Tranche de localisation `gameplay_shell` (ISS-075) | **Validé** | `a386001c` puis `1c35d359`. Zéro texte joueur en dur dans `scripts/ui/gameplay_shell.gd`, épinglé par le plafond du détecteur A9 ; français identique octet pour octet ; trou témoin de la locale préservé |
+| Le compteur de littéraux dit vrai (ISS-075) | **Validé** | `9a39ce85`. L'ancien outil ne retenait que les littéraux **accentués** ; le compte réel a été établi par deux voies indépendantes qui se réconcilient au littéral près. Sortie officielle datée : `evidence/world_v2/iss075/inventaire_officiel_apres.txt` |
+| Les chemins d'exécution ne montrent jamais une clé nue (ISS-075) | **Validé** | `f8abd674`, `1c35d359`. Le dé-enrobage que la contre-revue avait fait passer inaperçu rougit désormais : `evidence/world_v2/iss075/rouge_delta4.log` |
+| Affichage des clés de phase du boss (ISS-075) | **NON VÉRIFIÉ** | dix clés non pilotées : elles exigent un Gardien vivant. Leurs **valeurs** sont vérifiées en table ; leur **affichage au site d'appel** ne l'est pas, et le contrat le déclare en toutes lettres |
+| Le balayage d'export entend `[textes]` et `[audio]` | **Fonctionnel** | `737418b4`. Resserrement pur — aucun seuil abaissé, aucun motif retiré ; 3/3 lignes fautives attrapées, 0 faux positif sur journal sain. Le portail restait vert sur une localisation morte dans le PCK |
+| Dossier de recherche audio (ISS-087) | **Implémenté** | dix documents : inventaire des 27 fichiers, carte des zones sonores, transitions et priorités, budgets, protocole d'écoute, risques et interdits. Hors dépôt à ce jour |
+| Prototypes d'ambiance (ISS-087) | **NON VÉRIFIÉ** | neuf assets générés, **hors dépôt, sur aucune branche**. Leur vérification sans oreilles n'a jamais été exécutée : voir §3 |
+| `validate_fast` sur l'arbre final | **NON VÉRIFIÉ** | aucune suite complète n'a couru sur `8078da9b`. Toutes les mesures de cette passe sont des courses FILTRÉES |
+| Écoute réelle de l'audio | **BLOQUÉ** | aucun périphérique audio dans ce conteneur (ISS-004). Que l'ambiance sonne juste n'est pas prouvé, et ne peut pas l'être ici |

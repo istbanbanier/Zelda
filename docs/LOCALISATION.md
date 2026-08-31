@@ -67,9 +67,12 @@ Ce qu'on perd, dit franchement : la traduction automatique du `text` des
 donc la perte est nulle aujourd'hui. Le jour où un `.tscn` devra être traduit,
 tous les appels passent déjà par `t()` : le changement tiendra dans un fichier.
 
-## Ce qui est migré — et rien de plus
+## Ce qui est migré
 
-9 clés. Le camp braise, et les premiers textes d'une partie neuve.
+Deux tranches, dans cet ordre.
+
+**Tranche 1 — le camp braise et les premiers textes d'une partie neuve.** Neuf
+clés, migrées le 2026-08-29.
 
 | Clé | Où |
 |---|---|
@@ -85,73 +88,159 @@ tous les appels passent déjà par `t()` : le changement tiendra dans un fichier
 
 Le camp est un cas particulier instructif : `world_v2_camp_liberation.gd` est
 **gelé**, donc son `_annoncer()` ne peut pas appeler `Textes.t()`. Il publie la
-**clé** sur `EventBus`, et c'est le HUD (`gameplay_shell._on_notification`) qui
-la résout. Le script gelé portait déjà la note « le jour où une localisation
-arrive, c'est le JSON qu'elle remplace, pas cette ligne » — c'est exactement ce
-qui a été fait.
+**clé** sur `EventBus`, et c'est le HUD (`gameplay_shell._on_notification`) qui la
+résout. Le script gelé portait déjà la note « le jour où une localisation arrive,
+c'est le JSON qu'elle remplace, pas cette ligne » — c'est exactement ce qui a été
+fait.
 
-## Ce qui NE l'est pas — le compte exact
+**Tranche 2 — l'écran de jeu.** `scripts/ui/gameplay_shell.gd`, migré le
+2026-08-31. Le fichier ne porte plus **aucun** texte joueur écrit en dur, et le
+plafond du détecteur épingle ce zéro : y remettre un texte fait rougir la suite.
 
-Mesuré le 2026-08-29 par `tools/inventaire_textes_joueur.py` — **le script est
-committé**, donc le chiffre se rejoue. Une première rédaction de cette phrase
-affirmait qu'il vivait dans `tools/` alors qu'il n'y était pas : c'était un
-compteur en prose sans preuve, exactement ce que la règle d'ancrage du
-`CLAUDE.md` interdit. Sortie datée :
-`evidence/world_v2/camp_hardening/inventaire_textes_joueur.txt`.
+Les quatre tables `StringName -> String` du fichier — libellés de buff, phases du
+boss, actions et refus de Résonance — sont passées en clés. Leur **repli** reste
+en revanche le jeton technique BRUT et ne traverse jamais le résolveur : voir
+`## Les replis, et pourquoi ils ne sont pas traduits` ci-dessous.
+
+Le contrat de cette tranche est un fichier à lui seul,
+`tests/integration/test_localisation_iss075_gameplay_shell.gd` : il vérifie que
+chaque clé rend le français historique, que la locale témoin couvre toute la
+tranche, que les paramètres de format sont identiques dans les deux langues, que
+l'unicode traverse la table intact, que le changement de langue à chaud change
+réellement l'écran, et qu'aucune clé nue ne paraît sur les chemins d'exécution
+réellement pilotés.
+
+## Les replis, et pourquoi ils ne sont pas traduits
+
+Quand une table est interrogée avec un jeton qu'elle ne connaît pas, elle rend ce
+jeton **brut**, jamais un appel au résolveur. C'est délibéré : un repli qui
+passerait par `t()` afficherait le marqueur d'erreur `⟦…⟧` au joueur pour une
+cause qui n'est pas une faute de localisation — un jeton inattendu venu du
+gameplay. Le contrat vérifie les deux bras : le repli sort brut, et toutes les
+valeurs des quatre tables résolvent bien dans la langue source.
+
+## Ce qui NE l'est pas, et comment le compter
+
+**Le compte ne vit pas dans cette page.** Il vit dans l'outil, et sa sortie datée
+vit dans les preuves — c'est la règle d'ancrage du `CLAUDE.md` racine, et cette
+section a déjà été prise en défaut deux fois pour l'avoir enfreinte.
 
 ```
 python3 tools/inventaire_textes_joueur.py
 ```
 
+Sortie de référence de la tranche 2 :
+`evidence/world_v2/iss075/inventaire_officiel_apres.txt`. Elle porte trois
+catégories — texte joueur, texte diagnostic, hors build joué — puis le détail par
+fichier, du plus gros porteur au plus petit. **Rejouer la commande plutôt que de
+citer cette page.**
 
-| Catégorie | Littéraux | Fichiers |
-|---|---:|---:|
-| Texte joueur non migré | **200** | 54 |
-| Texte diagnostic (journaux, `push_error`) — hors périmètre | 138 | 54 |
-| Hors build joué (`scripts/tools/`, `scenes/tests/`) | 68 | 13 |
+Ordre de grandeur, à la date de la tranche 2 et pour situer seulement : le texte
+joueur non migré se compte en **quelques centaines de littéraux répartis sur
+plusieurs dizaines de fichiers**, l'écrasante majorité hors de l'écran de jeu. Les
+plus gros porteurs restants sont, dans l'ordre, `scripts/world/training_grounds.gd`,
+`scripts/ui/options_panel.gd`, `scenes/ui/GameplayShell.tscn` et
+`scripts/world/discovery_rewards.gd`.
 
-Les cinq plus gros porteurs : `gameplay_shell.gd` (39), `training_grounds.gd`
-(26), `discovery_rewards.gd` (11), `options_panel.gd` (9),
-`reward_anchor_audit.gd` (7).
+Le texte **diagnostic** ne sera pas traduit : un journal moteur s'adresse à qui lit
+le code, pas au joueur. Le **hors build joué** non plus.
 
-Le texte **diagnostic** ne sera pas traduit : un journal moteur s'adresse à qui
-lit le code, pas au joueur.
+### Le compteur annonçait un SOUS-ENSEMBLE STRICT, et il a fallu le refondre
 
-## La loi, et ce qu'elle ne couvre pas
+Cette page a annoncé « `gameplay_shell.gd` (39) » et présenté ce nombre comme le
+compte exact. Il ne l'était pas : l'outil ne retenait un littéral **que s'il
+portait un caractère accentué**. Ce n'était donc pas un compte de texte joueur,
+mais un compte de texte joueur **accentué** — un sous-ensemble strict, démontré
+comme tel : appliquer l'ancien filtre à l'inventaire complet redonne exactement le
+chiffre annoncé.
 
-`test_localisation_iss075.gd::test_aucune_nouvelle_porte_notify_...` interdit
-qu'un **nouveau** texte joueur écrit en dur passe par `call("notify", "…")`.
-Plafond par fichier, dette mesurée, « ça ne monte pas ». Descendre est libre.
+Trois défauts du jeu de caractères, tous mesurés :
 
-La porte `notify` est choisie parce qu'elle est **indiscutable** : tout ce qui
-la franchit finit sur l'écran. Restent **non couvertes** : `prompt_verb()`, le
-`text` posé en `.tscn`, `display_name` des `.tres`. Un garde-fou qui devinerait
-produirait des faux rouges, et un garde-fou à faux rouges finit désarmé
-(PROMPT4 §1.2). Elles sont comptées ci-dessus, pas gardées.
-
-### L'angle mort DANS la porte gardée, et il est vivant
-
-Le scanner ne lit qu'un littéral placé sur **la même ligne** que `"notify"`.
-Trois formes lui échappent, et la contre-revue en a trouvé une **en service** :
-
-| Forme | Exemple réel |
+| Défaut | Conséquence |
 |---|---|
-| un **enrobage** qui relaie | `scripts/tools/dev_mode.gd` — `_notify()` fait `bus.call("notify", text)` ; ses trois textes français crus comptent **zéro** |
-| le littéral porté par une variable | `bus.call("notify", message)` |
-| l'appel réparti sur deux lignes | `bus.call("notify",\n\t"…")` |
+| le tiret cadratin `—` en était **absent** | `"E — %s"`, `"Arc Link — relier"`, `"%s — soigne %d PV"` invisibles, alors que le dépôt en met partout |
+| tout **français sans accent** était invisible | `INVENTAIRE`, `Mains nues`, `Cuisiner`, `Reprendre`, `Attaque`, `Aucune cible`, `Trop loin`, `Lien rompu`, `Arc Step`… |
+| l'apostrophe typographique `’` y figurait alors que le dépôt n'en contient **aucune** | entrée morte — et piège : « améliorer » la typographie aurait fait MONTER le compte sans qu'un seul texte soit ajouté |
 
-`dev_mode.gd` ne part pas dans un build joué, donc l'impact est nul aujourd'hui
-— mais l'angle mort, lui, est général. Le déclarer vaut mieux que de laisser
-croire que la porte est étanche : **la loi empêche la dette de croître par le
-chemin direct, pas par un enrobage.** Fermer l'enrobage demanderait de suivre
-les appels, ce qu'un scan textuel ne fait pas sans faux positifs.
+Le compte réel a ensuite été établi par **deux voies indépendantes** — un miroir
+Python du détecteur côté écrivain, un automate à états lisant caractère par
+caractère côté contre-analyse — qui se réconcilient au littéral près, **zéro vrai
+manqué de part et d'autre**. L'outil a été refondu sur ce constat.
 
-Contrôle négatif joué : un `bus.call("notify", "Un texte joueur tout neuf,
-écrit en dur.")` ajouté dans `reset_button.gd` rend la loi ROUGE, et elle
-seule.
+**L'enseignement dépasse la localisation** : un instrument de mesure qui filtre
+avant de compter mesure son filtre, pas la grandeur. Le chiffre paraissait précis
+et il l'était — sur la mauvaise population.
+
+## La loi : la dette ne remonte pas
+
+`tests/integration/test_localisation_iss075.gd::test_aucun_nouveau_texte_joueur_ecrit_en_dur_dans_le_code`
+porte un **plafond par fichier**, mesuré, avec une seule règle : ça ne monte pas.
+Descendre est libre. Un fichier migré tombe à zéro et y reste — c'est le cas de
+`scripts/ui/gameplay_shell.gd`.
+
+Le détecteur qui l'alimente s'appelle **A9**. Il a remplacé un scanner qui ne
+regardait qu'une seule porte d'affichage et qu'une seule ligne à la fois. A9 voit
+désormais :
+
+- le texte **sans aucun accent** — c'est le défaut qui a coûté le compteur ;
+- les tables `const` **et** `var` ;
+- les chaînes multilignes, simples ou triples ;
+- le littéral posé dans une variable puis affiché plus loin ;
+- le texte rendu par `prompt_verb()` ;
+- l'appel d'affichage réparti sur **deux lignes** — la forme qui échappait au
+  scanner historique, et dont un sabotage confirme qu'A9 la rattrape.
+
+### Ce que la loi NE couvre pas, dit franchement
+
+**Trois surfaces sont comptées mais pas gardées** :
+
+1. le `text` posé en `.tscn` — `scenes/ui/GameplayShell.tscn` en porte une
+   quinzaine, dont **deux doublent un texte du code** (`Mains nues`, `Reprendre`).
+   Conséquence connue : le même bouton peut être français au démarrage puis traduit
+   au premier rafraîchissement, vocabulaire scindé dans un même panneau ;
+2. les verbes de `prompt_verb()` sur les interactables — cinq verbes distincts qui
+   remplissent le gabarit `"E — %s"`. Migrer le gabarit sans les verbes laisserait
+   l'invite à moitié française : les deux vont ensemble ou aucun ;
+3. le `display_name` des `.tres`.
+
+**Trois angles morts subsistent DANS la porte gardée**, mesurés et déclarés plutôt
+que devinés : un mot unique en minuscules sans accent hors d'une porte
+d'affichage ; une valeur de table seule sur sa ligne ; et le cas symétrique d'un
+enrobage qui relaie un appel. Un garde-fou qui devinerait produirait des faux
+rouges, et un garde-fou à faux rouges finit désarmé (`PROMPT4_METHOD` §1.2).
+
+### Ce que « couvert » veut dire pour les chemins d'exécution
+
+Le contrat de tranche ne se contente pas de vérifier que les clés existent en
+table : il **pilote l'écran réel** et vérifie qu'aucune clé nue n'y paraît. La
+distinction a coûté une reprise, et elle mérite d'être retenue.
+
+Une première rédaction annonçait que les clés restantes étaient « tenues par le
+contrat ». La contre-revue l'a réfutée par sabotage : deux clés dé-enrobées
+traversaient le portail entier **au vert**. Elles étaient épinglées **en table**,
+pas gardées **au site d'appel** — deux propriétés différentes, dont une seule
+protège l'écran.
+
+La formulation juste, et la seule à employer désormais : les clés de phase du boss
+ne sont pas pilotées, parce qu'elles exigent un Gardien vivant ; **leurs valeurs
+sont vérifiées en table, leur affichage au site d'appel ne l'est pas.** Toutes les
+autres clés de la tranche sont pilotées sur un chemin d'exécution réel.
 
 ## Prochaine tranche, si elle est demandée
 
-`gameplay_shell.gd` : 39 littéraux, dont quatre tables `StringName -> String`
-de 35 entrées. C'est le plus gros gain par fichier, et les tables sont déjà de
-la donnée — les basculer en clés est mécanique.
+`scripts/world/training_grounds.gd`, plus gros porteur restant, puis
+`scripts/ui/options_panel.gd`. L'ordre et les volumes se relisent dans la sortie
+de l'outil, pas ici.
+
+Deux dossiers sont à ouvrir avec la tranche suivante, parce qu'ils la rendront
+plus coûteuse s'ils attendent :
+
+- **les `text=` de `scenes/ui/GameplayShell.tscn`**, dont deux doublent déjà un
+  texte migré du code. C'est aujourd'hui la seule incohérence de vocabulaire
+  visible à l'écran ;
+- **les rappels de touches figés dans le texte traduit** — `"Fermer (Tab)"`,
+  `"E — %s"`, `"Polarité (Maj : repousser)"`. Ces glyphes dépendent de l'`InputMap`
+  et sont aujourd'hui gelés dans la langue source. Une locale qui les traduirait
+  mentirait sur le clavier ; une locale qui ne les traduit pas laisse de l'anglais
+  d'interface dans une phrase française. Le mécanisme de clés ne tranche pas ce
+  problème : il faudra une décision.

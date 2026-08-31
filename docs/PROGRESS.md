@@ -2766,3 +2766,126 @@ qui refermerait aussi ISS-088 ; (2) la variante visuelle du camp, à voir sur un
 écran avant de décider de la fusionner ; (3) la tranche ISS-075 suivante, dont
 le plan est prêt et dont le compteur de littéraux doit être corrigé d'abord —
 il annonce 39 là où il y en a ~62.
+
+## 2026-08-31 — Passe post-ISS-086 : la contre-revue a renversé deux conceptions
+
+Quatre voies en parallèle, chacune dans son propre worktree, chacune relue à
+contexte frais avant intégration. Le fait marquant n'est pas le volume livré, c'est
+que **deux corrections tenues pour finies ont été refaites après relecture** — et
+que dans les deux cas la relecture avait raison.
+
+### ISS-088 — trois défauts dans le même geste, dont un trouvé par la relecture
+
+L'ambiance livrée rebouclait à 0,81 s d'un clip de 4,0 s : la borne était calculée
+sur un compte d'octets **compressés**, alors qu'elle se compte en trames décodées.
+La correction évidente en a découvert deux autres :
+
+1. la mutation frappait l'exemplaire **partagé** du cache, celui que les sons
+   courts réutilisent ;
+2. la borne est **inclusive** — le moteur lit jusqu'à `loop_end` compris, et son
+   propre importeur écrit `frames - 1` quand on lui demande « la fin ». La première
+   version était donc juste à une trame près. **C'est la contre-revue qui l'a
+   trouvé**, sur la source du moteur, et qui a exigé que le contrat encadre la
+   borne des deux côtés plutôt que d'un seul.
+
+Puis un troisième renversement, de conception celui-là. Faire jouer une copie casse
+l'identification du son : le contrat voisin lisait « quel son joue » sur le chemin
+de la **ressource**, qu'une copie ne porte pas. Quatre assertions d'un fichier qui
+n'avait pas bougé sont devenues rouges. La contre-revue a proposé le bon niveau —
+ni le chemin, ni les octets, mais **l'intention du gestionnaire** — et l'a défendu
+par mesure : l'égalité d'octets se trompe dans les deux sens, et les deux cas
+existent dans le dépôt. Décision consignée en D-064.
+
+Verdict de la contre-revue sur la version finale : **PASS**, huit mesures, tous les
+sabotages reproduits sur l'arbre committé.
+
+### ISS-075 — le compteur mesurait son filtre, pas la grandeur
+
+`docs/LOCALISATION.md` annonçait « 39 littéraux » pour l'écran de jeu et présentait
+ce chiffre comme exact. L'outil ne retenait un littéral **que s'il portait un
+caractère accentué** : tout le français sans accent était invisible, et le tiret
+cadratin — que le dépôt met partout — ne figurait même pas dans son jeu de
+caractères. Ce n'était pas une approximation, c'était un sous-ensemble strict, et
+la démonstration est faite : appliquer l'ancien filtre à l'inventaire complet
+redonne exactement le chiffre annoncé.
+
+**Note d'honnêteté sur mon propre journal** : l'entrée du 2026-08-30 écrivait
+« ~62 ». C'était une estimation, jamais mesurée. Le compte réel a ensuite été
+établi par deux voies indépendantes — un miroir Python du détecteur, et un automate
+à états lisant caractère par caractère — qui se réconcilient au littéral près, zéro
+vrai manqué de part et d'autre. Les trois chiffres qui ont circulé sont donc : un
+faux, une estimation, une mesure. Seule la dernière compte.
+
+La tranche est livrée, le fichier est à zéro, et un détecteur refondu empêche la
+dette de remonter. Là encore la contre-revue a mordu : elle a démontré par sabotage
+que deux clés « tenues par le contrat » traversaient le portail entier au vert —
+elles étaient épinglées **en table**, pas gardées **au site d'appel**. Un quatrième
+commit a piloté les trois clés hors boss, et la formulation du résiduel dit
+désormais exactement ce qui est couvert et ce qui ne l'est pas. Ce quatrième
+commit a été re-jugé par la même contre-revue : **PASS** — ses deux sabotages
+traversants rougissent désormais, un troisième non demandé aussi, et la
+couverture annoncée a été recalculée indépendamment.
+
+### ISS-087 — dossier complet, prototypes NON VÉRIFIÉS
+
+La recherche audio a produit dix documents et **six défauts nouveaux, tous
+mesurés**, qui deviennent ISS-089 à ISS-094 : les volumes de découverte ne voient
+pas le joueur, l'ambiance se figera à chaque pause et à chaque transition de scène,
+le bus qui portera le son n'a ni curseur ni restauration, cinq sons de pas importés
+n'ont aucun appelant, l'orage éclaire sans jamais tonner, et une part significative
+du disque jouable n'appartient à aucune région.
+
+Neuf prototypes d'ambiance ont été générés. **Ils sont NON VÉRIFIÉS**, et c'est le
+point à ne pas perdre : la saturation de contexte est tombée **entre la génération
+et la vérification**. Le script de vérification existe et n'a jamais été exécuté ;
+son journal de génération s'arrête exactement là où la vérification devait
+commencer. Le fichier de mesures qu'il aurait produit n'existe pas — alors que le
+README des prototypes le liste comme s'il existait.
+
+### Deux défauts de notre appareil de preuve, consignés
+
+`validate_fast` juge un journal qui n'est **jamais commité** ; les journaux
+archivés sous ce nom ne sont pas ce fichier. Conséquence : une ligne « aucune erreur
+signalée » citée jusqu'ici comme preuve est **indécidable** et ne doit plus être
+invoquée (ISS-095). Et la table des quatorze couches de collision, correctement
+nommée dans `project.godot`, n'est reliée à **aucun test** : c'est l'amplificateur
+qui a rendu invisible le défaut des volumes de découverte (ISS-096).
+
+### État final, dit sans arrondir
+
+Les six commits sont sur `claude/world-v2-post-iss086-team`, sommet `8078da9b`.
+Toutes les mesures de cette passe viennent de courses **FILTRÉES** :
+`validate_fast` complet n'a couru sur aucun de ces arbres, et rien ici ne doit être
+lu comme une validation de suite complète. L'écoute réelle reste impossible dans ce
+conteneur.
+
+**Prochaine action exacte** — une seule, et elle a un préalable non négociable :
+
+> **Refaire la vérification sans oreilles des neuf prototypes d'ambiance, PUIS
+> seulement organiser l'écoute humaine.**
+>
+> 1. Exécuter le script de vérification des prototypes, qui n'a jamais tourné, et
+>    produire son fichier de mesures. Six critères : durée exacte, crête, RMS et
+>    marge anti-masquage, stabilité par fenêtre, **raccord de boucle**, spectre.
+>    Un seul de ces six — la durée — se lit dans l'en-tête du fichier ; les cinq
+>    autres sont aujourd'hui inconnus.
+> 2. Traiter les deux ratés que cette exécution mettra au jour : le README des
+>    prototypes annonce des mesures qui n'existent pas, et la valeur de référence
+>    de mixage citée trois fois n'est traçable dans aucun fichier du dossier livré.
+> 3. Trancher **avant** la séance les deux questions que le protocole d'écoute pose
+>    lui-même : brancher ou non les cinq sons de pas, brancher ou non le tonnerre.
+>    Sans cette décision, l'ambiance serait le seul son continu de la séance et
+>    Istvan ne pourrait pas distinguer « cette ambiance est trop présente » de « il
+>    n'y a rien d'autre ». Les deux choix sont acceptables ; l'indécision ne l'est
+>    pas.
+> 4. Seulement alors, monter les trois archives A/B/C et envoyer le protocole
+>    d'écoute — aveugle, trajet identique, ordre contre-balancé, environ dix minutes
+>    par variante.
+>
+> Ce que l'écoute d'Istvan **ne remplace pas** : une boucle qui claque, un niveau
+> qui masque les effets ou une raie parasite sont des défauts mesurables, et lui
+> demander de les entendre à notre place serait lui faire faire notre travail.
+
+Trois décisions restent au propriétaire, inchangées depuis la dernière entrée :
+la variante visuelle du camp (à voir sur un écran), la suite d'ISS-075, et l'ordre
+dans lequel traiter les six défauts audio nouvellement consignés.
