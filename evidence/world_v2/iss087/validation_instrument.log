@@ -1,30 +1,25 @@
-# Validation de l'instrument — tools/audio/band_profile.py
-# Arbre : 8c6955c6277e371327c71079bacaa6a8c2e44fac · branche claude/world-v2-iss087-soundscape-research
-# Date : 2026-08-31T02:18:52Z · python Python 3.11.15
-# numpy/scipy INDISPONIBLES dans ce conteneur : FFT en Python pur.
-
 VALIDATION DE L'INSTRUMENT — 44100 Hz, 4.0 s par cas
 
 Cas 1 — BRUIT BLANC gaussien (graine figée)
   Théorie : fraction d'une bande = largeur / Nyquist.
   bande       mesuré%   théorie%   écart pt
-  <22           0.110      0.101      0.009
-  31.5          0.081      0.101      0.020
-  63            0.222      0.202      0.020
-  125           0.411      0.401      0.010
-  250           0.768      0.802      0.034
-  500           1.649      1.603      0.046
-  1k            3.231      3.207      0.024
-  2k            6.389      6.414      0.024
-  4k           12.920     12.827      0.093
-  8k           26.044     25.655      0.389
-  16k          48.175     48.691      0.515
-  écart maximal : 0.515 point de pourcentage
-  125-500 Hz : mesuré 2.83 %   théorie 2.81 %   (l'ancien outil rendait 33 %)
+  <22           0.106      0.101      0.005
+  31.5          0.082      0.101      0.019
+  63            0.217      0.200      0.016
+  125           0.418      0.399      0.018
+  250           0.761      0.802      0.041
+  500           1.629      1.603      0.026
+  1k            3.229      3.207      0.023
+  2k            6.418      6.414      0.005
+  4k           12.939     12.827      0.112
+  8k           26.038     25.655      0.383
+  16k          48.164     48.691      0.527
+  écart maximal : 0.527 point de pourcentage
+  125-500 Hz : mesuré 2.81 %   théorie 2.81 %   (l'ancien outil rendait 33 %)
 
 Cas 2 — SINUS PUR 250 Hz
   Théorie : l'octave 250 (176,8-353,6 Hz) prend ~100 %.
-  octave 250 : 100.000 %   reste : 0.000 %
+  octave 250 : 99.971 %   reste : 0.029 %
 
 Cas 3 — SINUS PUR 16 kHz  (contrôle ANTI-REPLIEMENT)
   Théorie : l'octave 16k prend ~100 %, et RIEN ne descend en bas.
@@ -35,10 +30,18 @@ Cas 3 — SINUS PUR 16 kHz  (contrôle ANTI-REPLIEMENT)
 Cas 4 — BRUIT ROSE exact (densité 1/f)
   Théorie : chaque octave PLEINE porte la même énergie.
   C'est l'invariant que « huit sondes par octave » violait.
-  125=5.84%  250=5.75%  500=5.95%  1k=5.81%  2k=5.85%  4k=5.87%  8k=5.86%
-  moyenne 5.85 % — dispersion maximale 1.7 % de la moyenne
+  125=5.92%  250=5.94%  500=5.94%  1k=5.94%  2k=5.94%  4k=5.94%  8k=5.94%
+  moyenne 5.94 % — dispersion maximale 0.3 % de la moyenne
 
-Cas 5 — CONSERVATION : somme des fractions = 100.000000 %
+Cas 5 — CONSERVATION : 100.000000 % de l'énergie des raies atteint une bande
+        (la somme des fractions, elle, vaut 100.000000 % PAR CONSTRUCTION
+         et ne prouve rien — voir le commentaire du cas 5)
 
-VALIDATION : les cinq cas passent. L'instrument peut servir de mesure.
-# code retour : 0
+Cas 6 — ONE-SHOT à énergie exactement partagée (attaque 8 kHz / queue 200 Hz)
+     441 +   2205 trames : octave 8k =  49.82 %  (théorie 50,00 %)
+     882 +   5292 trames : octave 8k =  49.91 %  (théorie 50,00 %)
+     441 +   4410 trames : octave 8k =  49.88 %  (théorie 50,00 %)
+     441 +   8820 trames : octave 8k =  49.83 %  (théorie 50,00 %)
+     441 +  44100 trames : octave 8k =  49.84 %  (théorie 50,00 %)
+
+VALIDATION : les six cas passent. L'instrument peut servir de mesure.

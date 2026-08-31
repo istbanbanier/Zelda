@@ -181,15 +181,30 @@ def lire_wav(chemin: str) -> tuple[list[float], int]:
 # Le cœur : Welch, puis intégration au prorata sur les bandes
 # --------------------------------------------------------------------------
 def bornes_bandes(nyquist: float) -> list[tuple[str, float, float]]:
-    """Bandes contiguës couvrant 0 .. Nyquist, sans trou. La première va de 0
-    à la borne basse de l'octave 31,5 (elle absorbe le continu, ce qui est
-    voulu : un continu doit se VOIR, pas se diluer), la dernière est tronquée
-    à Nyquist."""
+    """Bandes contiguës couvrant 0 .. Nyquist, sans trou NI RECOUVREMENT. La
+    première va de 0 à la borne basse de l'octave 31,5 (elle absorbe le
+    continu, ce qui est voulu : un continu doit se VOIR, pas se diluer), la
+    dernière est tronquée à Nyquist.
+
+    LES RACCORDS SONT DES MOYENNES GÉOMÉTRIQUES, et pas `c/√2` d'un côté avec
+    `c·√2` de l'autre. La nuance a l'air scolastique ; elle ne l'est pas. Les
+    centres normalisés ne sont pas tous dans un rapport de 2 exact : 125/63
+    vaut 1,984. Poser indépendamment `63·√2 = 89,095` et `125/√2 = 88,388`
+    fait donc **se recouvrir** ces deux bandes sur 0,707 Hz, et toute raie qui
+    tombe dans cette lame est versée DEUX FOIS. Le cas 5 refondu l'a mesuré le
+    2026-08-31 : 100,003304 % de l'énergie des raies atteignait une bande.
+    C'est infime, et c'est exactement le genre d'infime qu'un instrument de
+    mesure n'a pas le droit de porter.
+
+    `sqrt(c_i · c_{i+1})` vaut `c·√2` partout où le rapport EST 2 : ce choix ne
+    déplace qu'un seul raccord de tout le tableau, celui de 63/125, à 88,741."""
     bandes: list[tuple[str, float, float]] = []
     basse = CENTRES[0] / RAC2
     bandes.append(("<%d" % round(basse), 0.0, basse))
-    for c in CENTRES:
-        lo, hi = c / RAC2, c * RAC2
+    for i, c in enumerate(CENTRES):
+        lo = basse if i == 0 else math.sqrt(CENTRES[i - 1] * c)
+        hi = (c * RAC2 if i == len(CENTRES) - 1
+              else math.sqrt(c * CENTRES[i + 1]))
         if lo >= nyquist:
             break
         bandes.append((("%g" % c) if c < 1000 else ("%gk" % (c / 1000.0)),
@@ -208,16 +223,46 @@ def profil(ech: list[float], rate: int) -> dict:
     L = SEGMENT_MIN
     while L * 2 <= min(n, SEGMENT_MAX):
         L *= 2
-    hop = L // 2
+    # RECOUVREMENT 75 %, ET BOURRAGE AUX DEUX BORDS. Ce n'est pas un réglage
+    # de confort : c'est la correction du défaut mesuré le 2026-08-31.
+    #
+    # Avec `hop = L // 2`, la somme des `hann²` n'est PAS constante : elle
+    # monte de 0 au premier échantillon jusqu'à son palier après L/2 trames,
+    # et redescend à la fin. Les L/2 premières trames ne sont donc vues que
+    # par la jupe montante d'une seule fenêtre. Sur un signal stationnaire de
+    # 42 segments, l'effet se noie ; sur un ONE-SHOT — 20 des 21 WAV du dépôt
+    # — l'attaque porte 27 à 42 % de l'énergie et se trouve précisément là.
+    #
+    # Mesure de la panne, sur cinq clips construits à réponse exacte (deux
+    # moitiés normalisées à énergie strictement égale, attaque à 8 kHz, queue
+    # à 200 Hz — donc 50,00 % dans l'octave 8k par construction) :
+    #
+    #   441 + 2 205 trames -> 8,90 %   au lieu de 50,00 %
+    #   882 + 5 292        -> 5,51 %
+    #   441 + 4 410        -> 0,70 %
+    #   441 + 8 820        -> 0,05 %
+    #   441 + 44 100       -> 0,03 %   soit un facteur 1 700
+    #
+    # `hann²` satisfait la condition COLA à `hop = L/4` : son spectre ne porte
+    # que les raies 0, 1 et 2, et le repliement de la somme se produit aux
+    # raies multiples de 4 — donc nulles. En bourrant de `L - hop` zéros aux
+    # deux bords, chaque trame réelle est couverte par exactement quatre
+    # fenêtres et la pondération devient plate d'un bout à l'autre du clip.
+    # Le bourrage corrige au passage l'abandon de queue : sans lui, jusqu'à
+    # `L-1` trames finales n'étaient lues par aucun segment, en silence.
+    hop = L // 4
     hann = [0.5 - 0.5 * math.cos(2.0 * math.pi * i / L) for i in range(L)]
+    marge = L - hop
+    ech_p = [0.0] * marge + list(ech) + [0.0] * marge
+    n_p = len(ech_p)
 
     nyquist = rate / 2.0
     df = rate / float(L)
     puissance = [0.0] * (L // 2 + 1)
     segments = 0
     debut = 0
-    while debut + L <= n:
-        buf = [complex(ech[debut + i] * hann[i], 0.0) for i in range(L)]
+    while debut + L <= n_p:
+        buf = [complex(ech_p[debut + i] * hann[i], 0.0) for i in range(L)]
         spec = fft(buf)
         # Spectre unilatéral : les raies intérieures comptent double, le
         # continu et Nyquist une seule fois. Oublier ce facteur ne changerait
@@ -252,6 +297,11 @@ def profil(ech: list[float], rate: int) -> dict:
                 energie[i] += p * (rec / largeur)
 
     total = sum(energie)
+    # `total_raies` est la somme AVANT répartition. Le rapport des deux est le
+    # seul contrôle de conservation qui puisse échouer : `sum(fractions)` vaut
+    # 100 par construction — la division par `total` l'y force — et ne détecte
+    # donc RIEN, pas même une octave entière absente de `bornes_bandes`.
+    total_raies = sum(puissance)
     fractions = [(e / total * 100.0 if total > 0 else 0.0) for e in energie]
 
     masq = 0.0
@@ -268,6 +318,7 @@ def profil(ech: list[float], rate: int) -> dict:
         "L": L,
         "df": df,
         "rate": rate,
+        "couverture": (total / total_raies if total_raies > 0 else 0.0),
         "trames": n,
         "duree": n / float(rate),
         "continu": sum(ech) / n,
@@ -307,8 +358,23 @@ def bruit_rose(n_pow2: int, rate: int, graine: int = 20260831) -> list[float]:
     return [0.5 * v / m for v in x]
 
 
+def _oneshot(att: int, queue: int, rate: int) -> list[float]:
+    """Deux moitiés successives d'énergie STRICTEMENT égale : attaque à 8 kHz,
+    queue à 200 Hz. La réponse est donc 50,00 % dans l'octave 8k, sans
+    tolérance — ce qui en fait une entrée à réponse exacte, pas une intuition."""
+    def moitie(f: float, m: int) -> list[float]:
+        v = [math.sin(2.0 * math.pi * f * i / rate) for i in range(m)]
+        e = sum(x * x for x in v)
+        k = 1.0 / math.sqrt(e) if e > 0.0 else 0.0
+        return [x * k for x in v]
+    sig = moitie(8000.0, att) + moitie(200.0, queue)
+    crete = max(abs(x) for x in sig)
+    # Mise à l'échelle GLOBALE : elle ne change aucun rapport d'énergie.
+    return [x / crete for x in sig] if crete > 0.0 else sig
+
+
 def valider() -> int:
-    """Éprouve l'instrument sur quatre entrées dont la réponse est connue.
+    """Éprouve l'instrument sur six entrées dont la réponse est connue.
     Publie le tableau : sans cette page, l'outil n'est pas un portail."""
     rate = 44100
     n = rate * 4
@@ -385,12 +451,53 @@ def valider() -> int:
         echecs.append("bruit rose : dispersion %.1f %% > 12 %%" % disp)
     print()
 
-    # -- Cas 5 : conservation. Les fractions somment à 100.
+    # -- Cas 5 : conservation. PAS la somme des fractions.
+    #
+    # `sum(fractions)` vaut 100 par construction — `profil` divise par ce
+    # total. Le 2026-08-31, une contre-revue l'a prouvé en sabotant l'outil de
+    # deux façons : en retirant l'octave 4 kHz de `bornes_bandes` (un trou de
+    # 2,8 kHz dans la couverture) et en réinjectant le défaut historique de
+    # prorata par largeur de bande. Dans LES DEUX CAS la somme est restée à
+    # 100,000000 %. Un cas de validation qui ne peut pas échouer n'est pas une
+    # validation (PROMPT4_METHOD §2).
+    #
+    # Ce qui peut échouer, et qui est donc contrôlé ici : le rapport entre
+    # l'énergie versée aux bandes et l'énergie présente dans les raies. Un
+    # trou de couverture le fait tomber sous 1, et le tableau s'en tait.
     p = profil(bruit_blanc(n), rate)
-    s = sum(p["fractions"])
-    print("Cas 5 — CONSERVATION : somme des fractions = %.6f %%" % s)
-    if abs(s - 100.0) > 1e-6:
-        echecs.append("somme des fractions = %.6f" % s)
+    couv = p["couverture"] * 100.0
+    print("Cas 5 — CONSERVATION : %.6f %% de l'énergie des raies atteint une bande" % couv)
+    print("        (la somme des fractions, elle, vaut %.6f %% PAR CONSTRUCTION" % sum(p["fractions"]))
+    print("         et ne prouve rien — voir le commentaire du cas 5)")
+    if abs(couv - 100.0) > 1e-6:
+        echecs.append("couverture des bandes = %.6f %%" % couv)
+    print()
+
+    # -- Cas 6 : ONE-SHOT à réponse exacte. Le cas qui manquait.
+    #
+    # Les cinq cas ci-dessus sont tous STATIONNAIRES sur quatre secondes. Or
+    # 20 des 21 WAV du dépôt sont des one-shots percussifs de 0,05 à 0,7 s, et
+    # l'estimateur était FAUX sur eux : voir le commentaire de `profil`, où
+    # l'ancien `hop = L // 2` rendait 0,03 % au lieu de 50,00 %. Aucun des
+    # cinq cas ne pouvait le voir, parce qu'aucun n'est un one-shot.
+    #
+    # Construction à réponse exacte : deux moitiés successives, chacune
+    # divisée par la racine de son énergie, donc rigoureusement égales en
+    # énergie. Attaque courte à 8 kHz (octave 8k), queue longue à 200 Hz
+    # (octave 250). La théorie n'a pas de tolérance : 50,00 % dans l'octave
+    # 8k. Le seuil de 2 points laisse la place à la fuite de la fenêtre de
+    # Hann par-dessus la frontière d'octave, mesurée à 0,1-0,2 point.
+    print("Cas 6 — ONE-SHOT à énergie exactement partagée (attaque 8 kHz / queue 200 Hz)")
+    pires: list[float] = []
+    for att, queue in ((441, 2205), (882, 5292), (441, 4410), (441, 8820), (441, 44100)):
+        sig = _oneshot(att, queue, rate)
+        pr = profil(sig, rate)
+        part = dict(zip([nom for nom, _lo, _hi in pr["bandes"]], pr["fractions"]))
+        vu = part.get("8k", 0.0)
+        pires.append(abs(vu - 50.0))
+        print("  %6d + %6d trames : octave 8k = %6.2f %%  (théorie 50,00 %%)" % (att, queue, vu))
+    if max(pires) > 2.0:
+        echecs.append("one-shot : écart max %.2f pt > 2,0 dans l'octave 8k" % max(pires))
     print()
 
     if echecs:
@@ -398,16 +505,31 @@ def valider() -> int:
         for e in echecs:
             print("  - %s" % e)
         return 1
-    print("VALIDATION : les cinq cas passent. L'instrument peut servir de mesure.")
+    print("VALIDATION : les six cas passent. L'instrument peut servir de mesure.")
     return 0
+
+
+# Jeu de colonnes CSV FIXE, indépendant du fichier mesuré. Sans lui, l'en-tête
+# était figé sur `bornes_bandes(22050.0)` — 11 bandes — tandis qu'une ligne de
+# données suivait le Nyquist du fichier : un WAV à 22 050 Hz n'en produit que
+# 10, la ligne sortait à 14 champs contre 15 d'en-tête, et `masquage_125_500`
+# glissait dans la colonne `b_16k`. `reproduire_mesures.py`, qui lit ce CSV
+# avec `csv.DictReader`, levait alors un `TypeError` sur `float(None)`.
+# L'instrument se cassait sur le livrable qu'il prescrit. Mesuré le 2026-08-31.
+COLONNES_CSV = [b[0] for b in bornes_bandes(22050.0)]
 
 
 def afficher(chemin: str, p: dict, csv: bool) -> None:
     nom = os.path.basename(chemin)
     if csv:
+        vus = dict(zip([b[0] for b in p["bandes"]], p["fractions"]))
+        # Une bande au-dessus du Nyquist du fichier n'a pas de valeur — champ
+        # VIDE, jamais 0,000 : « absent » et « mesuré à zéro » ne sont pas la
+        # même affirmation, et un lecteur de CSV ne peut pas les distinguer si
+        # on les écrit pareil.
+        cases = [("%.3f" % vus[c]) if c in vus else "" for c in COLONNES_CSV]
         print("%s,%.4f,%d,%s,%.3f" % (
-            nom, p["duree"], p["rate"],
-            ",".join("%.3f" % f for f in p["fractions"]), p["masquage"]))
+            nom, p["duree"], p["rate"], ",".join(cases), p["masquage"]))
         return
     print("%s" % nom)
     print("  %.3f s · %d Hz · %d trames · Welch L=%d (%.2f Hz/raie) · %d segments"
@@ -437,9 +559,8 @@ def main(argv: list[str]) -> int:
         return 3
 
     if a.csv:
-        exemple = bornes_bandes(22050.0)
         print("fichier,duree_s,rate,%s,masquage_125_500"
-              % ",".join("b_" + b[0] for b in exemple))
+              % ",".join("b_" + c for c in COLONNES_CSV))
     mesures = 0
     for chemin in a.fichiers:
         try:
