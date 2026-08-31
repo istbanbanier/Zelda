@@ -69,6 +69,16 @@ func test_aucune_reference_croisee_interdite() -> void:
 		"res://scripts/ui/main_menu.gd",         # « Nouvelle partie »/« Continuer »
 		"res://scripts/ui/victory_screen.gd",    # « Continuer l'exploration »
 		"res://scripts/world/citadel_vestibule.gd",  # la porte de SORTIE
+		# Les deux suivants sont le CÂBLAGE D'AMBIANCE des essais ISS-087
+		# (branche expérimentale) : la coquille est le porteur désigné par
+		# docs/audio/PROTOTYPES_AMBIANCE.md §2 — elle démarre et REND
+		# l'ambiance (contrat ISS-086) et, en variante P2, instancie le
+		# lecteur de zone dont tout l'objet est de lire les régions du monde
+		# V2 (groupe world_v2_regions). Le couplage est le BUT, pas un
+		# accident ; il est testé par test_essais_ambiance_iss087.gd, et un
+		# SIXIÈME fichier qui parlerait de V2 rougit toujours.
+		"res://scripts/ui/gameplay_shell.gd",    # porteur d'ambiance (essais)
+		"res://scripts/audio/lecteur_zones_p2.gd",  # lecteur de régions P2
 	]
 	var v1_offenders: Array[String] = []
 	var v1_files: Array[String] = []
