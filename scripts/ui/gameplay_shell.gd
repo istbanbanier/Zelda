@@ -117,6 +117,25 @@ func _ready() -> void:
 	_set_mouse_captured(true)
 	# Le joueur peut entrer dans l'arbre après la coquille : liaison différée.
 	_bind_player.call_deferred()
+	# ISS-087 — l'essai d'ambiance démarre ici : la coquille vit dans les dix
+	# scènes jouables, elle est LE porteur (PROTOTYPES_AMBIANCE §2).
+	demarrer_ambiance_essai(ESSAI_AMBIANCE.VARIANTE)
+
+
+## ISS-086 — QUI DÉMARRE REND. La coquille démarre l'ambiance d'essai dans
+## `_ready()` ; elle la rend ici, et seulement la sienne :
+## `stop_ambience_owned_by` ne fait rien si une autre scène est devenue
+## propriétaire entre-temps (sortie tardive par `queue_free()`, contrat
+## `test_ambience_ownership_iss086.gd`).
+func _exit_tree() -> void:
+	if _lecteur_zones != null and is_instance_valid(_lecteur_zones):
+		# P2 : le lecteur de zone est propriétaire de SES lits — on lui
+		# demande de rendre (idempotent : son propre `_exit_tree` repasse ici).
+		_lecteur_zones.arreter()
+		_lecteur_zones = null
+	var audio: Node = get_node_or_null("/root/AudioManager")
+	if audio != null:
+		audio.call("stop_ambience_owned_by", self)
 
 
 ## ---------------------------------------------------------------------------
@@ -1708,3 +1727,87 @@ func resonance_state_text() -> String:
 
 func resonance_overlay() -> ResonanceOverlay:
 	return _resonance_overlay
+
+
+## ---------------------------------------------------------------------------
+## ISS-087 / D-066 — essai d'ambiance : la coquille est le PORTEUR.
+##
+## `docs/audio/PROTOTYPES_AMBIANCE.md` : le propriétaire naturel
+## (`world_v2_root.gd`) est gelé par empreinte ; cette coquille, instanciée
+## dans les dix scènes jouables, porte donc le cycle démarre/rend. La variante
+## vient de `scripts/audio/essai_config.gd` — LE seul fichier que le lead fait
+## varier entre les quatre builds de l'essai d'écoute. `&"D"` (committé) est
+## le témoin muet : rien ne démarre, comportement historique inchangé.
+##
+## Propriété ISS-086 stricte : P1/P3 appartiennent à la coquille (`self`),
+## les lits de P2 au lecteur de zone. Chacun rend les siens à la sortie.
+## ---------------------------------------------------------------------------
+
+const ESSAI_AMBIANCE: GDScript = preload("res://scripts/audio/essai_config.gd")
+const LECTEUR_ZONES_P2: GDScript = preload("res://scripts/audio/lecteur_zones_p2.gd")
+## Intervalle des événements rares de P3 (PROTOTYPES_AMBIANCE §5) : le garde
+## `SFX_MIN_INTERVAL` (0,045 s) du pool est sans effet à cette échelle.
+const AMBIANCE_EVT_MIN_S: float = 20.0
+const AMBIANCE_EVT_MAX_S: float = 45.0
+
+var _lecteur_zones: LECTEUR_ZONES_P2 = null
+var _minuterie_evenements: Timer = null
+var _variante_essai: StringName = &""
+
+
+## Appelé par `_ready()` avec la variante committée ; public, pour que les
+## tests exercent les chemins P1/P2/P3 sans modifier `essai_config.gd`.
+func demarrer_ambiance_essai(variante: StringName) -> void:
+	_variante_essai = variante
+	var audio: Node = get_node_or_null("/root/AudioManager")
+	if audio == null:
+		return
+	match variante:
+		&"P1":
+			audio.call("play_ambience", &"amb_p1_lit", self)
+		&"P2":
+			if _lecteur_zones == null:
+				_lecteur_zones = LECTEUR_ZONES_P2.new() as LECTEUR_ZONES_P2
+				_lecteur_zones.name = "LecteurZonesP2"
+				_lecteur_zones.configurer(self)
+				add_child(_lecteur_zones)
+		&"P3":
+			audio.call("play_ambience", &"amb_p3_lit", self)
+			_armer_minuterie_evenements()
+		_:
+			pass  # &"D" — témoin muet : aucune ambiance ne démarre.
+
+
+## Seam de test : quelle variante `_ready()` a réellement appliquée.
+func variante_essai_appliquee() -> StringName:
+	return _variante_essai
+
+
+func minuterie_evenements_ambiance() -> Timer:
+	return _minuterie_evenements
+
+
+## P3 — minuterie re-armée à chaque tir : un `Timer` one-shot, jamais de
+## `_process`. La coquille est PROCESS_MODE_ALWAYS, mais l'événement
+## d'ambiance est du gameplay : la minuterie gèle pendant la pause (§13.3).
+func _armer_minuterie_evenements() -> void:
+	if _minuterie_evenements == null:
+		_minuterie_evenements = Timer.new()
+		_minuterie_evenements.name = "MinuterieEvenementsAmbiance"
+		_minuterie_evenements.one_shot = true
+		_minuterie_evenements.process_mode = Node.PROCESS_MODE_PAUSABLE
+		_minuterie_evenements.timeout.connect(_on_evenement_ambiance)
+		add_child(_minuterie_evenements)
+	_minuterie_evenements.start(randf_range(AMBIANCE_EVT_MIN_S, AMBIANCE_EVT_MAX_S))
+
+
+## Un des quatre événements rares, tiré au sort, sur le bus `Ambience` : le
+## curseur d'ambiance du joueur règle TOUTE la famille d'un coup — condition
+## du protocole d'écoute (et la restauration du bus est couverte par
+## `test_ambience_bus_restore.gd`). Tire-et-oublie via le pool : rien à rendre.
+func _on_evenement_ambiance() -> void:
+	var audio: Node = get_node_or_null("/root/AudioManager")
+	if audio != null:
+		audio.call("play_sfx",
+			StringName("amb_evt_%d" % (1 + randi() % 4)), "Ambience")
+	_armer_minuterie_evenements()

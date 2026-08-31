@@ -188,10 +188,16 @@ func test_le_cache_partage_reste_intact_et_lambiance_a_sa_copie() -> void:
 			"B5 : la copie boucle")
 		check_equal(joue.loop_end, AMB_LOOP_END,
 			"B6 : et sa borne est en trames, pas en octets")
-		# L'acquis ISS-086 : le contrat de propriété identifie l'ambiance par son
-		# chemin. Une copie anonyme l'aurait rendu rouge.
+		# ISS-087 — l'identité est désormais CONTRACTUELLE : le gestionnaire
+		# retient le StringName demandé (`ambience_id()`). Même sémantique
+		# qu'avant : « la bonne ambiance joue ».
+		check_equal(StringName(a.call("ambience_id")), &"amb_valley",
+			"B7 : l'identité contractuelle est celle demandée (ambience_id)")
+		# Le chemin posé par `set_path_cache` (acquis ISS-086) n'est PLUS
+		# l'identité — il reste un DIAGNOSTIC, et cette épingle empêche la
+		# copie de redevenir anonyme en silence.
 		check_equal(joue.resource_path, AMB,
-			"B7 : la copie porte le chemin de l'asset (acquis ISS-086)")
+			"B7b : la copie reste nommée — diagnostic set_path_cache, pas l'identité")
 
 	# LA MÉMORISATION, épinglée après contre-revue. Sans cette assertion, retirer
 	# `_ambience_streams` — donc re-dupliquer ~143 ko à CHAQUE appel — laissait

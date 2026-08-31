@@ -1,0 +1,16 @@
+LANCER_GODOT: --headless ajouté (pas de --rendu : aucun affichage disponible).
+LANCER_GODOT: VERROU=/home/istvan/Projects/Zelda/.git/heavy_tools.lock
+LANCER_GODOT: XDG_DATA_HOME=/tmp/lancer_godot_ud_BZGaHSW6
+LANCER_GODOT: CWD=/home/istvan/Projects/zelda-wt-impl
+LANCER_GODOT: CMD=/home/istvan/.local/bin/godot --headless --path . --script tools/godot/test_runner.gd -- --filter=ambience_bus_restore
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+=== TEST RUNNER — Godot 4.7.1-stable (official) ===
+filtre: ambience_bus_restore
+  ÉCHEC test_ambience_bus_restore.gd::test_le_volume_du_bus_ambience_est_restaure — B — après _restore_saved_volumes, le bus Ambience porte la valeur sauvée (0,37), pas son défaut : attendu 0.3700 ± 0.0100, obtenu 1.0000
+erreurs de script dans le journal : 0
+
+=== RÉSULTAT: 0 réussi(s), 1 échoué(s) ===
+  ÉCHEC: test_ambience_bus_restore.gd::test_le_volume_du_bus_ambience_est_restaure — B — après _restore_saved_volumes, le bus Ambience porte la valeur sauvée (0,37), pas son défaut : attendu 0.3700 ± 0.0100, obtenu 1.0000
+LANCER_GODOT: RC_GODOT=1
+filtre: ambience_bus_restore

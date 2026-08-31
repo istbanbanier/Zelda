@@ -112,12 +112,20 @@ func _attendre_liberation() -> void:
 		ecoule += _tree().root.get_process_delta_time()
 
 
+## ISS-087 — l'identité se lit au gestionnaire (`ambience_id()`), plus au
+## chemin du flux : c'est le StringName que `play_ambience` a reçu, l'identité
+## CONTRACTUELLE. Sémantique inchangée pour A2/D1.1/E1/E4/F2/F3 — « la bonne
+## ambiance joue » : les gardes playing/stream restent (elles disent SI,
+## l'identité dit QUOI), et le chemin reste dans `_etat()` en diagnostic.
 func _ambiance_de_la_vallee_joue() -> bool:
+	var audio: Node = _audio()
 	var joueur: AudioStreamPlayer = _lecteur()
-	return joueur != null \
+	return audio != null \
+		and audio.has_method("ambience_id") \
+		and joueur != null \
 		and joueur.playing \
 		and joueur.stream != null \
-		and joueur.stream.resource_path == AMB
+		and StringName(audio.call("ambience_id")) == &"amb_valley"
 
 
 ## `playing` est FAUX pendant toute pause de l'arbre — `SceneFlow.go_to()` met

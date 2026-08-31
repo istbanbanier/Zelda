@@ -1,0 +1,28 @@
+LANCER_GODOT: --headless ajouté (pas de --rendu : aucun affichage disponible).
+LANCER_GODOT: VERROU=/home/istvan/Projects/Zelda/.git/heavy_tools.lock
+LANCER_GODOT: XDG_DATA_HOME=/tmp/lancer_godot_ud_3OXXbGPV
+LANCER_GODOT: CWD=/home/istvan/Projects/zelda-wt-impl
+LANCER_GODOT: CMD=/home/istvan/.local/bin/godot --headless --path . --script tools/godot/test_runner.gd -- --filter=essais_ambiance_iss087
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+=== TEST RUNNER — Godot 4.7.1-stable (official) ===
+filtre: essais_ambiance_iss087
+  ok   test_essais_ambiance_iss087.gd::test_d_temoin_committe_muet (3 assertions)
+SCRIPT ERROR: Invalid access to property or key 'stream' on a base object of type 'null instance'.
+          at: test_p1_demarre_et_rend_a_la_sortie (res://tests/integration/test_essais_ambiance_iss087.gd:200)
+          GDScript backtrace (most recent call first):
+              [0] test_p1_demarre_et_rend_a_la_sortie (res://tests/integration/test_essais_ambiance_iss087.gd:200)
+              [1] _attendre_identite (res://tests/integration/test_essais_ambiance_iss087.gd:92)
+  ÉCHEC test_essais_ambiance_iss087.gd::test_p1_demarre_et_rend_a_la_sortie — P1.1 — le lit P1 joue et c'est BIEN lui (aucun lecteur d'ambiance) : attendu res://assets/audio/sfx/amb_p1_lit.wav, obtenu 
+  ÉCHEC test_essais_ambiance_iss087.gd::test_p1_demarre_et_rend_a_la_sortie — et laisse MondeEssaiAmbiance dans l'arbre
+  ok   test_essais_ambiance_iss087.gd::test_p3_lit_et_minuterie_dans_les_bornes (6 assertions)
+  ok   test_essais_ambiance_iss087.gd::test_p2_bascules_par_region_et_tenue_hors_region (7 assertions)
+erreurs de script dans le journal : 1
+  ÉCHEC ISS-027 : 1 SCRIPT ERROR dans le journal — un test a pu être avorté en silence
+
+=== RÉSULTAT: 3 réussi(s), 3 échoué(s) ===
+  ÉCHEC: test_essais_ambiance_iss087.gd::test_p1_demarre_et_rend_a_la_sortie — P1.1 — le lit P1 joue et c'est BIEN lui (aucun lecteur d'ambiance) : attendu res://assets/audio/sfx/amb_p1_lit.wav, obtenu 
+  ÉCHEC: test_essais_ambiance_iss087.gd::test_p1_demarre_et_rend_a_la_sortie — et laisse MondeEssaiAmbiance dans l'arbre
+  ÉCHEC: ISS-027 : 1 SCRIPT ERROR dans le journal — un test a pu être avorté en silence
+LANCER_GODOT: RC_GODOT=1
+filtre: essais_ambiance_iss087 (ablation: corps du chemin P1 débranché)

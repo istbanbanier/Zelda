@@ -57,6 +57,12 @@ var _ambience: AudioStreamPlayer = null
 ## bon choix parce qu'il exprime la non-propriété, pas parce qu'il éviterait une
 ## collision. Corrigé après lecture de `core/object/object.cpp`.
 var _ambience_owner: WeakRef = null
+## ISS-087 — l'IDENTITÉ CONTRACTUELLE de l'ambiance en cours : le StringName
+## demandé à `play_ambience`, vidé quand l'ambiance est rendue. Avant lui, les
+## contrats lisaient `stream.resource_path` — un diagnostic, pas une identité :
+## le gestionnaire lui-même ne retenait pas ce qu'il jouait. Le chemin RESTE
+## dans les diagnostics d'état ; c'est CE champ que les assertions comparent.
+var _ambience_id: StringName = &""
 ## Dernier instant de lecture par identifiant. Le tour de rôle du pool est
 ## DESTRUCTIF : sans cette garde, un balayage qui touche trois cibles rejoue
 ## le même son trois fois dans la même frame, et huit pas coupent la mort.
@@ -115,8 +121,10 @@ func play_ambience(sound: StringName, owner: Object) -> void:
 	_ambience.stream = jouable
 	_ambience.play()
 	# APRÈS `play()`, et sur la dernière demande reçue : deux ambiances ne se
-	# superposent jamais, donc la dernière voix est la seule propriétaire.
+	# superposent jamais, donc la dernière voix est la seule propriétaire —
+	# et la seule identité (`ambience_id()`).
 	_ambience_owner = weakref(owner) if owner != null else null
+	_ambience_id = sound
 
 
 ## ISS-088 — LA BORNE DE BOUCLE SE COMPTE EN TRAMES DÉCODÉES, PAS EN OCTETS.
@@ -293,6 +301,9 @@ func stop_ambience_owned_by(owner: Object) -> bool:
 ## cours de processus. Il est gardé pour cela, pas pour une cause qu'il n'a pas.
 func _release_ambience() -> void:
 	_ambience_owner = null
+	# L'identité meurt avec l'ambiance : un id survivant ferait passer un
+	# silence pour la bonne ambiance (`test_essais_ambiance_iss087.gd::P1.4`).
+	_ambience_id = &""
 	if _ambience == null or not is_instance_valid(_ambience):
 		return
 	_ambience.stop()
@@ -303,14 +314,25 @@ func is_ambience_playing() -> bool:
 	return _ambience != null and is_instance_valid(_ambience) and _ambience.playing
 
 
+## ISS-087 — l'identité de l'ambiance en cours, `&""` si aucune. C'est
+## L'IDENTITÉ que les contrats comparent ; `stream.resource_path` reste un
+## diagnostic. Combinée à `is_ambience_playing()` par l'appelant : l'une dit
+## QUOI, l'autre dit SI.
+func ambience_id() -> StringName:
+	return _ambience_id
+
+
 ## Les volumes étaient ÉCRITS dans `settings.cfg` et relus uniquement pour
 ## peindre la position des curseurs — jamais pour régler les bus. Un joueur qui
 ## coupait la musique la retrouvait à fond au lancement suivant, avec un
 ## curseur affichant zéro : le réglage semblait cassé, et il l'était. La
 ## sensibilité souris et l'inversion, elles, étaient bien rechargées ; le son
 ## avait simplement été oublié.
+## `Ambience` restauré depuis ISS-087 (test `test_ambience_bus_restore.gd`,
+## vu rouge avant la ligne) ; `UI` et `Voice` restent dehors — hors périmètre
+## ISS-091, ne pas les ajouter sans décision.
 func _restore_saved_volumes() -> void:
-	for bus_name: String in ["Master", "Music", "SFX"]:
+	for bus_name: String in ["Master", "Music", "SFX", "Ambience"]:
 		if has_bus(bus_name):
 			set_volume(bus_name, UserSettings.load_volume(bus_name))
 

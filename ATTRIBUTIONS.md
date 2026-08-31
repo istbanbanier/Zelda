@@ -192,6 +192,19 @@ Godot alimentée par les données réelles. Rien n'en est extrait ni copié-coll
   (§18.2) ; ils ne prétendent pas à la qualité finale — pas de variation par
   matière, pas de mixage écouté (conteneur sans périphérique audio, ISS-004).
 
+## Prototypes d'ambiance ISS-087 (`assets/audio/sfx/amb_p*.wav`, `amb_evt_*.wav`)
+
+- **Source** : synthétisés par `tools/audio/generer_prototypes_iss087.py`
+  (bruit filtré par biquads, sinus, enveloppes à plancher, dither TPDF) —
+  aucun échantillon externe, aucune bibliothèque hors stdlib Python.
+- **Auteur** : ce dépôt. **Licence** : domaine public de fait (script
+  versionné, graines dérivées des noms, reproductibles à l'octet près —
+  vérifié par `sha256sum` sur deux générations successives, 2026-08-31).
+- **Statut** : PROTOTYPES D'ESSAI (D-066). Quatre lits et quatre événements
+  pour l'essai d'écoute de `docs/audio/PROTOCOLE_ECOUTE.md` ; bornes mesurées
+  par `tools/audio/verifier_prototypes_iss087.py`. Aucun n'est déclaré
+  meilleur qu'un autre : ce conteneur n'a pas de périphérique audio (ISS-004).
+
 ## Packs Kenney livrés par le coursier (`source_assets/external/`, 2026-08-05)
 
 Téléchargés par le workflow `asset-courier.yml` (run n°2) depuis les dépôts

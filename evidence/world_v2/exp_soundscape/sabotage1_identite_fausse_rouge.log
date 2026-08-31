@@ -1,0 +1,64 @@
+LANCER_GODOT: --headless ajouté (pas de --rendu : aucun affichage disponible).
+LANCER_GODOT: VERROU=/home/istvan/Projects/Zelda/.git/heavy_tools.lock
+LANCER_GODOT: XDG_DATA_HOME=/tmp/lancer_godot_ud_ZS4WM83r
+LANCER_GODOT: CWD=/home/istvan/Projects/zelda-wt-impl
+LANCER_GODOT: CMD=/home/istvan/.local/bin/godot --headless --path . --script tools/godot/test_runner.gd -- --filter=ambience_ownership,audio_ambience_loop_iss088,essais_ambiance_iss087
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+=== TEST RUNNER — Godot 4.7.1-stable (official) ===
+filtre: ambience_ownership,audio_ambience_loop_iss088,essais_ambiance_iss087
+[boot] Godot            : 4.7.1-stable (official)
+[boot] renderer         : forward_plus
+[boot] physique 3D      : Jolt Physics
+[boot] tick physique    : 60 Hz
+[boot] pilote de rendu  : headless
+[boot] autoloads        : GameState, EventBus, SaveSystem, AudioManager, SceneFlow
+[boot] flux             : BOOT
+[boot] fondation vérifiée — Phase A.
+[boot] transition vers le menu principal.
+[flow] transition vers : res://scenes/ui/MainMenu.tscn
+[flow] transition vers : res://scenes/world/valley/ValleyWorld.tscn
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ÉCHEC test_ambience_ownership_iss086.gd::test_quitter_la_vallee_arrete_et_libere_son_ambiance — A2 — la vallée montée, son ambiance JOUE vraiment (playing=true, stream=res://assets/audio/sfx/amb_valley.wav, playback=true)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ÉCHEC test_ambience_ownership_iss086.gd::test_trois_cycles_ne_laissent_aucune_ambiance_derriere — D1.1 — cycle 1 : l'ambiance de la vallée joue et boucle (playing=true, stream=res://assets/audio/sfx/amb_valley.wav, playback=true)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ÉCHEC test_ambience_ownership_iss086.gd::test_une_sortie_tardive_ne_coupe_pas_lambiance_suivante — E1 — la vallée tient l'ambiance avant sa sortie (playing=true, stream=res://assets/audio/sfx/amb_valley.wav, playback=true)
+WARNING: [audio] play_ambience(amb_valley) sans propriétaire : refusé. Qui démarre une ambiance doit pouvoir la rendre.
+     at: push_warning (core/variant/variant_utility.cpp:1033)
+     GDScript backtrace (most recent call first):
+         [0] play_ambience (res://scripts/core/audio_manager.gd:103)
+         [1] test_une_ambiance_sans_proprietaire_est_refusee (res://tests/integration/test_ambience_ownership_iss086.gd:446)
+         [2] _rendre_le_silence (res://tests/integration/test_ambience_ownership_iss086.gd:216)
+  ÉCHEC test_ambience_ownership_iss086.gd::test_une_ambiance_sans_proprietaire_est_refusee — F3 — la MÊME demande, avec un propriétaire, démarre bien (playing=true, stream=res://assets/audio/sfx/amb_valley.wav, playback=true)
+  ok   test_audio_ambience_loop_iss088.gd::test_la_borne_de_boucle_se_compte_en_trames_pas_en_octets (8 assertions)
+  ÉCHEC test_audio_ambience_loop_iss088.gd::test_le_cache_partage_reste_intact_et_lambiance_a_sa_copie — B7 : l'identité contractuelle est celle demandée (ambience_id) : attendu amb_valley, obtenu identite_sabotee
+  ok   test_audio_ambience_loop_iss088.gd::test_la_lecture_ne_reboucle_pas_avant_la_fin_du_clip (5 assertions)
+  ok   test_essais_ambiance_iss087.gd::test_d_temoin_committe_muet (3 assertions)
+  ÉCHEC test_essais_ambiance_iss087.gd::test_p1_demarre_et_rend_a_la_sortie — P1.1 — le lit P1 joue et c'est BIEN lui (id=identite_sabotee, playing=true, stream=res://assets/audio/sfx/amb_p1_lit.wav) : attendu amb_p1_lit, obtenu identite_sabotee
+  ÉCHEC test_essais_ambiance_iss087.gd::test_p3_lit_et_minuterie_dans_les_bornes — P3.1 — le lit P3 joue et c'est bien lui (id=identite_sabotee, playing=true, stream=res://assets/audio/sfx/amb_p3_lit.wav) : attendu amb_p3_lit, obtenu identite_sabotee
+  ÉCHEC test_essais_ambiance_iss087.gd::test_p2_bascules_par_region_et_tenue_hors_region — P2.1 — hors de toute région, le lit de DÉPART « ouvert » joue — jamais le silence (id=identite_sabotee, playing=true, stream=res://assets/audio/sfx/amb_p2_ouvert.wav) : attendu amb_p2_ouvert, obtenu identite_sabotee
+  ÉCHEC test_essais_ambiance_iss087.gd::test_p2_bascules_par_region_et_tenue_hors_region — P2.3 — dans la boîte r06 (bois = fermé), bascule après l'hystérésis (id=identite_sabotee, playing=true, stream=res://assets/audio/sfx/amb_p2_ferme.wav) : attendu amb_p2_ferme, obtenu identite_sabotee
+  ÉCHEC test_essais_ambiance_iss087.gd::test_p2_bascules_par_region_et_tenue_hors_region — P2.4 — hors de toute région, le lit courant est GARDÉ (id=identite_sabotee, playing=true, stream=res://assets/audio/sfx/amb_p2_ferme.wav) : attendu amb_p2_ferme, obtenu identite_sabotee
+  ÉCHEC test_essais_ambiance_iss087.gd::test_p2_bascules_par_region_et_tenue_hors_region — P2.5 — dans la boîte r07 (hauteurs = ouvert), bascule inverse (id=identite_sabotee, playing=true, stream=res://assets/audio/sfx/amb_p2_ouvert.wav) : attendu amb_p2_ouvert, obtenu identite_sabotee
+  ÉCHEC test_essais_ambiance_iss087.gd::test_p2_bascules_par_region_et_tenue_hors_region — P2.6 — sur l'anneau frontalier (forme ring_radius_m), bascule vers « fermé » : la bordure n'est pas muette (id=identite_sabotee, playing=true, stream=res://assets/audio/sfx/amb_p2_ferme.wav) : attendu amb_p2_ferme, obtenu identite_sabotee
+erreurs de script dans le journal : 0
+
+=== RÉSULTAT: 3 réussi(s), 12 échoué(s) ===
+  ÉCHEC: test_ambience_ownership_iss086.gd::test_quitter_la_vallee_arrete_et_libere_son_ambiance — A2 — la vallée montée, son ambiance JOUE vraiment (playing=true, stream=res://assets/audio/sfx/amb_valley.wav, playback=true)
+  ÉCHEC: test_ambience_ownership_iss086.gd::test_trois_cycles_ne_laissent_aucune_ambiance_derriere — D1.1 — cycle 1 : l'ambiance de la vallée joue et boucle (playing=true, stream=res://assets/audio/sfx/amb_valley.wav, playback=true)
+  ÉCHEC: test_ambience_ownership_iss086.gd::test_une_sortie_tardive_ne_coupe_pas_lambiance_suivante — E1 — la vallée tient l'ambiance avant sa sortie (playing=true, stream=res://assets/audio/sfx/amb_valley.wav, playback=true)
+  ÉCHEC: test_ambience_ownership_iss086.gd::test_une_ambiance_sans_proprietaire_est_refusee — F3 — la MÊME demande, avec un propriétaire, démarre bien (playing=true, stream=res://assets/audio/sfx/amb_valley.wav, playback=true)
+  ÉCHEC: test_audio_ambience_loop_iss088.gd::test_le_cache_partage_reste_intact_et_lambiance_a_sa_copie — B7 : l'identité contractuelle est celle demandée (ambience_id) : attendu amb_valley, obtenu identite_sabotee
+  ÉCHEC: test_essais_ambiance_iss087.gd::test_p1_demarre_et_rend_a_la_sortie — P1.1 — le lit P1 joue et c'est BIEN lui (id=identite_sabotee, playing=true, stream=res://assets/audio/sfx/amb_p1_lit.wav) : attendu amb_p1_lit, obtenu identite_sabotee
+  ÉCHEC: test_essais_ambiance_iss087.gd::test_p3_lit_et_minuterie_dans_les_bornes — P3.1 — le lit P3 joue et c'est bien lui (id=identite_sabotee, playing=true, stream=res://assets/audio/sfx/amb_p3_lit.wav) : attendu amb_p3_lit, obtenu identite_sabotee
+  ÉCHEC: test_essais_ambiance_iss087.gd::test_p2_bascules_par_region_et_tenue_hors_region — P2.1 — hors de toute région, le lit de DÉPART « ouvert » joue — jamais le silence (id=identite_sabotee, playing=true, stream=res://assets/audio/sfx/amb_p2_ouvert.wav) : attendu amb_p2_ouvert, obtenu identite_sabotee
+  ÉCHEC: test_essais_ambiance_iss087.gd::test_p2_bascules_par_region_et_tenue_hors_region — P2.3 — dans la boîte r06 (bois = fermé), bascule après l'hystérésis (id=identite_sabotee, playing=true, stream=res://assets/audio/sfx/amb_p2_ferme.wav) : attendu amb_p2_ferme, obtenu identite_sabotee
+  ÉCHEC: test_essais_ambiance_iss087.gd::test_p2_bascules_par_region_et_tenue_hors_region — P2.4 — hors de toute région, le lit courant est GARDÉ (id=identite_sabotee, playing=true, stream=res://assets/audio/sfx/amb_p2_ferme.wav) : attendu amb_p2_ferme, obtenu identite_sabotee
+  ÉCHEC: test_essais_ambiance_iss087.gd::test_p2_bascules_par_region_et_tenue_hors_region — P2.5 — dans la boîte r07 (hauteurs = ouvert), bascule inverse (id=identite_sabotee, playing=true, stream=res://assets/audio/sfx/amb_p2_ouvert.wav) : attendu amb_p2_ouvert, obtenu identite_sabotee
+  ÉCHEC: test_essais_ambiance_iss087.gd::test_p2_bascules_par_region_et_tenue_hors_region — P2.6 — sur l'anneau frontalier (forme ring_radius_m), bascule vers « fermé » : la bordure n'est pas muette (id=identite_sabotee, playing=true, stream=res://assets/audio/sfx/amb_p2_ferme.wav) : attendu amb_p2_ferme, obtenu identite_sabotee
+LANCER_GODOT: RC_GODOT=1
+filtre: ambience_ownership,audio_ambience_loop_iss088,essais_ambiance_iss087 (sabotage: _ambience_id faux)
