@@ -549,3 +549,87 @@ func test_aucun_tag_de_reprise_ne_ressemble_a_une_cle() -> void:
 	check(Textes.ressemble_a_une_cle("boss.phase.dead"),
 		"préalable : une vraie clé est bien reconnue — sans ce bras, le cas "
 		+ "ci-dessus passerait avec une fonction cassée")
+
+
+## ─────────────────────────────────────────────────────────────────────────────
+## B13 — LES DEUX LISTES ÉPINGLÉES SONT DÉRIVÉES DE `_process`, PAS CRUES
+##
+## Ajouté après une contre-revue qui a REPRODUIT le trou plutôt que de le
+## supposer : `RACINE_PAR_FRAME` et `RAFRAICHIES_EN_BOUCLE` étaient des
+## constantes écrites à la main. En ajoutant à `_process`, HORS de la branche
+## accumulée, un appel vers une fonction neuve portant une traduction, `B4`
+## restait VERT. Il gardait UN chemin par frame, pas LE chemin par frame. Et une
+## quatrième étiquette rafraîchie à 10 Hz serait née sans garde d'égalité, sans
+## que `B3` la voie.
+##
+## Le geste est le même pour les deux listes parce que l'information est au même
+## endroit : le corps de `_process` se coupe en deux à la ligne du `if` de
+## l'accumulateur. Ce qui est appelé AVANT court à chaque frame ; ce qui est
+## appelé DEDANS court à la cadence `HUD_TEXT_REFRESH`.
+##
+## ON NE REMPLACE PAS LES CONSTANTES PAR LE CALCUL : on exige qu'elles lui
+## soient égales. Les remplacer aurait fait suivre le test au code en silence —
+## exactement le défaut qu'on ferme. Épinglé PLUS dérivé PLUS comparé : la
+## constante reste lisible dans les messages des autres cas, et la dérivation
+## rougit dès que le code s'en écarte.
+func test_les_listes_epinglees_sont_egales_a_ce_que_process_appelle() -> void:
+	var source: String = _lire(SHELL_GD)
+	check(source != "", "B13 préalable : la source du HUD se lit")
+	if source == "":
+		return
+	var corps: String = _corps(source, "_process")
+	check(corps != "", "B13 préalable : le corps de `_process` se lit")
+	if corps == "":
+		return
+
+	# La coupure est reconnue par le NOM de la constante de cadence, jamais par
+	# sa valeur ni par un numéro de ligne — les deux dérivent sans prévenir.
+	var brutes: PackedStringArray = corps.split("\n")
+	var lignes: Array[String] = []
+	for l: String in brutes:
+		var d: int = l.find("#")
+		lignes.append(l if d < 0 else l.substr(0, d))
+	var coupure: int = -1
+	for i in lignes.size():
+		if lignes[i].contains("HUD_TEXT_REFRESH"):
+			coupure = i
+			break
+	check(coupure > 0,
+		"B13 préalable ÉPINGLÉ : `_process` porte une branche accumulée "
+		+ "reconnaissable à `HUD_TEXT_REFRESH`. Sans elle ce cas ne garde RIEN.")
+	if coupure <= 0:
+		return
+
+	var avant: Array[String] = []
+	var apres: Array[String] = []
+	for i in lignes.size():
+		for nom: String in _noms_de_fonctions(source):
+			var d: int = lignes[i].find(nom + "(")
+			# Frontière de mot à gauche : sans elle, « _hud( » serait trouvé à
+			# l'intérieur de « _resonance_hud( ». Deux noms du fichier sont déjà
+			# suffixes d'un autre — le faux positif n'est pas théorique.
+			if d < 0:
+				continue
+			if d > 0:
+				var p: String = lignes[i][d - 1]
+				if p == "_" or (p.to_lower() != p.to_upper()) or p.is_valid_int():
+					continue
+			var cible: Array[String] = avant if i < coupure else apres
+			if not cible.has(nom):
+				cible.append(nom)
+
+	avant.sort()
+	apres.sort()
+	var racine_attendue: Array[String] = [RACINE_PAR_FRAME]
+	var boucle_attendue: Array[String] = RAFRAICHIES_EN_BOUCLE.duplicate()
+	boucle_attendue.sort()
+
+	check_equal(avant, racine_attendue,
+		"B13 : ce que `_process` appelle HORS de la branche accumulée doit être "
+		+ "exactement la racine par frame épinglée. Un appel neuf ici ferait "
+		+ "courir du code à 60 Hz sans que `B4` le voie — scénario reproduit "
+		+ "VERT par la contre-revue avant l'existence de ce cas.")
+	check_equal(apres, boucle_attendue,
+		"B13 : ce que `_process` appelle DANS la branche accumulée doit être "
+		+ "exactement la liste des étiquettes rafraîchies à 10 Hz. Une "
+		+ "quatrième naîtrait sans garde d'égalité et sans que `B3` la voie.")

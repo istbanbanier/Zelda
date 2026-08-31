@@ -238,3 +238,58 @@ ligne** (`{"title": "…", "key": "…"}`), l'idiome de `training_grounds.gd`,
 monde. Sans elle, aucun compte de dette n'est publiable, et migrer reviendrait
 à travailler à l'aveugle. Voir `docs/handoff/ISS-075.md`, « Prochaine action
 exacte ».
+
+## Ce que les contre-revues d'ISS-075 ont corrigé — chiffres et angles morts
+
+Deux relectures à contexte frais ont attaqué la tranche après son commit. Elles
+ont établi l'essentiel — **le texte que le joueur voit n'a pas changé** — et
+corrigé trois choses qu'il faut consigner.
+
+### Le compte des clés, rectifié
+
+Le message de commit annonçait « 72 clés replient sur le français » et
+« `fr.json` en porte 80 ». **Les deux chiffres sont faux**, et l'erreur venait
+d'un filtre trop étroit : `Textes._charger_depuis` retire **toute** clé
+commençant par un souligné, pas seulement les `_doc*`. Sept marqueurs de section
+étaient comptés comme des clés alors qu'ils ne résolvent jamais et ne replient
+jamais.
+
+| | brutes | effectives |
+|---|---:|---:|
+| `fr.json` | 84 | **74** |
+| `en.json` | 10 | **8** |
+| clés qui replient sur le français | — | **66** |
+
+Recompté avec la règle réelle du chargeur.
+
+### Le repli anglais est voulu, mais il n'a pas de cliquet
+
+`t()` replie sur la locale source et **compte** le repli dans `_repliees` — le
+joueur lit du français, jamais un crochet. C'est le bon compromis et il est
+testé.
+
+Mais `_repliees` **n'a aucun accesseur** : `Textes` expose `absentes_source()`,
+pas `repliees()`. Et le seul garde du repli, dans
+`tests/integration/test_localisation_iss075.gd`, épingle **une** clé témoin
+choisie à la main. Rien ne pose de plafond sur `cles_sans_traduction("en")`.
+**La couverture anglaise peut donc pourrir en silence** : 66 clés replient
+aujourd'hui, le nombre peut monter indéfiniment sans un seul rouge.
+
+### La scène porte encore le français de deux clés migrées
+
+`scenes/ui/GameplayShell.tscn` cuit quinze chaînes françaises, dont **deux
+dupliquent des clés que cette tranche vient de migrer** : `WeaponLabel.text` vaut
+`"Mains nues"` et `ArrowsLabel.text` vaut `"Flèches : 0"`.
+
+Aucun défaut visible aujourd'hui — le script écrase les deux au démarrage, et la
+garde d'égalité saute même l'écriture puisque la valeur cuite égale le repli
+français. Mais dire « `gameplay_shell.gd` est fait » sans dire que sa propre
+scène porte encore ces deux textes serait surestimer la couverture.
+
+### Une dette de grammaire, nommée et non résolue
+
+`resonance.pulse.revelees` vaut `"Impulsion — %d cible%s révélée%s"`. L'accord
+pluriel français est **cuit dans le gabarit**, et les deux fragments `"s"`
+restent dans le code, hors de la clé. Toute locale non française hérite d'un
+gabarit inutilisable. Le classeur range ces fragments en `A_ARBITRER` plutôt que
+de les absoudre — c'est le bon geste, mais la dette est réelle.
