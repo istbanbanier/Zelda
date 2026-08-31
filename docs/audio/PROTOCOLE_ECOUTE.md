@@ -158,7 +158,7 @@ qu'après la question 10.**
   dit que les zones s'entendent — pas que le découpage en régions est bon.
 - Ne pas conclure sur la question du **22 050 Hz**. Les quatre essais sont tous à
   22 050 Hz : l'essai ne compare pas les fréquences d'échantillonnage. La perte
-  mesurée de 2,04 % d'énergie au-dessus de 11 025 Hz reste **`NON VÉRIFIÉ`** à
+  mesurée de 1,97 % d'énergie au-dessus de 11 025 Hz reste **`NON VÉRIFIÉ`** à
   l'oreille, et le resterait même si Istvan aimait les quatre essais.
 - Ne pas moyenner les quatre notes en un score. **Le verdict est le plus faible
   des critères, pas leur moyenne.**
