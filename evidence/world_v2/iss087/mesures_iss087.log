@@ -1,5 +1,5 @@
-# Mesures dérivées ISS-087 — arbre f0ccc75e40e51abd34a2ffa584afb2c4e6d345fb
-# 2026-08-31T04:10:16Z · fichiers sales : 0 · reproduire : python3 evidence/world_v2/iss087/reproduire_mesures.py
+# Mesures dérivées ISS-087 — arbre 56613803b10b39600d2c58a72d7631a59c00e28c
+# 2026-08-31T04:11:28Z · fichiers sales : 0 · reproduire : python3 evidence/world_v2/iss087/reproduire_mesures.py
 
 ========================================================================
 MESURE 1 — REPLIEMENT DE `force/max_rate` DANS L'IMPORTATEUR GODOT
@@ -62,8 +62,10 @@ MESURE 4 — SENSIBILITÉ DE L'ESTIMATEUR (amb_valley, 125-500 Hz)
        32768       1.35         24        51.58
        65536       0.67         13        51.56
       131072       0.34          8        51.55
-  Stable à +-0,6 point sur un rapport 128x. L'écart avec la contre-revue
-  (54,8 %%) est donc DÉFINITIONNEL, pas du bruit d'estimateur.
+  Amplitude mesurée sur un rapport 128x de longueur de segment :
+  0.29 point (de 51.55 à 51.83).
+  L'écart avec la contre-revue (54,8 %) vaut 11.1x cette amplitude :
+  il est DÉFINITIONNEL, pas du bruit d'estimateur.
 
 # --- modèle de coût QOA ---
 Contrôle : amb_valley, 176 400 trames mono 44,1 kHz
