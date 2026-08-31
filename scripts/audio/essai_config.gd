@@ -18,4 +18,4 @@
 ## `scripts/ui/gameplay_shell.gd`.
 extends RefCounted
 
-const VARIANTE: StringName = &"P2"
+const VARIANTE: StringName = &"P3"
