@@ -49,7 +49,9 @@ const AMB_DUREE_S: float = 4.0
 ## Ce que l'ancienne formule rendait. Épinglé pour que le rouge soit lisible.
 const ANCIENNE_BORNE: int = 35704
 
-## Garde d'anti-blocage, PAS un budget : le cas C sort dès qu'il a vu le recul.
+## Garde d'anti-blocage par INTENTION (le cas C sort dès qu'il a vu le recul) ;
+## caveat mesuré : le driver factice est plus lent que le temps réel, donc sur
+## une machine très chargée ce plafond PEUT expirer sans défaut — voir handoff.
 const ANTIHANG_S: float = 25.0
 ## Un recul de position ne peut venir que du bouclage : `_mix_internal` ne fait
 ## reculer `offset` que dans `if (loop_format != LOOP_DISABLED && offset >= loop_end)`.
@@ -253,8 +255,9 @@ func test_la_lecture_ne_reboucle_pas_avant_la_fin_du_clip() -> void:
 	var recul_a: float = -1.0
 	var releves: int = 0
 	var depart: int = Time.get_ticks_msec()
-	# Garde d'anti-blocage, pas un budget de vitesse : on SORT dès que le recul
-	# est vu. Une machine lente met plus longtemps ; elle ne fait pas rougir.
+	# Garde d'anti-blocage par intention : on SORT dès que le recul est vu. Une
+	# machine lente met plus longtemps — et si elle dépasse ANTIHANG_S le cas
+	# rougit quand même : caveat du driver factice, documenté dans le handoff.
 	while Time.get_ticks_msec() - depart < int(ANTIHANG_S * 1000.0):
 		await _tree().process_frame
 		if not joueur.playing:
