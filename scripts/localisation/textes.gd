@@ -102,8 +102,17 @@ static func ressemble_a_une_cle(texte: String) -> bool:
 static func brut(cle: String, locale: StringName = &"") -> String:
 	_charger()
 	var demandee: StringName = _locale if locale == &"" else locale
-	var table: Dictionary = _tables.get(demandee, {}) as Dictionary
-	return String(table.get(cle, ""))
+	# LE LITTÉRAL `{}` EST UNE EXPRESSION, pas une valeur repliée : GDScript le
+	# compile en `OPCODE_CONSTRUCT_DICTIONARY` et l'ÉVALUE avant l'appel à
+	# `get`, donc à CHAQUE appel — y compris les 99 % où la locale existe et où
+	# le défaut ne sert à rien. `brut()` est la brique sous `t()`, elle-même
+	# sous chaque libellé du HUD : le nombre d'appelants vient d'être multiplié
+	# par vingt par cette passe, et une allocation par libellé et par
+	# rafraîchissement n'a aucune raison d'exister. Le test d'appartenance ne
+	# construit rien.
+	if not _tables.has(demandee):
+		return ""
+	return String((_tables[demandee] as Dictionary).get(cle, ""))
 
 
 ## Le texte à afficher. Repli documenté, faute bruyante.
@@ -236,19 +245,46 @@ static func liberer_caches() -> int:
 	return n
 
 
+## ISS-075 — LE DRAPEAU SE POSE APRÈS LE TRAVAIL, JAMAIS AVANT.
+##
+## La première rédaction posait `_charge = true` AVANT le balayage. Si
+## `DirAccess.open` rendait `null` — dossier absent, export incomplet, droits —
+## le drapeau restait vrai pour TOUT LE PROCESSUS : `_tables` restait vide,
+## rien ne plantait, et chaque `t()` rendait `⟦clé⟧` jusqu'à la fermeture du
+## jeu. C'est la forme exacte d'ISS-071 : un échec mémoïsé en succès ne se
+## distingue plus d'un succès, et la seule façon d'en sortir est de relancer.
+##
+## La règle est donc : **le drapeau atteste d'un chargement qui a produit au
+## moins une table non vide**, pas d'une tentative. Un échec laisse le drapeau
+## bas, et la prochaine résolution réessaie — ce qui est le comportement qu'un
+## joueur attend d'un dossier momentanément illisible.
 static func _charger() -> void:
 	if _charge:
 		return
-	_charge = true
-	var dossier: DirAccess = DirAccess.open(DOSSIER)
-	if dossier == null:
-		push_error("[textes] dossier introuvable : %s" % DOSSIER)
+	var tables: Dictionary = _charger_depuis(DOSSIER)
+	if tables.is_empty():
+		# PAS de mémoïsation : rien n'a été chargé, donc rien n'est acquis.
 		return
+	_tables = tables
+	_charge = true
+
+
+## Le balayage lui-même, séparé pour deux raisons. La première est que la
+## décision « mémoïser ou non » se lit alors en trois lignes au lieu d'être
+## noyée. La seconde est qu'un test peut le viser sur un dossier ABSENT et
+## constater qu'il rend une table vide — sans quoi le défaut ci-dessus ne
+## serait vérifiable que par un dépôt cassé.
+static func _charger_depuis(chemin: String) -> Dictionary:
+	var tables: Dictionary = {}
+	var dossier: DirAccess = DirAccess.open(chemin)
+	if dossier == null:
+		push_error("[textes] dossier introuvable : %s" % chemin)
+		return tables
 	for nom: String in dossier.get_files():
 		if not nom.ends_with(".json"):
 			continue
 		var locale: StringName = StringName(nom.get_basename())
-		var f: FileAccess = FileAccess.open(DOSSIER + nom, FileAccess.READ)
+		var f: FileAccess = FileAccess.open(chemin + nom, FileAccess.READ)
 		if f == null:
 			push_error("[textes] illisible : %s" % nom)
 			continue
@@ -264,4 +300,5 @@ static func _charger() -> void:
 			if s.begins_with("_"):
 				continue
 			table[s] = String((brut_json as Dictionary)[cle])
-		_tables[locale] = table
+		tables[locale] = table
+	return tables
