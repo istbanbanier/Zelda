@@ -1,0 +1,171 @@
+==============================================================================
+PORTAIL D'EXPORT ISS-071 — parité de résolution éditeur / build exportée
+arbre   : /home/istvan/Projects/Zelda
+sortie  : /home/istvan/.cache/team-post086/export-out   (HORS de l'arbre : un export dans l'arbre le salirait)
+date    : 2026-08-31T03:09:06+02:00
+==============================================================================
+
+### 0. état du dépôt — une preuve vient d'un arbre COMMITTÉ
+    SHA testé      : 0597f1213d38a68fc934052f53f0224380178ed7
+    fichiers sales : 0
+
+### 1. verrou canonique et cloison user://
+    XDG_DATA_HOME (étapes éditeur) = /home/istvan/Projects/Zelda/.godot_user
+verrou « /home/istvan/Projects/Zelda/.git/heavy_tools.lock » occupé — attente jusqu'à 3600 s...
+    verrou pris : /home/istvan/Projects/Zelda/.git/heavy_tools.lock
+    godot : 4.7.1.stable.official.a13da4feb
+
+### 2. import — obligatoire, et pas une formalité
+    code retour import : 0 (16 lignes)
+
+### 3. manifeste ÉDITEUR
+    code retour : 0
+    manifeste éditeur : /home/istvan/.cache/team-post086/export-out/manifeste_editeur.json (37364 octets)
+
+### 4. export Linux vers un chemin HORS de l'arbre
+    templates : android_debug.apk android_release.apk android_source.zip icudt_godot.dat ios.zip linux_debug.arm32 linux_debug.arm64 linux_debug.x86_32 linux_debug.x86_64 linux_release.arm32 linux_release.arm64 linux_release.x86_32 linux_release.x86_64 macos.zip version.txt web_debug.zip web_dlink_debug.zip web_dlink_nothreads_debug.zip web_dlink_nothreads_release.zip web_dlink_release.zip web_nothreads_debug.zip web_nothreads_release.zip web_release.zip windows_debug_arm64.exe windows_debug_arm64_console.exe windows_debug_x86_32.exe windows_debug_x86_32_console.exe windows_debug_x86_64.exe windows_debug_x86_64_console.exe windows_release_arm64.exe windows_release_arm64_console.exe windows_release_x86_32.exe windows_release_x86_32_console.exe windows_release_x86_64.exe windows_release_x86_64_console.exe 
+    code retour export : 0 (1586 lignes)
+    binaire : /home/istvan/.cache/team-post086/export-out/build/EclatsDOrage.x86_64
+    octets  : 393830704
+    sha256  : a7794c0e9cef9515dd848ad33a774bf9a65f8f880f566dd441a54fb7bd98bc97
+
+### 5. lancement de la build AUTONOME, user:// VIERGE
+    profil vierge : /home/istvan/.cache/team-post086/export-out/profil_vierge (0 entrée(s) — 0 attendu)
+    Xvfb PID 33001 sur :91
+    jeu PID 33006 ; journal /home/istvan/.cache/team-post086/export-out/journaux/jeu_exporte_stdout.log
+    drapeaux après « -- » : --iss071-dump=/home/istvan/.cache/team-post086/export-out/manifeste_export.json --iss071-chargeabilite=1
+
+### 6. pilotage par le FOCUS X
+    fenêtre : 2097156
+    « Nouvelle partie » : Return envoyé par le focus, pas par --window
+
+### 7. attente du jalon de montage, PUIS de l'effacement du chargement
+    jalon atteint : [world_v2] fondation V2 vérifiée — vallée whitebox prête.
+    luminance moyenne mesurée : 0.51634 (seuil 0.02 ; chargement 0.0027)
+    monde affiché — capture /home/istvan/.cache/team-post086/export-out/02_monde.png
+
+### 8. manifeste EXPORT écrit par le jeu lui-même
+    manifeste export : /home/istvan/.cache/team-post086/export-out/manifeste_export.json (37363 octets)
+    [iss071] manifeste écrit : /home/istvan/.cache/team-post086/export-out/manifeste_export.json
+    jeu arrêté ; journal figé à 56 lignes
+
+### 9. familles d'erreur au journal du jeu
+         0 ligne(s)  ::  kit : modèle inconnu
+         0 ligne(s)  ::  modèle végétal introuvable
+         0 ligne(s)  ::  \[flower_field\] modèle inconnu
+         0 ligne(s)  ::  \[flower_field\] modèle de dalle inconnu
+
+### 10. comparateur de parité (tools/iss071_parite.py)
+==============================================================================
+ISS-071 — CONTRÔLE DE PARITÉ ÉDITEUR / EXPORT
+contrat : docs/contrats/iss071_parite_resolveurs.md
+==============================================================================
+[VERT        ] lecture du manifeste editeur
+               examiné : /home/istvan/.cache/team-post086/export-out/manifeste_editeur.json (37364 o)
+               mesure  : environnement « editeur », godot 4.7.1-stable (official), monde neris_v2
+[VERT        ] lecture du manifeste export
+               examiné : /home/istvan/.cache/team-post086/export-out/manifeste_export.json (37363 o)
+               mesure  : environnement « export », godot 4.7.1-stable (official), monde neris_v2
+[VERT        ] lecture du journal du jeu
+               examiné : /home/istvan/.cache/team-post086/export-out/journaux/jeu_exporte_stdout.log (56 lignes)
+               mesure  : jalon « fondation V2 vérifiée » présent
+[VERT        ] I7 AssetRegistry — ordre des répertoires inchangé
+               examiné : 6 répertoire(s) éditeur, 6 export, comparés position par position
+               mesure  : listes identiques dans le même ordre
+[VERT        ] I1 index AssetRegistry — mêmes noms canoniques indexés
+               examiné : 160 clés éditeur contre 160 clés export, union 160
+               mesure  : 0 différence(s) : 0 seulement en éditeur, 0 seulement en export
+[VERT        ] I2/I3 index AssetRegistry — même chemin source pour un même nom
+               examiné : 160 couple(s) nom→chemin comparés un à un (comparaison de couples, jamais de cardinaux)
+               mesure  : 0 couple(s) divergent(s)
+[VERT        ] I6 AssetRegistry — collisions publiées à l'identique
+               examiné : 0 collision(s) publiée(s) en éditeur, 0 en export
+               mesure  : mêmes collisions des deux côtés
+[VERT        ] §4 AssetRegistry — différence des modèles DEMANDÉS
+               examiné : 21 nom(s) demandés en éditeur, 21 en export
+               mesure  : 0 différence(s)
+[VERT        ] §4 AssetRegistry — différence des modèles CHARGÉS
+               examiné : 21 nom(s) chargés en éditeur, 21 en export
+               mesure  : 0 différence(s)
+[VERT        ] §4 AssetRegistry — modèle DEMANDÉ mais NON CHARGÉ
+               examiné : table « manques » des deux manifestes : 0 nom(s) distincts en éditeur, 0 en export
+               mesure  : 0 appel(s) manqué(s) en éditeur, 0 en export
+[VERT        ] I7 WorldV2PlaceKit — ordre des répertoires inchangé
+               examiné : 6 répertoire(s) éditeur, 6 export, comparés position par position
+               mesure  : listes identiques dans le même ordre
+[VERT        ] I1 index WorldV2PlaceKit — mêmes noms canoniques indexés
+               examiné : 215 clés éditeur contre 215 clés export, union 215
+               mesure  : 0 différence(s) : 0 seulement en éditeur, 0 seulement en export
+[VERT        ] I2/I3 index WorldV2PlaceKit — même chemin source pour un même nom
+               examiné : 215 couple(s) nom→chemin comparés un à un (comparaison de couples, jamais de cardinaux)
+               mesure  : 0 couple(s) divergent(s)
+[VERT        ] I6 WorldV2PlaceKit — collisions publiées à l'identique
+               examiné : 0 collision(s) publiée(s) en éditeur, 0 en export
+               mesure  : mêmes collisions des deux côtés
+[VERT        ] §4 WorldV2PlaceKit — différence des modèles DEMANDÉS
+               examiné : 99 nom(s) demandés en éditeur, 99 en export
+               mesure  : 0 différence(s)
+[VERT        ] §4 WorldV2PlaceKit — différence des modèles CHARGÉS
+               examiné : 99 nom(s) chargés en éditeur, 99 en export
+               mesure  : 0 différence(s)
+[VERT        ] §4 WorldV2PlaceKit — modèle DEMANDÉ mais NON CHARGÉ
+               examiné : table « manques » des deux manifestes : 0 nom(s) distincts en éditeur, 0 en export
+               mesure  : 0 appel(s) manqué(s) en éditeur, 0 en export
+[VERT        ] §4 modules_instancies — positif et identique
+               examiné : clé « modules_instancies » des deux manifestes
+               mesure  : éditeur=459, export=459
+[VERT        ] §4 cellules_emises — positif et identique
+               examiné : clé « cellules_emises » des deux manifestes
+               mesure  : éditeur=631, export=631
+[VERT        ] §4 cellules_manquees — nulles des deux côtés
+               examiné : clé « vegetation.cellules_manquees » des deux manifestes
+               mesure  : éditeur=0, export=0 — une cellule manquée est une cellule de MultiMesh sautée ENTIÈRE, donc bien plus d'objets absents que d'appels manqués
+[VERT        ] §3 lieux_poses — positif et identique
+               examiné : clé « lieux_poses » des deux manifestes
+               mesure  : éditeur=15, export=15
+[VERT        ] §4 journal — lignes « kit : modèle inconnu »
+               examiné : 56 ligne(s) de journal balayées
+               mesure  : 0 ligne(s), 0 modèle(s) distinct(s)
+[VERT        ] §4 journal — lignes « modèle végétal introuvable »
+               examiné : 56 ligne(s) de journal balayées
+               mesure  : 0 ligne(s), 0 modèle(s) distinct(s)
+[VERT        ] §4 journal — lignes « flower_field : modèle inconnu »
+               examiné : 56 ligne(s) de journal balayées
+               mesure  : 0 ligne(s), 0 modèle(s) distinct(s)
+[VERT        ] §4 journal — lignes « flower_field : modèle de dalle inconnu »
+               examiné : 56 ligne(s) de journal balayées
+               mesure  : 0 ligne(s), 0 modèle(s) distinct(s)
+[VERT        ] I9 — aucun manque silencieux
+               examiné : 0 manque(s) comptés aux manifestes contre 0 ligne(s) d'erreur au journal
+               mesure  : compteurs et journal concordent (tous deux nuls, ou tous deux positifs)
+[VERT        ] I4/I5 editeur/WorldV2PlaceKit — chemins indexés réellement chargeables
+               examiné : 215 chemin(s) éprouvés par un vrai load(), pour 215 chemin(s) publiés dans l'index
+               mesure  : 215/215 chargés
+[VERT        ] I4/I5 editeur/AssetRegistry — chemins indexés réellement chargeables
+               examiné : 160 chemin(s) éprouvés par un vrai load(), pour 160 chemin(s) publiés dans l'index
+               mesure  : 160/160 chargés
+[VERT        ] I4/I5 export/WorldV2PlaceKit — chemins indexés réellement chargeables
+               examiné : 215 chemin(s) éprouvés par un vrai load(), pour 215 chemin(s) publiés dans l'index
+               mesure  : 215/215 chargés
+[VERT        ] I4/I5 export/AssetRegistry — chemins indexés réellement chargeables
+               examiné : 160 chemin(s) éprouvés par un vrai load(), pour 160 chemin(s) publiés dans l'index
+               mesure  : 160/160 chargés
+[VERT        ] I8 — plafond de rétention des PackedScene de kit (ISS-059)
+               examiné : scripts/world_v2/poi/world_v2_place_kit.gd (512 lignes) cherché pour le littéral « const SCENE_CACHE_MAX: int = 256 »
+               mesure  : littéral présent, à l'identique
+[VERT        ] I8 — plafond de rétention des PackedScene du registre (ISS-059)
+               examiné : scripts/core/asset_registry.gd (295 lignes) cherché pour le littéral « const MODEL_CACHE_MAX: int = 48 »
+               mesure  : littéral présent, à l'identique
+
+inventaire nominatif écrit : /home/istvan/.cache/team-post086/export-out/inventaire_modeles_absents.txt (0 modèle(s) distinct(s))
+
+==============================================================================
+VERDICT ISS-071 : VERT  (code 0)
+  32 contrôle(s) exécutés · 0 ROUGE · 0 BLOQUÉ · 0 NON VÉRIFIÉ
+==============================================================================
+rapport JSON : /home/istvan/.cache/team-post086/export-out/rapport_parite.json
+    code retour du comparateur : 0
+    contexte : /home/istvan/.cache/team-post086/export-out/contexte.json
+
+=== VERDICT PORTAIL EXPORT ISS-071 : code 0
+RC=0
