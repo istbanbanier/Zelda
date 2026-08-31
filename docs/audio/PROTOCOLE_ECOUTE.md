@@ -55,10 +55,10 @@ le moment. Et **appuie encore sur F3 à la fin** pour arrêter.
 Sans le premier F3, **F4 ne fait rien du tout et ne te le dit pas** : tes
 signalements seraient perdus en silence.
 
-Puis arrête, et réponds aux six questions ci-dessous **tout de suite**, avant
+Puis arrête, et réponds aux sept questions ci-dessous **tout de suite**, avant
 de lancer l'essai suivant.
 
-### Les six questions
+### Les sept questions
 
 Réponds en tes mots. Les notes vont de 1 à 5 ; 1 = pas du tout, 5 = beaucoup.
 
@@ -165,7 +165,7 @@ qu'après la question 10.**
 
 ### Où atterrissent les réponses
 
-Les six réponses par essai, plus les trois finales, vont dans
+Les sept réponses par essai, plus les trois finales, vont dans
 `docs/PLAYTESTS.md`, avec la date, la correspondance étiquette → prototype
 révélée après coup, et les dossiers de session produits par F3/F4
 (`docs/MODE_DEV.md`). Tant que ce document n'est pas rempli, **le choix d'un

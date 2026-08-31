@@ -132,7 +132,16 @@ func test_une_cle_absente_de_la_source_est_signalee_et_visible() -> void:
 		"A3 — la résolution nue rend le vide, sans bruit : c'est la brique "
 		+ "qui permet de CONSTATER une absence sans la provoquer")
 
+	# A3 exerce le chemin d'erreur À DESSEIN : `t()` doit crier. Mais l'étape 2
+	# de validate_fast traite tout `ERROR:` du journal comme un échec, et elle
+	# a raison de le faire. On fait donc taire l'impression LE TEMPS de l'appel
+	# — on n'annule pas l'erreur, on l'empêche de polluer le journal d'un juge
+	# qui ne peut pas savoir qu'elle est voulue. Valeur SAUVEGARDÉE puis
+	# restaurée, jamais `true` en dur : un autre test peut l'avoir éteinte.
+	var imprimait: bool = Engine.print_error_messages
+	Engine.print_error_messages = false
 	var rendu: String = Textes.t(fantome)
+	Engine.print_error_messages = imprimait
 	check(rendu.contains(fantome) and rendu.begins_with("⟦"),
 		"A3 — le joueur voit un texte manifestement cassé : %s" % rendu)
 	check(Textes.absentes_source().has(fantome),

@@ -138,7 +138,14 @@ func _noms_de_fonctions(source: String) -> Array[String]:
 ## chaque `t()` rendait `⟦clé⟧` jusqu'à la fermeture du jeu. Un échec mémoïsé
 ## en succès ne se distingue plus d'un succès.
 func test_un_chargement_rate_ne_produit_aucune_table() -> void:
+	# Le dossier absent fait crier `_charger_depuis` À DESSEIN — même règle que
+	# l'A3 du contrat de localisation : l'étape 2 de validate_fast rejette tout
+	# `ERROR:` du journal, on éteint l'impression LE TEMPS de l'appel voulu,
+	# valeur sauvegardée puis restaurée.
+	var imprimait_b1: bool = Engine.print_error_messages
+	Engine.print_error_messages = false
 	var vide: Dictionary = Textes._charger_depuis("res://ce_dossier_n_existe_pas/")
+	Engine.print_error_messages = imprimait_b1
 	check(vide.is_empty(),
 		"B1 — le chemin d'échec doit rendre une table VIDE, pas une table "
 		+ "partielle : c'est ce vide qui fait que le drapeau ne se pose pas. "

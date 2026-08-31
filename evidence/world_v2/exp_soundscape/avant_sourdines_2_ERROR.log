@@ -1,0 +1,50 @@
+LANCER_GODOT: --headless ajouté (pas de --rendu : aucun affichage disponible).
+LANCER_GODOT: VERROU=/home/istvan/Projects/Zelda/.git/heavy_tools.lock
+LANCER_GODOT: XDG_DATA_HOME=/tmp/lancer_godot_ud_o6QviIcN
+LANCER_GODOT: CWD=/home/istvan/Projects/zelda-wt-frev-b
+LANCER_GODOT: CMD=/home/istvan/.local/bin/godot --headless --path . --script tools/godot/test_runner.gd -- --filter=textes_iss075,localisation_iss075
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+=== TEST RUNNER — Godot 4.7.1-stable (official) ===
+filtre: textes_iss075,localisation_iss075
+  ok   test_localisation_iss075.gd::test_la_forme_d_une_cle_ne_peut_pas_attraper_un_texte_joueur (85 assertions)
+  ok   test_localisation_iss075.gd::test_chaque_cle_de_la_source_rend_un_texte (75 assertions)
+ERROR: [textes] clé absente de la langue source « fr » : cle.qui.n.existe.pas.du.tout
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] t (res://scripts/localisation/textes.gd:130)
+       [1] test_une_cle_absente_de_la_source_est_signalee_et_visible (res://tests/integration/test_localisation_iss075.gd:135)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _root_delta (res://tools/godot/test_runner.gd:390)
+  ok   test_localisation_iss075.gd::test_une_cle_absente_de_la_source_est_signalee_et_visible (4 assertions)
+  ok   test_localisation_iss075.gd::test_la_locale_temoin_change_le_texte_rendu (6 assertions)
+  ok   test_localisation_iss075.gd::test_une_traduction_manquante_retombe_sur_le_francais_sans_echouer (5 assertions)
+  ok   test_localisation_iss075.gd::test_les_textes_du_camp_sont_des_cles_qui_resolvent (6 assertions)
+  ok   test_localisation_iss075.gd::test_le_hud_traduit_une_cle_et_laisse_passer_un_texte_brut (3 assertions)
+  ok   test_localisation_iss075.gd::test_aucune_nouvelle_porte_notify_ne_porte_de_texte_ecrit_en_dur (7 assertions)
+ERROR: [textes] dossier introuvable : res://ce_dossier_n_existe_pas/
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _charger_depuis (res://scripts/localisation/textes.gd:281)
+       [1] test_un_chargement_rate_ne_produit_aucune_table (res://tests/unit/test_textes_iss075.gd:141)
+       [2] _run_script (res://tools/godot/test_runner.gd:297)
+       [3] _initialize (res://tools/godot/test_runner.gd:80)
+       [4] _run_script (res://tools/godot/test_runner.gd:339)
+       [5] _root_delta (res://tools/godot/test_runner.gd:390)
+  ok   test_textes_iss075.gd::test_un_chargement_rate_ne_produit_aucune_table (3 assertions)
+  ok   test_textes_iss075.gd::test_le_drapeau_de_cache_se_pose_apres_le_travail_jamais_avant (4 assertions)
+  ok   test_textes_iss075.gd::test_brut_ne_construit_pas_un_dictionnaire_a_chaque_appel (5 assertions)
+  ok   test_textes_iss075.gd::test_les_etiquettes_rafraichies_en_boucle_passent_par_la_garde (51 assertions)
+  ok   test_textes_iss075.gd::test_le_chemin_par_frame_ne_porte_aucune_traduction (7 assertions)
+  ok   test_textes_iss075.gd::test_le_francais_rendu_est_inchange (15 assertions)
+  ok   test_textes_iss075.gd::test_aucune_valeur_ne_porte_un_echappement_non_decode (76 assertions)
+  ok   test_textes_iss075.gd::test_chaque_cle_citee_par_le_hud_resout (67 assertions)
+  ok   test_textes_iss075.gd::test_les_tables_de_libelles_portent_des_cles (69 assertions)
+  ok   test_textes_iss075.gd::test_le_francais_restant_est_confine_au_chemin_par_frame (11 assertions)
+  ok   test_textes_iss075.gd::test_les_comptes_de_fleches_et_de_plats_s_affichent (3 assertions)
+  ok   test_textes_iss075.gd::test_aucun_tag_de_reprise_ne_ressemble_a_une_cle (7 assertions)
+  ok   test_textes_iss075.gd::test_les_listes_epinglees_sont_egales_a_ce_que_process_appelle (5 assertions)
+erreurs de script dans le journal : 0
+
+=== RÉSULTAT: 21 réussi(s), 0 échoué(s) ===
+LANCER_GODOT: RC_GODOT=0

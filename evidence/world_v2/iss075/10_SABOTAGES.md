@@ -91,3 +91,17 @@ $ git diff --stat -- scripts/ resources/
  scripts/ui/gameplay_shell.gd   | 215 ++++++++++++++++++++++++++---------------
  3 files changed, 262 insertions(+), 93 deletions(-)
 ```
+
+## Angle mort S3, DÉCLARÉ par la contre-revue d'intégration (2026-08-31)
+
+Mesuré par la contre-revue fraîche de la voie (sabotage S3, journaux dans le
+dossier de revue) : dé-enrober `Textes.t()` sur un chemin d'EXÉCUTION —
+`_announce_resonance("resonance.verdict.lien_etabli", false)` au lieu du texte
+résolu — laisse la clé nue TRAVERSER jusqu'à l'écran avec la suite entière
+verte (21/21 + resonance_hud 7/7). B4 interdit par doctrine de résoudre dans
+`_resonance_state_line`, et aucun test n'épingle « Lien établi » au moment de
+l'événement. Le trou est ici DÉCLARÉ, pas fermé : sa fermeture (un pin de type
+B9 au moment de l'annonce, ou un pilotage des chemins d'exécution comme l'a
+fait l'autre lignée d'implémentation avec C7bis) est un choix qui appartient à
+la FUSION des deux lignées de localisation, documentée comme décision
+d'implémentation — jamais un merge textuel.
