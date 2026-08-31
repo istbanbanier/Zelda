@@ -127,9 +127,20 @@ print("MESURE 4 — SENSIBILITÉ DE L'ESTIMATEUR (amb_valley, 125-500 Hz)")
 print("=" * 72)
 ech, rate = bp.lire_wav("assets/audio/sfx/amb_valley.wav")
 print("  %10s %10s %10s %12s" % ("segment", "Hz/raie", "segments", "125-500 %"))
+# L'AMPLITUDE EST CALCULÉE, PAS RECOPIÉE. Elle était écrite en dur à
+# « +-0,6 point » ; après la correction du recouvrement du 2026-08-31 la table
+# n'en montre plus que 0,28, et la phrase était devenue fausse sous sa propre
+# table. Un document cite des chemins et des symboles, jamais un nombre —
+# CLAUDE.md, règle d'ancrage.
+_vus = []
 for L in (1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072):
     bp.SEGMENT_MAX = L; bp.SEGMENT_MIN = min(256, L)
     p = bp.profil(ech, rate)
+    _vus.append(p["masquage"])
     print("  %10d %10.2f %10d %12.2f" % (p["L"], p["df"], p["segments"], p["masquage"]))
-print("  Stable à +-0,6 point sur un rapport 128x. L'écart avec la contre-revue")
-print("  (54,8 %%) est donc DÉFINITIONNEL, pas du bruit d'estimateur.")
+_amp = max(_vus) - min(_vus)
+print("  Amplitude mesurée sur un rapport 128x de longueur de segment :")
+print("  %.2f point (de %.2f à %.2f)." % (_amp, min(_vus), max(_vus)))
+print("  L'écart avec la contre-revue (54,8 %%) vaut %.1fx cette amplitude :"
+      % (abs(54.8 - sum(_vus) / len(_vus)) / _amp if _amp else float("inf")))
+print("  il est DÉFINITIONNEL, pas du bruit d'estimateur.")

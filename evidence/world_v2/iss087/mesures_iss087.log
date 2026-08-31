@@ -1,3 +1,6 @@
+# Mesures dérivées ISS-087 — arbre f0ccc75e40e51abd34a2ffa584afb2c4e6d345fb
+# 2026-08-31T04:10:16Z · fichiers sales : 0 · reproduire : python3 evidence/world_v2/iss087/reproduire_mesures.py
+
 ========================================================================
 MESURE 1 — REPLIEMENT DE `force/max_rate` DANS L'IMPORTATEUR GODOT
 ========================================================================
@@ -12,14 +15,23 @@ Nyquist réduit = 11 025 Hz. Repliement théorique : 22 050 - 16 000 = 6 050 Hz.
 MESURE 2 — CE QUE 22,05 kHz MET HORS D'ATTEINTE DU MASQUAGE
 ========================================================================
 Un flux à 22,05 kHz ne porte aucune énergie au-dessus de 11 025 Hz.
-  son                   > 11 025 Hz
-  amb_valley                  2.03 %
-  step_grass_a               23.26 %
-  step_grass_b               19.90 %
-  step_grass_c               26.79 %
-  step_stone_a                2.08 %
-  hit_taken                   0.17 %
-  death                       0.01 %
+
+  ESTIMATEUR : FFT PLEIN CLIP, pas le périodogramme de Welch de
+  band_profile. Welch redistribue au prorata par-dessus la frontière
+  d'octave 8k/16k, qui tombe à 11 314 Hz et non à 11 025 : il rendait
+  0,7 point de plus, et le document publiait l'autre chiffre. Les deux
+  estimateurs ne peuvent pas cohabiter dans le dossier de preuve.
+  La colonne pondérée A applique la courbe d'IEC 61672 — une fonction
+  normalisée, qui n'est TOUJOURS PAS un verdict d'écoute (ISS-004).
+
+  son                   > 11 025 Hz       pondérée A
+  amb_valley                  1.97 %            0.98 %
+  step_grass_a               22.57 %            6.79 %
+  step_grass_b               19.22 %            5.61 %
+  step_grass_c               26.11 %            8.13 %
+  step_stone_a                1.99 %            2.01 %
+  hit_taken                   0.16 %            1.06 %
+  death                       0.01 %            0.04 %
 
 ========================================================================
 MESURE 3 — OCCUPATION SPECTRALE DE LA BANQUE LIVRÉE
@@ -52,3 +64,10 @@ MESURE 4 — SENSIBILITÉ DE L'ESTIMATEUR (amb_valley, 125-500 Hz)
       131072       0.34          8        51.55
   Stable à +-0,6 point sur un rapport 128x. L'écart avec la contre-revue
   (54,8 %%) est donc DÉFINITIONNEL, pas du bruit d'estimateur.
+
+# --- modèle de coût QOA ---
+Contrôle : amb_valley, 176 400 trames mono 44,1 kHz
+  prédit par ce modèle : 71408 octets
+  mesuré dans le moteur (ISS-088) : 71408 octets
+  écart : 0
+OK : le modèle est exact.
