@@ -11,6 +11,27 @@ conteneur n'a pas de périphérique audio (ISS-004). Ce document est un choix
 
 ## 0. La décision d'architecture, tranchée
 
+### Prérequis d'intégration — non négociable
+
+**Aucun prototype ne s'intègre avant que `72e081a6` (ISS-088) soit dans l'arbre
+porteur.** Sans lui, `play_ambience` pose encore `loop_end = data.size() / 2`,
+une borne comptée en octets sur une charge utile QOA à débit variable : P1
+reboucle alors sur **6,07 s de ses 30**, P2 sur 3,04 s de chacun de ses lits de
+15 s, P3 sur 4,05 s de ses 20 — **et en silence**, aucune garde du moteur ne se
+déclenche dans ce régime (`loop_begin < loop_end < frames`).
+
+Un essai d'écoute mené sur cet arbre-là mesurerait fidèlement ce défaut et
+condamnerait le choix de durée de boucle par un accident de fusion. La question
+2 du protocole (« as-tu entendu quelque chose se répéter ? ») répondrait
+« oui, au bout de six secondes » pour un lit qui en dure trente.
+
+Vérification en une ligne, depuis l'arbre porteur :
+
+```bash
+git merge-base --is-ancestor 72e081a6 HEAD && echo OUI || echo NON
+```
+
+
 **Question** : un second mécanisme d'ambiance à côté de `play_ambience`, ou
 l'extension de `play_ambience` ?
 

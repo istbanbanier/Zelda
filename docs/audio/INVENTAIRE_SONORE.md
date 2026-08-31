@@ -101,9 +101,15 @@ autorisées, 37 de marge. **Le budget audio de ce projet se compte en octets.**
 
 ## 3. Où l'énergie se trouve déjà — la contrainte de conception
 
-Mesuré par `tools/audio/band_profile.py`, instrument validé contre cinq
+Mesuré par `tools/audio/band_profile.py`, instrument validé contre **six**
 réponses théoriques (`docs/audio/INSTRUMENT_BANDES.md`). Tableau complet :
 `evidence/world_v2/iss087/bandes_sfx.csv`.
+
+> **Ce tableau a été refait le 2026-08-31.** Sa première version reposait sur un
+> estimateur qui, sur un ONE-SHOT, voyait l'attaque à 0,7-1,6 % de son poids
+> réel — recouvrement de 50 % sous fenêtre de Hann, sans bourrage aux bords.
+> Quatre de ses onze lignes étaient fausses. Détail, entrée à réponse exacte et
+> ablation : `docs/audio/INSTRUMENT_BANDES.md`, et le commentaire de `profil`.
 
 Occupation : un son « occupe » une bande s'il y met ≥ 20 % de son énergie.
 
@@ -111,16 +117,25 @@ Occupation : un son « occupe » une bande s'il y met ≥ 20 % de son énergie.
 |---|---|---|
 | < 22 · 31,5 | 0 | — |
 | 63 | 1 | `land_hard` |
-| **125** | **7** | death, guard, hit_land, hit_taken, land_soft, refuse, step_stone_b |
-| **250** | **5** | death, guard, step_stone_a, step_stone_b, weapon_break |
-| 500 | 2 | chest_open, ui_accept |
-| 1k | 4 | parry, pickup, swing, ui_move |
+| **125** | **6** | hit_land, hit_taken, **land_hard**, land_soft, refuse, step_stone_b |
+| **250** | **7** | **chest_open**, death, guard, **hit_land**, step_stone_a, step_stone_b, weapon_break |
+| 500 | 3 | chest_open, **pickup**, ui_accept |
+| 1k | 5 | **jump**, parry, pickup, swing, ui_move |
 | **2k** | **1** | parry |
 | 4k · 8k · 16k | 3 · 3 · 2 | **les trois pas sur l'herbe, et eux seuls** |
 
-**Onze sons sur vingt** mettent ≥ 75 % de leur énergie dans 125-500 Hz. La règle
-héritée — « creuser 125-500 Hz » — est donc fondée, et elle est confirmée par un
-instrument juste après l'avoir été par un instrument faux.
+Ce qui a bougé, en gras ci-dessus : `land_hard` entre à 125 (34,5 %) et `death`
+et `guard` en sortent — ils sont à 250, à 80 % ; `chest_open` et `hit_land`
+entrent à 250 ; `pickup` entre à 500 (64,7 %, contre 15,8 % annoncés) ; `jump`
+entre à 1k. Aucune de ces corrections ne déplace un son d'un bout du spectre à
+l'autre : elles corrigent le poids de l'attaque, qui est basse-fréquence sur un
+impact et disparaissait de la mesure.
+
+**Dix sons sur vingt** mettent ≥ 75 % de leur énergie dans 125-500 Hz — et non
+onze : `weapon_break` en sort, mesuré à 58,3 % et non 79,2 %. La règle héritée
+— « creuser 125-500 Hz » — **survit à la correction**, ce qui est le seul point
+qui compte : elle a été fondée sur un instrument faux, puis refondée sur un
+instrument juste, et elle dit la même chose.
 
 ### 3.1 Ce que l'acquis disait, et qui est FAUX
 
@@ -136,8 +151,11 @@ joueur entend en permanence.
 
 ### 3.2 La bande réellement creuse
 
-**707 - 2 828 Hz** (octaves 1k et 2k). Cinq occupants au total — `parry`,
-`pickup`, `swing`, `ui_move` — tous rares et délibérés, aucun répété.
+**707 - 2 828 Hz** (octaves 1k et 2k). **Cinq sons distincts, six créneaux** :
+`jump`, `parry`, `pickup`, `swing`, `ui_move` — dont `parry` seul occupe les
+deux octaves. La première version de ce paragraphe annonçait « cinq occupants »
+et n'en nommait que quatre : le cinquième, `jump`, était absent du décompte
+comme du tableau. Tous sont rares et délibérés, aucun n'est répété à la foulée.
 
 C'est le seul intervalle du spectre qui ne soit ni le domicile des impacts, ni
 celui des pas.
@@ -160,21 +178,41 @@ d'échappement : **c'est la bande des pas sur l'herbe.**
 | Qu'est-ce qui devient **inatteignable** par l'ambiance ? | tout ce qui est au-dessus de 11 025 Hz |
 
 Et c'est ce dernier point qui renverse. Un flux à 22,05 kHz ne porte **aucune**
-énergie au-dessus de 11 025 Hz. Donc toute énergie de son court située là est
-**mécaniquement à l'abri du masquage** :
+énergie au-dessus de 11 025 Hz. Toute énergie de son court située là est donc
+**hors de portée d'un masqueur de même fréquence** :
 
-| son | énergie > 11 025 Hz, donc à l'abri |
-|---|---|
-| `step_grass_a` | **22,39 %** |
-| `step_grass_b` | **18,90 %** |
-| `step_grass_c` | **26,06 %** |
-| `step_stone_a` | 1,98 % |
-| `hit_taken` | 0,17 % |
+| son | énergie > 11 025 Hz | **la même, pondérée A** |
+|---|---|---|
+| `step_grass_a` | 22,57 % | **6,79 %** |
+| `step_grass_b` | 19,22 % | **5,61 %** |
+| `step_grass_c` | 26,11 % | **8,13 %** |
+| `step_stone_a` | 1,98 % | — |
+| `hit_taken` | 0,17 % | — |
 
-**Conclusion soumise** : à 22,05 kHz, l'ambiance coûte moitié moins, conserve
-intégralement la seule bande creuse, perd 2 % d'elle-même, et met environ un
-cinquième de chaque pas sur l'herbe hors d'atteinte du masquage. Ce n'est plus
-un compromis, c'est le meilleur des deux termes.
+**Le mot « mécaniquement à l'abri » a été retiré le 2026-08-31, et deux
+réserves ont été posées à sa place.**
+
+**Première réserve — le masquage ne s'arrête pas à la fréquence du masqueur.**
+Il décroît continûment de part et d'autre. Fonction d'étalement de Schroeder
+sur l'échelle de Bark, pour un masqueur que le flux à 22,05 kHz porte encore :
+un masqueur à 11 000 Hz atténue encore de **0,68 dB seulement** à 12 000 Hz, et
+de 6,1 dB à 16 000 Hz. « Hors de portée » vaut pour un masqueur strictement
+co-fréquentiel, pas pour l'oreille.
+
+**Seconde réserve — l'énergie n'est pas la sensibilité.** Ce document applique
+déjà la réserve « c'est en énergie, pas en perception » aux 2 % de l'ambiance,
+deux paragraphes plus bas. Elle n'était **pas** appliquée aux 19-26 % désignés
+comme « le point qui décide » : l'argument le plus emphatique portait la garde
+la plus faible. Pondérée par la courbe A d'IEC 61672 — une fonction normalisée,
+calculable, qui n'est toujours pas un verdict d'écoute — la part concernée
+tombe de « environ un cinquième de chaque pas » à **environ un quinzième**.
+
+**Conclusion soumise, révisée** : à 22,05 kHz, l'ambiance coûte moitié moins,
+conserve intégralement la seule bande creuse, et perd 2 % d'elle-même. Sur la
+troisième jambe — les pas sur l'herbe — l'avantage est **réel mais trois fois
+plus petit qu'annoncé**, et il reste `NON VÉRIFIÉ` à l'oreille. L'arbitrage
+tient sur ses deux premières jambes, qui sont mesurées et vérifiées ; il ne
+tient plus sur la troisième comme sur une évidence.
 
 **Ce que cette conclusion ne dit pas** : si la perte de 2 % s'entend. Elle est
 en énergie, pas en perception. Aucune mesure de ce conteneur ne peut trancher
@@ -197,6 +235,31 @@ Preuve, en rejouant l'algorithme du moteur à l'identique
 
 Le ton s'est replié à 22 050 − 16 000 = **6 050 Hz** au lieu de disparaître. Un
 ré-échantillonnage correct rendrait ~0 % partout.
+
+**Précision apportée le 2026-08-31, et elle aggrave le piège.** Dire
+« interpolation cubique sans filtre » sous-estime ce qui se passe au rapport
+44 100 / 22 050, qui vaut **exactement 2**. Dans la boucle du moteur, `frac`
+avance de 2,0 puis se voit retirer `floor(2,0) = 2` : il reste **rigoureusement
+à zéro** à chaque tour, et `cubic_interpolate(y1, y2, y0, y3, 0)` rend `y1`.
+Ce n'est donc même pas une interpolation — c'est **l'abandon d'un échantillon
+sur deux**. Le repliement est intégral, mesuré à **0,00 dB** d'atténuation sur
+quatre tons purs :
+
+| ton d'entrée | alias attendu | atténuation mesurée |
+|---:|---:|---:|
+| 12 000 Hz | 10 050 Hz | 0,00 dB |
+| 16 000 Hz | 6 050 Hz | 0,00 dB |
+| 20 000 Hz | **2 050 Hz** | 0,00 dB |
+| 21 000 Hz | 1 050 Hz | 0,00 dB |
+
+La ligne à 20 kHz est la pire : elle atterrit dans l'octave 2k, **à pleine
+amplitude, au milieu de la seule bande que tout ce lot cherche à garder
+creuse**.
+
+`force/max_rate_hz` est exposé en `PROPERTY_HINT_RANGE, "11025,192000,1,exp"` :
+22 050 s'atteint d'un clic dans l'inspecteur. Aucun des 21 `.import` du dépôt
+ne pose `force/max_rate=true` aujourd'hui — le piège est **prospectif**, et
+c'est la seule raison pour laquelle il n'a encore rien cassé.
 
 > **Règle** : produire la source **directement à 22 050 Hz**. Ne jamais poser
 > `force/max_rate` dans un `.import` pour y arriver.

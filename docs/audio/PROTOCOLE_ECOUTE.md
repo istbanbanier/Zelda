@@ -30,8 +30,12 @@ te paraissent pareils, dis-le aussi — **c'est même le résultat le plus utile
 
 ### Pour chaque essai, dans l'ordre qu'on te donne
 
-Joue **trois minutes environ**, en faisant ceci — l'ordre n'a pas d'importance :
+Joue **trois minutes environ**. Les deux premières lignes ne sont pas
+optionnelles ; le reste peut se faire dans n'importe quel ordre :
 
+- **arrête-toi trente secondes sans rien faire, et écoute** ;
+- **fais le même trajet aux quatre essais : droit devant jusqu'à la rivière,
+  puis retour** ;
 - marche un moment sur l'herbe ;
 - cours ;
 - saute et retombe deux ou trois fois ;
@@ -39,8 +43,17 @@ Joue **trois minutes environ**, en faisant ceci — l'ordre n'a pas d'importance
 - si tu croises un coffre, ouvre-le ;
 - **mets le jeu en pause, attends deux secondes, reprends.**
 
-Si à un moment quelque chose te surprend ou te déplaît, appuie sur **F4**. Pas
-besoin d'expliquer sur le moment.
+Ces deux premières lignes sont là parce que sans elles l'essai ne mesure rien :
+tant que tu bouges, tes pas couvrent tout, et si tu passes ailleurs à chaque
+essai tu compares quatre endroits au lieu de quatre sons.
+
+**Appuie sur F3 au début de l'essai.** Un petit panneau apparaît en haut à
+gauche : c'est le signe que l'enregistrement tourne. Ensuite, quand quelque
+chose te surprend ou te déplaît, appuie sur **F4** — pas besoin d'expliquer sur
+le moment. Et **appuie encore sur F3 à la fin** pour arrêter.
+
+Sans le premier F3, **F4 ne fait rien du tout et ne te le dit pas** : tes
+signalements seraient perdus en silence.
 
 Puis arrête, et réponds aux six questions ci-dessous **tout de suite**, avant
 de lancer l'essai suivant.
@@ -57,17 +70,19 @@ Réponds en tes mots. Les notes vont de 1 à 5 ; 1 = pas du tout, 5 = beaucoup.
 | 4 | Tes **coups** et le **coffre** s'entendaient-ils bien ? (1 = étouffés, 5 = très nets) | |
 | 5 | Y a-t-il eu un moment où le son a **coupé** ou **changé d'un coup** ? Quand ? | |
 | 6 | Quelque chose t'a-t-il **gêné** ou **fatigué** au bout de trois minutes ? | |
+| 7 | Pendant les trente secondes où tu ne bougeais plus : entendais-tu **un son qui continue tout seul**, ou **plus rien** ? | |
 
 ### À la toute fin, une fois les quatre essais faits
 
 | | Question | Réponse |
 |---|---|---|
-| 7 | Lequel garderais-tu ? Pourquoi, en tes mots ? | |
-| 8 | Lequel jetterais-tu ? | |
-| 9 | Y en a-t-il un où tu n'as **rien entendu du tout** en te promenant ? Lequel ? | |
+| 8 | Lequel garderais-tu ? Pourquoi, en tes mots ? | |
+| 9 | Lequel jetterais-tu ? | |
+| 10 | Dans quel essai n'y avait-il **plus rien** pendant l'arrêt de trente secondes ? | |
 
-La question 9 est importante. **Ne cherche pas à deviner** : si tu n'es pas sûr,
-écris « je ne sais pas ». C'est une réponse qui compte autant que les autres.
+La question 10 est importante. **Ne cherche pas à deviner** : si tu n'es pas
+sûr, écris « je ne sais pas ». C'est une réponse qui compte autant que les
+autres.
 
 ### Ce qu'on ne te demande pas
 
@@ -94,12 +109,24 @@ message d'envoi.
 
 **Le témoin muet n'est pas optionnel.** Sans lui, « ça paraît plus vivant » n'a
 aucun point de comparaison, et le défaut qu'on cherche à corriger est
-précisément l'absence totale d'ambiance. Si Istvan ne distingue pas le témoin
-des trois autres, **aucun des trois prototypes ne mérite d'être intégré** — et
-c'est un résultat, pas un échec.
+précisément l'absence totale d'ambiance.
+
+**La règle d'invalidation, énoncée sans ambiguïté** : si la question 7 rend
+« un son qui continue tout seul » pour les quatre essais, ou « plus rien » pour
+les quatre, **l'essai entier est nul** — soit le témoin n'a pas été construit
+comme annoncé, soit aucun des trois prototypes ne s'entend à l'arrêt. Dans les
+deux cas on ne conclut rien sur P1, P2 ou P3, et on recommence. Si la
+question 7 isole exactement un essai à « plus rien » et que c'est bien le
+témoin, l'essai est valide.
+
+Elle porte sur la question **7**, posée à l'arrêt et par essai, jamais sur une
+impression de promenade : le jeu n'est pas muet aujourd'hui — pas, coups, sons
+d'interface — donc « je n'ai rien entendu du tout en me promenant » est une
+question sans réponse possible, et la poser condamnerait les trois prototypes
+par sa seule formulation.
 
 **Mélanger l'ordre au tirage au sort, noter la correspondance, et ne la révéler
-qu'après la question 9.**
+qu'après la question 10.**
 
 ### Les règles à tenir
 
@@ -122,7 +149,8 @@ qu'après la question 9.**
 | 4 | le masquage en 125-500 Hz, où onze des vingt sons courts vivent |
 | 5 | le fondu d'un tampon à chaque pause et à chaque transition, et — pour P2 — le battement aux frontières de région |
 | 6 | la fatigue, que rien d'automatique ne mesure |
-| 9 | **la validité de tout l'essai.** Si le témoin muet n'est pas repéré, le reste ne veut rien dire |
+| 7 | **la validité de tout l'essai.** C'est la seule question qui identifie le témoin muet, et la seule posée dans des conditions où il est identifiable : à l'arrêt, sans pas ni coups pour couvrir |
+| 10 | le même contrôle, reposé de mémoire à la fin. Il confirme la 7 ou la contredit ; une contradiction se note, elle ne s'arbitre pas |
 
 ### Ce qu'il ne faut pas conclure
 

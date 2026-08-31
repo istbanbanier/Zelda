@@ -52,7 +52,7 @@ version se trompait le plus.
 Les fractions somment à 100 % par construction. Un total qui s'en écarterait
 serait lui-même le signe d'un défaut : c'est le cas 5 de la validation.
 
-## La validation, et ses cinq cas
+## La validation, et ses six cas
 
 `python3 tools/audio/band_profile.py --valider` — 3 s, code retour 0.
 Journal figé : `evidence/world_v2/iss087/validation_instrument.log`.
@@ -108,6 +108,124 @@ conservés, ce qui est cohérent avec un désaccord de découpage et non de mét
 | `hit_taken`, octave 125 | 94,1 % | 90,0 % | **91,67 %** |
 | `step_stone_a`, octave 250 | 85,1 % | 80,6 % | **82,48 %** |
 
+## Le second défaut, trouvé par contre-revue le 2026-08-31
+
+Cette version-ci a été corrigée une seconde fois. Le défaut était **de la même
+famille** que celui qu'elle réparait : une pondération systématique oubliée.
+La première version oubliait la largeur de bande dans le domaine
+**fréquentiel** ; la deuxième oubliait la couverture dans le domaine
+**temporel**.
+
+### Ce qui n'allait pas
+
+`profil` posait `hop = L // 2` sous fenêtre de Hann, sans bourrage aux bords.
+La somme des `hann²` n'est alors pas constante : elle monte de zéro jusqu'à son
+palier sur les `L/2` premières trames. Ces trames-là n'étaient vues que par la
+jupe montante d'une seule fenêtre.
+
+Sur un lit stationnaire de 42 segments, l'effet se noie. Sur un **one-shot
+percussif** — 20 des 21 WAV du dépôt — l'attaque porte 27 à 42 % de l'énergie
+et se trouve exactement là. Elle était vue à 0,7-1,6 % de son poids.
+
+S'y ajoutait un abandon de queue silencieux : jusqu'à `L-1` trames finales
+n'étaient lues par aucun segment, sans mention. `n = 300` rendait une sortie
+identique à `n = 256`.
+
+### L'entrée à réponse exacte qui l'a établi
+
+Deux moitiés successives, chacune divisée par la racine de son énergie, donc
+rigoureusement égales : attaque à 8 kHz, queue à 200 Hz. La théorie n'a pas de
+tolérance — **50,00 % dans l'octave 8k**.
+
+| clip (attaque + queue, trames) | avant | après |
+|---|---:|---:|
+| 441 + 2 205 | 8,90 % | **49,82 %** |
+| 882 + 5 292 | 5,51 % | **49,91 %** |
+| 441 + 4 410 | 0,70 % | **49,88 %** |
+| 441 + 8 820 | 0,05 % | **49,83 %** |
+| 441 + 44 100 | **0,03 %** | **49,84 %** |
+
+Facteur d'erreur jusqu'à **1 700**. L'instrument qu'on avait remplacé pour un
+facteur 77 en faisait 1 700 sur cette classe d'entrée. Le résidu de 0,1-0,2
+point est la fuite de la fenêtre de Hann par-dessus la frontière d'octave, pas
+un biais systématique.
+
+**Aucun des cinq cas de validation ne pouvait le voir** : tous les cinq sont
+stationnaires sur quatre secondes. C'est le trou exact que le cas 6 comble.
+
+### La correction
+
+`hop = L // 4`, plus `L - hop` zéros aux deux bords. `hann²` satisfait la
+condition COLA à `hop = L/4` — son spectre ne porte que les raies 0, 1 et 2, et
+le repliement de la somme se produit aux raies multiples de 4, donc nulles.
+Chaque trame réelle est alors couverte par exactement quatre fenêtres, la
+pondération est plate d'un bout à l'autre, et le bourrage corrige au passage
+l'abandon de queue.
+
+### Le cas 5 était une tautologie, et il ne l'est plus
+
+L'ancien cas 5 vérifiait que `sum(fractions)` vaut 100. Or `profil` divise par
+ce total : la somme vaut 100 **par construction**. La contre-revue l'a prouvé
+en sabotant l'outil de deux façons — un trou de 2,8 kHz dans `bornes_bandes`
+(l'octave 4k retirée), et le défaut de prorata historique réinjecté. Dans les
+deux cas, la somme est restée à **100,000000 %**.
+
+Le cas 5 contrôle désormais la **couverture** : le rapport entre l'énergie
+versée aux bandes et l'énergie présente dans les raies. Ablation refaite :
+
+| ablation | ancien cas 5 | **nouveau cas 5** |
+|---|---|---|
+| octave 4k retirée de la couverture | 100,000000 % — **vert** | **87,061099 % — ROUGE** |
+| prorata par largeur de bande (défaut historique) | 100,000000 % — **vert** | ROUGE via les cas 1, 1b, 4 |
+| `hop = L // 2` restauré | vert | cas 6 ROUGE : écart 49,97 pt |
+
+Ce nouveau cas 5 a **échoué dès sa première exécution**, à 100,003304 %, et il
+avait raison : `bornes_bandes` posait indépendamment `63·√2 = 89,095` et
+`125/√2 = 88,388`, parce que le rapport 125/63 vaut 1,984 et non 2. Les deux
+bandes se **recouvraient** sur 0,707 Hz, et toute raie de cette lame était
+versée deux fois. Les raccords sont désormais des moyennes géométriques
+`sqrt(c_i · c_{i+1})` — identiques à `c·√2` partout où le rapport est 2, donc
+un seul raccord de tout le tableau se déplace.
+
+### Le mode `--csv` se cassait sur son propre livrable
+
+L'en-tête était figé sur `bornes_bandes(22050.0)` — 11 bandes — tandis qu'une
+ligne suivait le Nyquist du fichier mesuré. Un WAV à 22 050 Hz n'en produit que
+10 : la ligne sortait à **14 champs contre 15 d'en-tête**, `masquage_125_500`
+glissait dans la colonne `b_16k`, et `reproduire_mesures.py` levait un
+`TypeError` sur `float(None)`. C'est-à-dire précisément le format que le lot
+recommande de produire pour une ambiance à 22,05 kHz. Les colonnes sont
+maintenant fixes (`COLONNES_CSV`), et une bande au-dessus du Nyquist du fichier
+sort en **champ vide** — jamais `0,000` : « absent » et « mesuré à zéro » ne
+sont pas la même affirmation.
+
+### Ce que la correction a changé aux conclusions publiées
+
+Trois fichiers sur 21 étaient faux — exactement les trois où le découpage
+laissait 1 à 3 segments. Les 18 autres tenaient à moins de 2,5 points.
+
+| fichier | 125-500 Hz avant | après | > 2 828 Hz avant | après |
+|---|---:|---:|---:|---:|
+| `land_hard` | 11,66 % | **36,47 %** | 3,98 % | 4,31 % |
+| `pickup` | 15,82 % | **64,66 %** | 0,00 % | 0,00 % |
+| `weapon_break` | 79,15 % | **58,31 %** | 13,14 % | **31,48 %** |
+
+**Aucune conclusion stratégique n'est renversée.** La règle « creuser
+125-500 Hz » survit (dix sons sur vingt au lieu de onze), la bande creuse
+707-2 828 Hz survit, et les trois pas sur l'herbe montent de 68,7/63,6/73,0 %
+à 71,8/67,0/75,7 % au-dessus de 2 828 Hz. Ce qui ne survit pas, c'est le
+tableau d'occupation, faux sur quatre de ses onze lignes — rectifié dans
+`docs/audio/INVENTAIRE_SONORE.md` §3.
+
+### Convergence indépendante
+
+La contre-revue avait écrit son propre analyseur — FFT vérifiée contre une DFT
+naïve, Parseval exact à chaque appel, plus un troisième estimateur STFT à
+recouvrement 75 %. L'instrument corrigé retombe sur ses valeurs : `weapon_break`
+58,31 % et 31,48 % à l'identique, les trois pas d'herbe à 0,00 point près,
+`land_hard` à 0,22 point, `pickup` à 1,6 point. Deux chemins de calcul écrits
+séparément qui convergent valent mieux qu'un seul qui s'auto-vérifie.
+
 ## Limites assumées
 
 - **Ne décode pas l'Ogg Vorbis.** Les six sons d'interface (`assets/audio/ui/`)
@@ -118,6 +236,17 @@ conservés, ce qui est cohérent avec un désaccord de découpage et non de mét
   validation, ~2 s pour les 21 sons.
 - Mesure un **fichier**, pas un mixage. Aucun verdict d'écoute ne peut en sortir :
   ce conteneur n'a pas de périphérique audio (ISS-004).
+- **Fuite de fenêtre près d'un raccord d'octave.** Le lobe principal de Hann
+  s'étale sur ±2 raies. À `L = 8192` cela fait ±10,8 Hz ; à `L = 1024` — la
+  longueur retenue pour un clip très court comme `ui_move` — cela fait ±86 Hz.
+  Un ton à 1 % sous un raccord se voit donc réparti sur les deux bandes. Borné
+  et localisé, mais réel : ne pas lire une répartition 85/15 près d'un raccord
+  comme une vraie bimodalité.
+- **Les six cas de validation sont tous mono.** La lecture 8/24/32 bits et le
+  downmix stéréo sont implémentés et ont été éprouvés à la main, mais **aucun
+  cas ne les garde**. Un stéréo en opposition de phase rend un profil de zéros
+  avec un code retour 0, sans avertissement. Sans portée aujourd'hui : les 21
+  assets sont mono.
 
 ## Codes retour
 

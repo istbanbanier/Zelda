@@ -1,13 +1,10 @@
-# Mesures dérivées ISS-087 — arbre 8c6955c6277e371327c71079bacaa6a8c2e44fac
-# 2026-08-31T02:29:32Z · reproduire : python3 evidence/world_v2/iss087/reproduire_mesures.py
-
 ========================================================================
 MESURE 1 — REPLIEMENT DE `force/max_rate` DANS L'IMPORTATEUR GODOT
 ========================================================================
 Sinus pur 16 000 Hz à 44,1 kHz, passé dans l'algorithme du moteur vers 22,05 kHz.
 Nyquist réduit = 11 025 Hz. Repliement théorique : 22 050 - 16 000 = 6 050 Hz.
   AVANT  (44,1 kHz)                          octave 16k  : 100.00 %  [11314-22050 Hz]
-  APRÈS  (22,05 kHz, algorithme du moteur)   octave 8k   : 100.00 %  [5657-11025 Hz]
+  APRÈS  (22,05 kHz, algorithme du moteur)   octave 8k   :  99.99 %  [5657-11025 Hz]
   Un ré-échantillonnage correct rendrait ~0 %% : le ton est au-dessus du
   nouveau Nyquist, il doit DISPARAÎTRE, pas descendre.
 
@@ -16,11 +13,11 @@ MESURE 2 — CE QUE 22,05 kHz MET HORS D'ATTEINTE DU MASQUAGE
 ========================================================================
 Un flux à 22,05 kHz ne porte aucune énergie au-dessus de 11 025 Hz.
   son                   > 11 025 Hz
-  amb_valley                  2.04 %
-  step_grass_a               22.39 %
-  step_grass_b               18.90 %
-  step_grass_c               26.06 %
-  step_stone_a                1.98 %
+  amb_valley                  2.03 %
+  step_grass_a               23.26 %
+  step_grass_b               19.90 %
+  step_grass_c               26.79 %
+  step_stone_a                2.08 %
   hit_taken                   0.17 %
   death                       0.01 %
 
@@ -31,40 +28,27 @@ Un son « occupe » une bande s'il y met >= 20 %% de son énergie.
   <22     0   — libre —
   31.5    0   — libre —
   63      1   land_hard
-  125     7   death, guard, hit_land, hit_taken, land_soft, refuse, step_stone_b
-  250     5   death, guard, step_stone_a, step_stone_b, weapon_break
-  500     2   chest_open, ui_accept
-  1k      4   parry, pickup, swing, ui_move
+  125     6   hit_land, hit_taken, land_hard, land_soft, refuse, step_stone_b
+  250     7   chest_open, death, guard, hit_land, step_stone_a, step_stone_b, weapon_break
+  500     3   chest_open, pickup, ui_accept
+  1k      5   jump, parry, pickup, swing, ui_move
   2k      1   parry
   4k      3   step_grass_a, step_grass_b, step_grass_c
   8k      3   step_grass_a, step_grass_b, step_grass_c
   16k     2   step_grass_a, step_grass_c
-  Sons dont >= 75 % de l'énergie tient dans 125-500 Hz : 11 sur 20
+  Sons dont >= 75 % de l'énergie tient dans 125-500 Hz : 10 sur 20
 
 ========================================================================
 MESURE 4 — SENSIBILITÉ DE L'ESTIMATEUR (amb_valley, 125-500 Hz)
 ========================================================================
      segment    Hz/raie   segments    125-500 %
-        1024      43.07        343        52.07
-        2048      21.53        171        51.95
-        4096      10.77         85        51.65
-        8192       5.38         42        51.03
-       16384       2.69         20        51.44
-       32768       1.35          9        51.40
-       65536       0.67          4        51.62
-      131072       0.34          1        51.64
+        1024      43.07        692        51.83
+        2048      21.53        347        51.68
+        4096      10.77        175        51.60
+        8192       5.38         89        51.58
+       16384       2.69         46        51.59
+       32768       1.35         24        51.58
+       65536       0.67         13        51.56
+      131072       0.34          8        51.55
   Stable à +-0,6 point sur un rapport 128x. L'écart avec la contre-revue
   (54,8 %%) est donc DÉFINITIONNEL, pas du bruit d'estimateur.
-
-# --- modèle de coût QOA ---
-Contrôle : amb_valley, 176 400 trames mono 44,1 kHz
-  prédit par ce modèle : 71408 octets
-  mesuré dans le moteur (ISS-088) : 71408 octets
-  écart : 0
-OK : le modèle est exact.
-  durée s       octets   x banque     + tampon
-    15.00       133872       1.01       144112
-    20.00       178496       1.35       188736
-    30.00       267728       2.03       277968
-débit : 8923.5 octets/s à 22050 Hz, 1 canal/canaux
-seuil d'égalité avec la banque des sons courts : 14.81 s
