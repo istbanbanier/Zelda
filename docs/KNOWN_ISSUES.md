@@ -3547,3 +3547,98 @@ mais elle ne boucle pas là où le code croit.
   `/opt/src/godot/scene/resources/audio_stream_wav.h`.
 
 
+
+---
+
+## ISS-090 — Le plancher `pre-push` est plus faible que le hook `Stop` sur l'invariant Nintendo — S2, OUVERT
+
+**En clair** : deux garde-fous censés appliquer la même règle ne l'appliquent
+pas pareil. Trois noms interdits passent le second sans être vus.
+
+**Découvert le 2026-08-31**, en vérifiant des constats annexes de la vague
+ISS-088/075/087.
+
+`.claude/hooks/README.md` énonce que `.githooks/pre-push` **rejoue** les règles
+du hook `Stop`. Il ne les rejoue pas : les deux motifs diffèrent.
+
+| | motif |
+|---|---|
+| `.claude/hooks/qa-stop.sh` (perl) | `ganon(?:dorf)?` · `master\s+sword` · `breath\s+of\s+the\s+wild` |
+| `.githooks/pre-push` (grep -E) | `ganon` seul, et **aucun** des deux termes composés |
+
+Reproduction, une ligne, sans le moteur :
+
+```bash
+for m in ganon ganondorf hyrulean "master sword"; do
+  printf '%-14s ' "$m"
+  echo "$m" | grep -Eiq '\b(bokoblin|lynel|hyrule|sheikah|ganon|korok|triforce|deku|zonai|moblin|hylian)\b' \
+    && echo ATTRAPÉ || echo PASSE
+done
+```
+
+Relevé : `ganon` ATTRAPÉ · **`ganondorf` PASSE** · **`hyrulean` PASSE** ·
+**`master sword` PASSE**. Cause exacte : `\bganon\b` échoue sur `ganondorf`,
+parce que le `d` qui suit est un caractère de mot — la frontière n'y est pas.
+Même mécanique pour `hyrule` dans `hyrulean`.
+
+`hyrulean` passe **les deux** couches : le hook `Stop` porte `hyrule` et
+`hylian`, pas `hyrulean`.
+
+**Ce que ça ne veut pas dire.** Aucun de ces termes n'est présent dans le
+dépôt aujourd'hui ; le trou est **prospectif**, exactement comme le piège
+`force/max_rate` d'ISS-087. Il est classé S2 et non S3 parce qu'il touche un
+invariant que `CLAUDE.md` déclare non négociable, et parce qu'un garde-fou dont
+on croit à tort qu'il couvre une règle est pire qu'un garde-fou absent.
+
+**Correction** : aligner le motif de `.githooks/pre-push` sur celui de
+`qa-stop.sh`, ajouter `hyrulean` aux deux, et **écrire un test qui compare les
+deux motifs** — sans lui, ils redivergeront. La divergence actuelle n'a été vue
+que parce que quelqu'un a relu les deux fichiers côte à côte.
+
+---
+
+## ISS-091 — Trois pièges d'outillage qui échouent en silence — S3, OUVERT
+
+**En clair** : trois commandes du dépôt ne font pas ce que leur documentation
+annonce, et aucune ne le dit. Rien ne casse ; on croit simplement avoir fait
+quelque chose qu'on n'a pas fait.
+
+**Découverts le 2026-08-31.** Chacun est reproductible en une commande.
+
+### a) `tools/CLAUDE.md` donne une commande de verrou impossible en worktree
+
+Ligne 182 : `flock "$PWD/.git/heavy_tools.lock" -c \…`
+
+Or `tools/CLAUDE.md` dit lui-même, ligne 92, que « le verrou canonique est
+`<git-common-dir>/heavy_tools.lock` ». Dans un arbre de travail git, `.git` est
+un **fichier** de 45 octets, pas un répertoire :
+
+```bash
+ls -ld /home/user/wt-C/.git      # -rw-r--r-- … 45 … .git
+```
+
+`$PWD/.git/heavy_tools.lock` est donc un chemin qui traverse un non-répertoire,
+et la commande échoue. Le fichier se contredit : sa prose est juste, sa
+commande copiable-collable est fausse — et la règle « un arbre de travail
+séparé par tâche » rend ce cas **normal**, pas exceptionnel.
+
+### b) `gate_fuite_composition.sh --sortie <rep>` est documenté et non analysé
+
+L'en-tête d'usage annonce `[--sortie <repertoire>]`, forme avec espace.
+L'analyseur ne reconnaît que `--sortie=*`, et le `case` **n'a pas de branche
+`*)`** : un argument non reconnu est ignoré sans un mot. Donner
+`--sortie /chemin` écrit donc les preuves ailleurs que demandé, en silence, et
+`/chemin` est avalé sans erreur.
+
+### c) `gate_select.sh` prend le verrou avant de lire ses arguments
+
+Ligne 34 : `godot_verrou_prendre 8 3000 || exit 3`. Ligne 38 : `for arg in
+"$@"`. Une faute de frappe dans un drapeau — ou un simple `--help` — attend
+donc jusqu'à **50 minutes** que le moteur se libère avant d'annoncer qu'il n'a
+pas compris. L'ordre inverse coûte une ligne.
+
+**Correction** : (a) remplacer la commande de `tools/CLAUDE.md` par
+`"$(git rev-parse --git-common-dir)/heavy_tools.lock"`, ce que fait déjà
+`tools/lancer_godot.sh` ; (b) ajouter `--sortie) …; shift` et une branche `*)`
+qui refuse l'inconnu avec le code 2 ; (c) déplacer la prise de verrou après la
+boucle d'analyse.
