@@ -1,0 +1,301 @@
+# ISS-088 — CONTRAT ROUGE SOUS LE PIÈGE D ORDRE
+# arbre : /home/user/wt-A (base 726d782d)  état : MODIFIÉ (correctif retiré)
+# filtre --filter=iss08 : les DEUX fichiers courent, donc
+# test_ambience_ownership_iss086.gd joue l ambiance AVANT ce contrat,
+# et le piège d ordre est réellement présent.
+# date : 2026-08-31T00:41:12Z
+
+LANCER_GODOT: --headless ajouté (pas de --rendu : aucun affichage disponible).
+LANCER_GODOT: VERROU=/home/user/Zelda/.git/heavy_tools.lock
+LANCER_GODOT: XDG_DATA_HOME=/tmp/lancer_godot_ud_yCyAglHa
+LANCER_GODOT: CWD=/home/user/wt-A
+LANCER_GODOT: CMD=/usr/local/bin/godot --headless --path . --script tools/godot/test_runner.gd -- --filter=iss08
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+
+=== TEST RUNNER — Godot 4.7.1-stable (custom_build) ===
+filtre: iss08
+[boot] Godot            : 4.7.1-stable (custom_build)
+[boot] renderer         : forward_plus
+[boot] physique 3D      : Jolt Physics
+[boot] tick physique    : 60 Hz
+[boot] pilote de rendu  : headless
+[boot] autoloads        : GameState, EventBus, SaveSystem, AudioManager, SceneFlow
+[boot] flux             : BOOT
+[boot] fondation vérifiée — Phase A.
+[boot] transition vers le menu principal.
+[flow] transition vers : res://scenes/ui/MainMenu.tscn
+[flow] transition vers : res://scenes/world/valley/ValleyWorld.tscn
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+[flow] transition vers : res://scenes/ui/MainMenu.tscn
+  ok   test_ambience_ownership_iss086.gd::test_quitter_la_vallee_arrete_et_libere_son_ambiance (8 assertions)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ok   test_ambience_ownership_iss086.gd::test_trois_cycles_ne_laissent_aucune_ambiance_derriere (13 assertions)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ok   test_ambience_ownership_iss086.gd::test_une_sortie_tardive_ne_coupe_pas_lambiance_suivante (5 assertions)
+WARNING: [audio] play_ambience(amb_valley) sans propriétaire : refusé. Qui démarre une ambiance doit pouvoir la rendre.
+     at: push_warning (core/variant/variant_utility.cpp:1033)
+     GDScript backtrace (most recent call first):
+         [0] play_ambience (res://scripts/core/audio_manager.gd:88)
+         [1] test_une_ambiance_sans_proprietaire_est_refusee (res://tests/integration/test_ambience_ownership_iss086.gd:438)
+         [2] _rendre_le_silence (res://tests/integration/test_ambience_ownership_iss086.gd:208)
+  ok   test_ambience_ownership_iss086.gd::test_une_ambiance_sans_proprietaire_est_refusee (4 assertions)
+  ÉCHEC test_audio_ambience_loop_iss088.gd::test_la_borne_de_boucle_se_compte_en_trames_pas_en_octets — A1 : `loop_end_frame()` est exposée
+  ÉCHEC test_audio_ambience_loop_iss088.gd::test_le_cache_partage_reste_intact_et_lambiance_a_sa_copie — B4 : le flux JOUÉ n'est pas l'exemplaire du cache — c'est une copie
+  ÉCHEC test_audio_ambience_loop_iss088.gd::test_le_cache_partage_reste_intact_et_lambiance_a_sa_copie — B6 : et sa borne est en trames, pas en octets : attendu 176399, obtenu 35704
+  ÉCHEC test_audio_ambience_loop_iss088.gd::test_le_cache_partage_reste_intact_et_lambiance_a_sa_copie — B8 : l'exemplaire PARTAGÉ du cache n'a pas été muté : attendu 0, obtenu 1
+  ÉCHEC test_audio_ambience_loop_iss088.gd::test_le_cache_partage_reste_intact_et_lambiance_a_sa_copie — B9 : sa borne non plus : attendu 0, obtenu 35704
+  ÉCHEC test_audio_ambience_loop_iss088.gd::test_la_lecture_ne_reboucle_pas_avant_la_fin_du_clip — C4 : la lecture a dépassé 1.10 s avant de reboucler (vue : 0.7459 s). Sous le défaut, elle plafonnait à 0.8096 s.
+  ÉCHEC test_audio_ambience_loop_iss088.gd::test_la_lecture_ne_reboucle_pas_avant_la_fin_du_clip — C5 : et le bouclage arrive bien À LA FIN du clip, ni avant ni après (0.7459 s pour un clip de 4.00 s)
+  ok   test_enemy_riposte_iss085.gd::test_un_garde_frappe_de_loin_se_tourne_avance_et_reste_chez_lui (9 assertions)
+  ok   test_enemy_riposte_iss085.gd::test_sous_le_feu_repete_le_garde_ne_franchit_jamais_sa_frontiere (10 assertions)
+  ok   test_enemy_riposte_iss085.gd::test_l_impact_reveille_le_voisinage_sans_le_faire_sortir (5 assertions)
+  ok   test_enemy_riposte_iss085.gd::test_un_bruit_hors_territoire_ne_fait_pas_sortir_le_garde (7 assertions)
+  ok   test_enemy_riposte_iss085.gd::test_dans_le_territoire_un_coup_acquiert_toujours_la_cible (2 assertions)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ok   test_enemy_riposte_iss085.gd::test_la_vallee_v1_garde_ses_adversaires_au_repos (3 assertions)
+  ok   test_enemy_territory_iss083.gd::test_la_vision_n_acquiert_pas_au_dela_du_territoire (3 assertions)
+  ok   test_enemy_territory_iss083.gd::test_le_cri_d_un_allie_n_impose_pas_une_cible_hors_territoire (3 assertions)
+  ok   test_enemy_territory_iss083.gd::test_une_fleche_venue_de_loin_n_impose_pas_sa_cible (3 assertions)
+  ok   test_enemy_territory_iss083.gd::test_dans_le_territoire_la_vision_acquiert_toujours (2 assertions)
+  ok   test_enemy_territory_iss083.gd::test_dans_le_territoire_le_cri_d_un_allie_porte_toujours (5 assertions)
+  ok   test_enemy_territory_iss083.gd::test_dans_le_territoire_un_coup_recu_revele_toujours_l_attaquant (3 assertions)
+WARNING: [salle de donjon] slot présent mais ILLISIBLE — écriture refusée pour ne pas l'écraser (§19.4, ISS-082)
+     at: push_warning (core/variant/variant_utility.cpp:1033)
+     GDScript backtrace (most recent call first):
+         [0] base_de_fusion (res://scripts/save/save_merge_guard.gd:56)
+         [1] save_room_state (res://scripts/dungeon/dungeon_room.gd:140)
+         [2] test_une_salle_de_donjon_refuse_un_slot_tronque (res://tests/integration/test_save_guard_iss082.gd:151)
+         [3] _run_script (res://tools/godot/test_runner.gd:297)
+         [4] _initialize (res://tools/godot/test_runner.gd:80)
+         [5] _run_script (res://tools/godot/test_runner.gd:339)
+         [6] _root_delta (res://tools/godot/test_runner.gd:390)
+  ok   test_save_guard_iss082.gd::test_une_salle_de_donjon_refuse_un_slot_tronque (3 assertions)
+WARNING: [salle de donjon] slot présent mais ILLISIBLE — écriture refusée pour ne pas l'écraser (§19.4, ISS-082)
+     at: push_warning (core/variant/variant_utility.cpp:1033)
+     GDScript backtrace (most recent call first):
+         [0] base_de_fusion (res://scripts/save/save_merge_guard.gd:56)
+         [1] save_room_state (res://scripts/dungeon/dungeon_room.gd:140)
+         [2] test_une_salle_de_donjon_refuse_un_schema_futur (res://tests/integration/test_save_guard_iss082.gd:173)
+         [3] _run_script (res://tools/godot/test_runner.gd:297)
+         [4] _root_delta (res://tools/godot/test_runner.gd:390)
+  ok   test_save_guard_iss082.gd::test_une_salle_de_donjon_refuse_un_schema_futur (3 assertions)
+WARNING: [salle de donjon] slot présent mais ILLISIBLE — écriture refusée pour ne pas l'écraser (§19.4, ISS-082)
+     at: push_warning (core/variant/variant_utility.cpp:1033)
+     GDScript backtrace (most recent call first):
+         [0] base_de_fusion (res://scripts/save/save_merge_guard.gd:56)
+         [1] save_room_state (res://scripts/dungeon/dungeon_room.gd:140)
+         [2] test_deux_salles_d_affilee_ne_detruisent_pas_la_copie_de_secours (res://tests/integration/test_save_guard_iss082.gd:199)
+         [3] _run_script (res://tools/godot/test_runner.gd:297)
+         [4] _root_delta (res://tools/godot/test_runner.gd:390)
+WARNING: [salle de donjon] slot présent mais ILLISIBLE — écriture refusée pour ne pas l'écraser (§19.4, ISS-082)
+     at: push_warning (core/variant/variant_utility.cpp:1033)
+     GDScript backtrace (most recent call first):
+         [0] base_de_fusion (res://scripts/save/save_merge_guard.gd:56)
+         [1] save_room_state (res://scripts/dungeon/dungeon_room.gd:140)
+         [2] test_deux_salles_d_affilee_ne_detruisent_pas_la_copie_de_secours (res://tests/integration/test_save_guard_iss082.gd:199)
+         [3] _demonter (res://tests/integration/test_save_guard_iss082.gd:137)
+         [4] _settle (res://tests/integration/test_save_guard_iss082.gd:53)
+  ok   test_save_guard_iss082.gd::test_deux_salles_d_affilee_ne_detruisent_pas_la_copie_de_secours (1 assertions)
+WARNING: [arène du boss] slot présent mais ILLISIBLE — écriture refusée pour ne pas l'écraser (§19.4, ISS-082)
+     at: push_warning (core/variant/variant_utility.cpp:1033)
+     GDScript backtrace (most recent call first):
+         [0] base_de_fusion (res://scripts/save/save_merge_guard.gd:56)
+         [1] _on_boss_died (res://scripts/boss/boss_arena.gd:451)
+         [2] test_la_victoire_du_boss_refuse_un_schema_futur (res://tests/integration/test_save_guard_iss082.gd:219)
+         [3] _run_script (res://tools/godot/test_runner.gd:297)
+         [4] _root_delta (res://tools/godot/test_runner.gd:390)
+  ok   test_save_guard_iss082.gd::test_la_victoire_du_boss_refuse_un_schema_futur (1 assertions)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+WARNING: [vallée] slot présent mais ILLISIBLE — écriture refusée pour ne pas l'écraser (§19.4, ISS-082)
+     at: push_warning (core/variant/variant_utility.cpp:1033)
+     GDScript backtrace (most recent call first):
+         [0] base_de_fusion (res://scripts/save/save_merge_guard.gd:56)
+         [1] _autosave (res://scripts/world/valley_world.gd:978)
+         [2] test_l_autosave_de_la_vallee_refuse_un_schema_futur (res://tests/integration/test_save_guard_iss082.gd:243)
+         [3] _settle (res://tests/integration/test_save_guard_iss082.gd:53)
+  ok   test_save_guard_iss082.gd::test_l_autosave_de_la_vallee_refuse_un_schema_futur (2 assertions)
+  ok   test_save_guard_iss082.gd::test_un_slot_normal_reste_inscriptible_par_les_trois_ecrivains (7 assertions)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ok   test_save_guard_iss082.gd::test_l_autosave_de_la_vallee_preserve_les_coffres_d_une_autre_scene (3 assertions)
+  ok   test_save_guard_iss082.gd::test_tout_ecrivain_de_sauvegarde_fusionne_ou_est_exempte_nommement (9 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 7297 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 15 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+[world_v2] porte donjon : posée au seuil §3.3
+[world_v2] arrivée      : spawn
+[world_v2] héros posé   : (0.0, 24.4, 170.0) lacet=0.00
+[peuplement] garnison : 4 posé(s), 0 déjà tombé(s)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_camp_cuisine_iss084.gd::test_camp_tenu_le_foyer_ne_propose_rien_et_refuse_de_cuisiner (11 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 5778 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 15 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+[world_v2] porte donjon : posée au seuil §3.3
+[world_v2] arrivée      : spawn
+[world_v2] héros posé   : (0.0, 24.4, 170.0) lacet=0.00
+[peuplement] garnison : 4 posé(s), 0 déjà tombé(s)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+[peuplement] touché : garrison.ember_camp.red.01
+[peuplement] tombé : garrison.ember_camp.red.01
+[peuplement] touché : garrison.ember_camp.red.02
+[peuplement] tombé : garrison.ember_camp.red.02
+[peuplement] touché : garrison.ember_camp.red.03
+[peuplement] tombé : garrison.ember_camp.red.03
+[peuplement] touché : garrison.ember_camp.blue.01
+[peuplement] tombé : garrison.ember_camp.blue.01
+[peuplement] garnison vaincue
+  ok   test_world_v2_camp_cuisine_iss084.gd::test_le_foyer_bascule_quand_la_garnison_tombe_en_session (8 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 4562 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 15 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+[world_v2] porte donjon : posée au seuil §3.3
+[world_v2] arrivée      : spawn
+[world_v2] héros posé   : (0.0, 24.4, 170.0) lacet=0.00
+[peuplement] garnison : 0 posé(s), 4 déjà tombé(s)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_camp_cuisine_iss084.gd::test_camp_libere_le_foyer_redevient_utilisable (5 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 5322 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 15 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+[world_v2] porte donjon : posée au seuil §3.3
+[world_v2] arrivée      : spawn
+[world_v2] héros posé   : (0.0, 24.4, 170.0) lacet=0.00
+[peuplement] garnison : 4 posé(s), 0 déjà tombé(s)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 4588 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 15 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+[world_v2] porte donjon : posée au seuil §3.3
+[world_v2] arrivée      : spawn
+[world_v2] héros posé   : (0.0, 24.4, 170.0) lacet=0.00
+[peuplement] garnison : 0 posé(s), 4 déjà tombé(s)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+  ok   test_world_v2_camp_cuisine_iss084.gd::test_l_etat_du_foyer_se_deduit_a_chaque_reprise (7 assertions)
+  ok   test_world_v2_camp_cuisine_iss084.gd::test_le_foyer_de_l_antichambre_n_est_jamais_revendique (2 assertions)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ok   test_world_v2_camp_cuisine_iss084.gd::test_le_foyer_de_la_vallee_v1_reste_utilisable (3 assertions)
+erreurs de script dans le journal : 0
+
+=== RÉSULTAT: 30 réussi(s), 7 échoué(s) ===
+  ÉCHEC: test_audio_ambience_loop_iss088.gd::test_la_borne_de_boucle_se_compte_en_trames_pas_en_octets — A1 : `loop_end_frame()` est exposée
+  ÉCHEC: test_audio_ambience_loop_iss088.gd::test_le_cache_partage_reste_intact_et_lambiance_a_sa_copie — B4 : le flux JOUÉ n'est pas l'exemplaire du cache — c'est une copie
+  ÉCHEC: test_audio_ambience_loop_iss088.gd::test_le_cache_partage_reste_intact_et_lambiance_a_sa_copie — B6 : et sa borne est en trames, pas en octets : attendu 176399, obtenu 35704
+  ÉCHEC: test_audio_ambience_loop_iss088.gd::test_le_cache_partage_reste_intact_et_lambiance_a_sa_copie — B8 : l'exemplaire PARTAGÉ du cache n'a pas été muté : attendu 0, obtenu 1
+  ÉCHEC: test_audio_ambience_loop_iss088.gd::test_le_cache_partage_reste_intact_et_lambiance_a_sa_copie — B9 : sa borne non plus : attendu 0, obtenu 35704
+  ÉCHEC: test_audio_ambience_loop_iss088.gd::test_la_lecture_ne_reboucle_pas_avant_la_fin_du_clip — C4 : la lecture a dépassé 1.10 s avant de reboucler (vue : 0.7459 s). Sous le défaut, elle plafonnait à 0.8096 s.
+  ÉCHEC: test_audio_ambience_loop_iss088.gd::test_la_lecture_ne_reboucle_pas_avant_la_fin_du_clip — C5 : et le bouclage arrive bien À LA FIN du clip, ni avant ni après (0.7459 s pour un clip de 4.00 s)
+WARNING: 125 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 70 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)
+ERROR: Pages in use exist at exit in PagedAllocator: N12VariantPools12BucketMediumE
+   at: ~PagedAllocator (./core/templates/paged_allocator.h:170)
+ERROR: Pages in use exist at exit in PagedAllocator: N12VariantPools11BucketSmallE
+   at: ~PagedAllocator (./core/templates/paged_allocator.h:170)
+LANCER_GODOT: RC_GODOT=1

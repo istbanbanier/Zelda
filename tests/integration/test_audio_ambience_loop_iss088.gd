@@ -30,8 +30,13 @@
 ## donc la position de lecture avance en headless. Mais son `thread_func` fait
 ## `delay_usec(buffer_frames / mix_rate)` SANS compenser le temps de traitement :
 ## il est structurellement plus lent que le temps réel. Le cas C sort donc de sa
-## boucle DÈS que le recul est observé, et son plafond est un garde
-## d'anti-blocage — jamais un budget de vitesse (ISS-038, `tests/CLAUDE.md`).
+## boucle DÈS que le recul est observé. Son plafond reste néanmoins un budget,
+## et la contre-revue a eu raison de refuser la formule « jamais un budget de
+## vitesse » : si le bouclage n'est pas vu en 25 s, `C3` rougit. La machine doit
+## donc jouer 4,00 s d'audio en moins de 25 s de temps mur — un facteur 6 de
+## marge, confortable mais pas infini. `C4`, l'assertion discriminante, n'a
+## elle besoin que d'atteindre 1,10 s : c'est `C3` et `C5` qui achètent le
+## reste du temps, et donc le risque d'intermittence (ISS-038).
 extends GateTestCase
 
 const AMB: String = "res://assets/audio/sfx/amb_valley.wav"
@@ -106,6 +111,15 @@ func test_la_borne_de_boucle_se_compte_en_trames_pas_en_octets() -> void:
 		check(false, "A0 : AudioManager absent, rien à mesurer")
 		return
 	check(a.has_method("loop_end_frame"), "A1 : `loop_end_frame()` est exposée")
+	# GARDE DE SORTIE, ajoutée après contre-revue. Sans elle, `A3` appelait une
+	# méthode inexistante sous ablation : GDScript avortait la méthode, `A4` à
+	# `A8` n'étaient JAMAIS exécutées, et le runner ajoutait une ligne
+	# `SCRIPT ERROR` au décompte. Le rouge de ce cas était donc « la méthode
+	# n'existe pas », pas « la borne est fausse » — et `A6`, la seule assertion
+	# qui oppose la production à la vraie ressource QOA, n'avait jamais été
+	# observée rouge.
+	if not a.has_method("loop_end_frame"):
+		return
 
 	# Un clip dont on connaît le compte de trames par construction.
 	var w: AudioStreamWAV = _wav_synthetique(12345)
@@ -179,6 +193,18 @@ func test_le_cache_partage_reste_intact_et_lambiance_a_sa_copie() -> void:
 		check_equal(joue.resource_path, AMB,
 			"B7 : la copie porte le chemin de l'asset (acquis ISS-086)")
 
+	# LA MÉMORISATION, épinglée après contre-revue. Sans cette assertion, retirer
+	# `_ambience_streams` — donc re-dupliquer ~143 ko à CHAQUE appel — laissait
+	# la totalité du contrat verte. Un second appel doit rendre le MÊME objet.
+	a.call("play_ambience", &"amb_valley", proprio)
+	await _tree().process_frame
+	var joueur2: AudioStreamPlayer = _lecteur()
+	var joue2: AudioStreamWAV = null
+	if joueur2 != null:
+		joue2 = joueur2.stream as AudioStreamWAV
+	check(joue2 != null and joue2 == joue,
+		"B11 : un second appel réutilise la MÊME copie, il n'en refabrique pas")
+
 	# LE CŒUR DU CAS : l'exemplaire que `load()` rend à tout le monde, et que
 	# `play_sfx` réutiliserait, n'a pas bougé.
 	check_equal(partage.loop_mode, AudioStreamWAV.LOOP_DISABLED,
@@ -244,9 +270,14 @@ func test_la_lecture_ne_reboucle_pas_avant_la_fin_du_clip() -> void:
 		% [SEUIL_PRECOCE_S, maxi_vu]
 		+ "Sous le défaut, elle plafonnait à %.4f s." % (float(ANCIENNE_BORNE) / 44100.0))
 	if recul_a >= 0.0:
-		check(recul_a >= AMB_DUREE_S - 0.5,
-			"C5 : et le bouclage arrive à la FIN du clip (%.4f s sur %.2f s)"
-			% [recul_a, AMB_DUREE_S])
+		# BORNÉE DES DEUX CÔTÉS, corrigé après contre-revue. La rédaction
+		# d'origine ne posait qu'un plancher (`>= AMB_DUREE_S - 0.5`), donc une
+		# borne absurdement grande — un `mix_rate` appliqué deux fois, par
+		# exemple — l'aurait satisfaite intégralement. Le message promettait
+		# « à la FIN du clip » et ne prouvait que « au moins à 3,5 s ».
+		check(absf(recul_a - AMB_DUREE_S) <= 0.5,
+			"C5 : et le bouclage arrive bien À LA FIN du clip, ni avant ni "
+			+ "après (%.4f s pour un clip de %.2f s)" % [recul_a, AMB_DUREE_S])
 
 	await _rendre_le_silence()
 	proprio.queue_free()

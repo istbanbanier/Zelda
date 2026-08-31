@@ -176,10 +176,12 @@ func loop_end_frame(wav: AudioStreamWAV) -> int:
 ## affectation `path_cache = p_path` — `ResourceCache::resources` n'est pas
 ## touché, aucun signal n'est émis, et `Resource::~Resource` n'efface une entrée
 ## que si `E->value == this`. C'est l'idiome du moteur lui-même : la branche
-## `CACHE_MODE_IGNORE` de `ResourceLoader::_load_start` fait exactement cela.
+## `CACHE_MODE_IGNORE` de `ResourceLoader::_run_load_task` fait exactement
+## cela (et non `_load_start`, qui n'appelle jamais `set_path_cache`).
 ## Surtout PAS `set_path()`, qui sur un chemin déjà pris pose
 ## `ERR_FAIL_MSG("Another resource is loaded from path …")` — une ligne `ERROR:`
-## que l'étape 2b de `validate_fast` compte comme un échec — ET laisse la copie
+## que l'étape 2 de `validate_fast` compte comme un échec (2b, elle, juge le
+## résidu de fin de processus — deux juges distincts) — ET laisse la copie
 ## anonyme, puisque `path_cache` a déjà été vidé avant le `ERR_FAIL_MSG`.
 ##
 ## Le chemin n'est pas cosmétique : le contrat ISS-086
@@ -187,8 +189,11 @@ func loop_end_frame(wav: AudioStreamWAV) -> int:
 ## par `joueur.stream.resource_path`. Une copie anonyme l'aurait rendu rouge.
 ##
 ## DANGER LATENT, à ne pas perdre. `Resource::is_built_in()` rend FAUX dès que
-## `path_cache` est un `res://…` sans `::`. Si l'arbre d'ambiance était un jour
-## empaqueté ou sauvegardé, `resource_format_{text,binary}` écriraient la copie
+## `path_cache` est un `res://…` sans `::`. Un EXPORT de projet ne peut PAS
+## l'atteindre — il empaquette des fichiers du disque, jamais une ressource née
+## à l'exécution ; le seul déclencheur est un `PackedScene.pack()` suivi d'un
+## `ResourceSaver.save()` À L'EXÉCUTION. Si cela arrivait,
+## `resource_format_{text,binary}` écriraient la copie
 ## en `ExtResource`, et le rechargement rendrait l'exemplaire PARTAGÉ sans
 ## boucle : les deux défauts d'ISS-088 reviendraient ensemble, en silence. Non
 ## atteignable aujourd'hui — les seuls `ResourceSaver.save` du dépôt sont des
@@ -201,14 +206,31 @@ func loop_end_frame(wav: AudioStreamWAV) -> int:
 ## instancie `ValleyWorld` des dizaines de fois : mémoriser remplace ce
 ## va-et-vient par 71 ko résidents, une fois.
 ##
-## CE QUI ARRIVE SI LA COPIE SURVIT — et le détecteur exact, corrigé après
-## contre-revue. Elle n'apparaîtrait PAS dans `Resource still in use:` :
-## `ResourceCache::clear()` n'énumère que `ResourceCache::resources`, où la
-## copie n'est jamais entrée. Elle est prise par l'autre détecteur, `ObjectDB::
-## cleanup()`, qui imprime `Leaked instance: AudioStreamWAV:<id>` — et
-## `tools/gate_fuite_ressources.py` classe `AudioStreamWAV` hors de
-## `CLASSES_MOTEUR`, donc portail A rouge, ISS-086 rouverte. Le `resource_path`
-## ne change rien à cette classification.
+## CE QUI ARRIVE SI LA COPIE SURVIT — la contre-revue a REFUSÉ ma première
+## rédaction, qui annonçait « portail A rouge ». C'est faux pour le chemin de
+## routine, et la nuance décide de ce qu'un lecteur ira chercher.
+##
+## Elle n'apparaîtrait PAS dans `Resource still in use:` : `ResourceCache::clear()`
+## n'énumère que `ResourceCache::resources`, où la copie n'entre jamais. Mais
+## elle n'apparaîtrait pas non plus sous `Leaked instance: AudioStreamWAV` dans
+## une course ordinaire : `ObjectDB::cleanup()` n'imprime ses lignes par instance
+## que sous `is_stdout_verbose()`, et `tools/validate_fast.sh` ne passe PAS
+## `--verbose`. Seul l'agrégat sort.
+##
+## Et le portail y tourne en `--mode=agregat`, où la condition « classe non
+## attribuée au moteur » n'existe pas : `CLASSES_MOTEUR` n'est consulté que par
+## `verdict()`, jamais par `verdict_agregat()`. Une copie survivante ferait donc
+## passer `objets fuités` de 140 à 141 et rougirait en
+## `ENGINE_SCRIPT_CACHE_TELEMETRY : DÉRIVE` — sous une bannière dont le texte
+## dit « Ce n'est PAS le signe qu'une ressource du projet fuit » et propose
+## d'entériner. La course reste ROUGE, rien ne s'échappe ; mais l'étiquette
+## envoie chercher ailleurs.
+##
+## RÈGLE QUI EN DÉCOULE, et c'est elle qui compte : ne JAMAIS entériner une
+## dérive d'`objets fuités` sans avoir d'abord passé
+## `tools/gate_fuite_composition.sh`, seul mode qui NOMME la ressource. Dans un
+## lot qui ajoute aussi des scripts — ce que fait chaque lot de V2.3-B —
+## entériner la dérive absorberait un `AudioStreamWAV` fuité en silence.
 func _ambience_bouclee(sound: StringName, stream: AudioStream) -> AudioStream:
 	var partage: AudioStreamWAV = stream as AudioStreamWAV
 	if partage == null:

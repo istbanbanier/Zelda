@@ -2033,19 +2033,45 @@ et devrait s'inscrire à `StaticResourceCaches` ;
 `tests/unit/test_invariants.gd::test_tout_cache_statique_de_ressources_est_liberable`
 le prendrait. `_ambience_streams` meurt avec l'autoload, comme `_sfx_streams`.
 
-**Ce que la contre-revue a corrigé dans cette décision.** Une première rédaction
-affirmait qu'une copie survivante serait classée « ressource du PROJET » par
-`tools/gate_fuite_ressources.py`. **C'est faux** : `ResourceCache::clear()`
-n'énumère que `ResourceCache::resources`, où la copie n'entre jamais — elle
-n'apparaîtrait donc PAS dans `Resource still in use:`. Elle est prise par l'autre
-détecteur, `ObjectDB::cleanup()`, qui imprime `Leaked instance: AudioStreamWAV`,
-et le portail rougit par la condition « classe non attribuée au moteur ». La
-conclusion tenait, le mécanisme était faux ; il est corrigé ici et dans le
-commentaire de `_ambience_bouclee`.
+**Ce que les contre-revues ont corrigé dans cette décision — deux fois.**
 
-**Danger latent consigné.** `Resource::is_built_in()` rend faux dès que
-`path_cache` est un `res://…` sans `::`. Si l'arbre d'ambiance était un jour
-empaqueté ou sauvegardé, la copie serait écrite en `ExtResource` et le
-rechargement rendrait l'exemplaire partagé sans boucle : les deux défauts
-d'ISS-088 reviendraient ensemble, en silence. Non atteignable aujourd'hui — les
-seuls `ResourceSaver.save` du dépôt sont des outils de cuisson hors-ligne.
+*Premier passage.* Une rédaction affirmait qu'une copie survivante serait classée
+« ressource du PROJET ». Faux : `ResourceCache::clear()` n'énumère que
+`ResourceCache::resources`, où la copie n'entre jamais.
+
+*Second passage, et il réfute aussi la correction du premier.* J'avais alors
+écrit qu'elle serait prise par `Leaked instance: AudioStreamWAV`, donc portail A
+rouge. **C'est faux pour le chemin de routine**, pour deux raisons vérifiables :
+`ObjectDB::cleanup()` n'imprime ses lignes par instance que sous
+`is_stdout_verbose()`, et `tools/validate_fast.sh` ne passe pas `--verbose` ; et
+le portail y tourne en `--mode=agregat`, où `CLASSES_MOTEUR` n'est jamais
+consulté — cette condition vit dans `verdict()`, pas dans `verdict_agregat()`.
+
+Une copie survivante ferait donc passer `objets fuités` de 140 à 141 et rougirait
+en `ENGINE_SCRIPT_CACHE_TELEMETRY : DÉRIVE`, sous une bannière qui affirme
+explicitement que ce n'est PAS une fuite du projet et propose d'entériner. La
+course reste rouge — rien ne s'échappe — mais l'étiquette envoie chercher
+ailleurs.
+
+**RÈGLE QUI EN DÉCOULE.** Ne jamais entériner une dérive d'`objets fuités` sans
+avoir d'abord passé `tools/gate_fuite_composition.sh`, seul mode qui NOMME la
+ressource. Dans un lot qui ajoute aussi des scripts — ce que fait chaque lot de
+V2.3-B — entériner la dérive absorberait un `AudioStreamWAV` fuité en silence.
+C'est le seul chemin plausible par lequel cette détection pourrait se perdre.
+
+**Danger latent consigné, et son déclencheur resserré.**
+`Resource::is_built_in()` rend faux dès que `path_cache` est un `res://…` sans
+`::`, donc la copie serait écrite en `ExtResource` et le rechargement rendrait
+l'exemplaire partagé sans boucle : les deux défauts d'ISS-088 reviendraient
+ensemble, en silence. **Un export de projet ne peut pas l'atteindre** — il
+empaquette des fichiers du disque, jamais une ressource née à l'exécution. Le
+seul déclencheur est un `PackedScene.pack()` suivi d'un `ResourceSaver.save()`
+à l'exécution. Vérifié exhaustivement : trois `ResourceSaver` dans le dépôt,
+tous des outils de cuisson hors-ligne ; zéro `pack(`, zéro `take_over_path`,
+zéro `reload_from_file` ; `save_system.gd` ne sérialise aucun nœud.
+
+**Ce que la mesure 140/140 ne clôt pas**, et qu'il faut écrire plutôt que de
+laisser croire : une substitution à somme nulle passerait ; la mémorisation
+n'est jamais exercée par la sonde cumulative de l'étape 2c, qui monte
+`WorldV2.tscn` alors que seul `ValleyWorld` appelle `play_ambience` ; et le
+comportement avec un second nom d'ambiance n'existe pas encore.
