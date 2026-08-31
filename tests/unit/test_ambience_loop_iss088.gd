@@ -31,6 +31,14 @@
 ## l'autre QOA (`compress/mode=2`). Même durée décodée, poids de `data` sans
 ## rapport (44 100 contre 8 952 octets) : la borne correcte est la même.
 ##
+## VÉRIFICATION INDÉPENDANTE du littéral TRAMES (D-067) — sans confiance dans
+## l'API testée ni dans la prose de cet en-tête :
+##   python3 -c "import wave; print(wave.open('tests/fixtures/audio/iss088_boucle_pcm.wav').getnframes())"  -> 22050
+##   côté QOA, l'en-tête `qoaf` du `data` importé porte le même compte en
+##   grand-boutiste (octets 4..7). Mesuré à l'écriture de cette recette :
+##   PCM 44100 Hz mono 16 bits, sinus de période 100 échantillons (~441 Hz),
+##   amplitude crête 16383.
+##
 ## SECOND DÉFAUT DU MÊME GESTE : la mutation frappait l'exemplaire PARTAGÉ —
 ## celui du cache `_sfx_streams` ET du ResourceCache de `load()` — que
 ## `play_sfx` réutilise. Le contrat exige une COPIE locale pour la boucle et un
